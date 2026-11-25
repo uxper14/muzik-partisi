@@ -33,18 +33,9 @@ const MELODY_PRESETS = [
 ];
 
 const CONCEPTS = [
-  "Güneşli Piknik",
-  "Gergin Robot",
-  "Yağmurda Koşmak",
-  "Uzay Gemisi",
-  "Gece Nöbeti",
-  "Büyülü Orman",
-  "Hızlı Kaçış",
-  "Dans Pisti",
-  "Korsan Gemisi",
-  "Gizemli Şato",
-  "Siberpunk Gece",
-  "Sahil Gün Batımı"
+  "Güneşli Piknik", "Gergin Robot", "Yağmurda Koşmak", "Uzay Gemisi",
+  "Gece Nöbeti", "Büyülü Orman", "Hızlı Kaçış", "Dans Pisti",
+  "Korsan Gemisi", "Gizemli Şato", "Siberpunk Gece", "Sahil Gün Batımı"
 ];
 
 function normalizeCode(raw) {
@@ -142,6 +133,17 @@ function broadcastRoom(room) {
     safeSend(player.ws, {
       type: "room_state",
       room: state,
+      serverNow: Date.now()
+    });
+  }
+}
+
+function broadcastLiveNote(room, senderId, notePayload) {
+  for (const player of room.players.values()) {
+    if (player.id === senderId) continue;
+    safeSend(player.ws, {
+      type: "live_note",
+      note: notePayload,
       serverNow: Date.now()
     });
   }
@@ -424,7 +426,7 @@ wss.on("connection", (ws) => {
     if (!room || !boundPlayerId) return;
     room.lastActiveAt = Date.now();
 
-    if (msg.type === "update_settings" && room.hostId === boundPlayerId) {
+    if (msg.type === "update_settings") {
       const incoming = { ...(msg.settings || {}) };
       if (incoming.mode === "muzziko") incoming.mode = "collab";
       room.settings = {
@@ -435,13 +437,13 @@ wss.on("connection", (ws) => {
       return;
     }
 
-    if (msg.type === "start_game" && room.hostId === boundPlayerId) {
+    if (msg.type === "start_game") {
       beginGame(room);
       broadcastRoom(room);
       return;
     }
 
-    if (msg.type === "set_dj" && room.hostId === boundPlayerId) {
+    if (msg.type === "set_dj") {
       room.djEffect = msg.djEffect || "normal";
       broadcastRoom(room);
       return;
@@ -450,6 +452,16 @@ wss.on("connection", (ws) => {
     if (msg.type === "set_concept") {
       room.concept = String(msg.concept || "Güneşli Piknik").slice(0, 48);
       broadcastRoom(room);
+      return;
+    }
+
+    if (msg.type === "live_note") {
+      broadcastLiveNote(room, boundPlayerId, {
+        freq: Number(msg.freq || 261.63),
+        instrumentId: String(msg.instrumentId || "grand_piano"),
+        durationMs: Math.max(120, Math.min(2500, Number(msg.durationMs || 260))),
+        synth: msg.synth || {}
+      });
       return;
     }
 
@@ -474,7 +486,7 @@ wss.on("connection", (ws) => {
       return;
     }
 
-    if (msg.type === "delete_layer" && room.hostId === boundPlayerId) {
+    if (msg.type === "delete_layer") {
       room.layers = room.layers.filter((l) => l.id !== msg.layerId);
       broadcastRoom(room);
       return;
@@ -512,7 +524,7 @@ wss.on("connection", (ws) => {
       return;
     }
 
-    if (msg.type === "return_lobby" && room.hostId === boundPlayerId) {
+    if (msg.type === "return_lobby") {
       room.phase = "lobby";
       room.layers = [];
       room.votes = {};
@@ -543,7 +555,7 @@ wss.on("connection", (ws) => {
       return;
     }
 
-    if (msg.type === "force_end_challenge" && room.challenge && room.hostId === boundPlayerId) {
+    if (msg.type === "force_end_challenge" && room.challenge) {
       const results = {};
       for (const p of room.players.values()) {
         results[p.id] = room.challenge.submitted.get(p.id) || { accuracy: 0, notes: [] };
