@@ -5,9 +5,7 @@ const path = require("path");
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  maxHttpBufferSize: 20 * 1024 * 1024
-});
+const io = new Server(server);
 
 app.use(express.static(path.join(__dirname)));
 
@@ -87,7 +85,6 @@ function calculateSimilarity(target, submission) {
 
     if (uNotes.length === 0 || tNotes.length === 0) continue;
 
-    // İlk notalar arasındaki yarım ses farkına göre yakınlık puanı
     const tMidi = tNotes[0];
     let bestStepScore = 0;
 
@@ -95,16 +92,15 @@ function calculateSimilarity(target, submission) {
       const diff = Math.abs(tMidi - uMidi);
       let score = 0;
       if (diff === 0) score = 100;
-      else if (diff === 12) score = 80; // Aynı nota farklı oktav
-      else if (diff === 1) score = 65;  // 1 yarım ses yakın
-      else if (diff === 2) score = 45;  // 1 tam ses yakın
+      else if (diff === 12) score = 80;
+      else if (diff === 1) score = 65;
+      else if (diff === 2) score = 45;
       else if (diff <= 4) score = 20;
       else score = 5;
 
       if (score > bestStepScore) bestStepScore = score;
     }
 
-    // Fazladan basılan alakasız tuş varsa hafif ceza
     const extraPenalty = Math.max(0, (uNotes.length - tNotes.length) * 10);
     noteScoreTotal += Math.max(0, bestStepScore - extraPenalty);
   }
@@ -194,12 +190,11 @@ io.on("connection", socket => {
       mode,
       solo,
       host: socket.id,
-      started: solo, // Tek kişilik modda direkt başlar
+      started: solo,
       currentTurn: 0,
       players: [{ id: socket.id, name }],
       actions: [],
-      challenge: null,
-      dj: null
+      challenge: null
     };
 
     if (solo && mode === "mimic") {
@@ -332,7 +327,6 @@ io.on("connection", socket => {
     callback?.({ ok: true });
   });
 
-  // Sadece oda sahibinin ortak müziği başlatması/durdurması
   socket.on("play-song", (data, callback) => {
     const room = getRoom(socket, data?.code);
     if (!room) return callback?.({ ok: false, message: "Oda bulunamadı." });
@@ -358,7 +352,6 @@ io.on("connection", socket => {
     callback?.({ ok: true });
   });
 
-  // Melodi Taklit Modu: Oyuncu tahmini gönderme
   socket.on("submit-mimic", (data, callback) => {
     const room = getRoom(socket, data?.code);
     if (!room || !room.started || room.mode !== "mimic" || !room.challenge) {
@@ -380,133 +373,3 @@ io.on("connection", socket => {
     );
 
     if (sequence.length !== room.challenge.sequence.length || sequence.some(s => s.length === 0)) {
-      return callback?.({
-        ok: false,
-        message: `Lütfen tüm ${room.challenge.sequence.length} adımı da doldur.`
-      });
-    }
-
-    const instrument = String(data?.instrument || "acoustic_grand_piano").slice(0, 60);
-    const score = calculateSimilarity(room.challenge, { instrument, sequence });
-
-    const existingIdx = room.challenge.submissions.findIndex(s => s.playerId === socket.id);
-    const entry = {
-      playerId: socket.id,
-      playerName: player.name,
-      instrument,
-      sequence,
-      score
-    };
-
-    if (existingIdx >= 0) {
-      room.challenge.submissions[existingIdx] = entry;
-    } else {
-      room.challenge.submissions.push(entry);
-    }
-
-    // Odadaki herkes gönderdiyse sonuçları otomatik açıkla
-    if (room.challenge.submissions.length >= room.players.length) {
-      room.challenge.revealed = true;
-      room.challenge.submissions.sort((a, b) => b.score - a.score);
-    }
-
-    sendRoom(room);
-    callback?.({ ok: true });
-  });
-
-  socket.on("reveal-mimic", (data, callback) => {
-    const room = getRoom(socket, data?.code);
-    if (!room || room.mode !== "mimic" || !room.challenge) {
-      return callback?.({ ok: false, message: "Oda bulunamadı." });
-    }
-    if (room.host !== socket.id) {
-      return callback?.({ ok: false, message: "Sonuçları yalnızca oda sahibi açıklayabilir." });
-    }
-
-    room.challenge.revealed = true;
-    room.challenge.submissions.sort((a, b) => b.score - a.score);
-    sendRoom(room);
-    callback?.({ ok: true });
-  });
-
-  socket.on("next-round", (data, callback) => {
-    const room = getRoom(socket, data?.code);
-
-    if (!room) return callback?.({ ok: false, message: "Oda bulunamadı." });
-    if (room.host !== socket.id) {
-      return callback?.({ ok: false, message: "Bu işlemi yalnızca oda sahibi yapabilir." });
-    }
-
-    room.actions = [];
-    room.currentTurn = 0;
-
-    if (room.mode === "mimic") {
-      const ch = generateChallenge();
-      room.challenge = { ...ch, submissions: [], revealed: false };
-    }
-
-    sendRoom(room);
-    io.to(room.code).emit("round-cleared");
-    callback?.({ ok: true });
-  });
-
-  socket.on("dj-upload", (data, callback) => {
-    const room = getRoom(socket, data?.code);
-
-    if (!room) return callback?.({ ok: false, message: "Oda bulunamadı." });
-    if (room.host !== socket.id) {
-      return callback?.({ ok: false, message: "DJ dosyasını yalnızca oda sahibi yükleyebilir." });
-    }
-
-    const fileName = String(data.fileName || "DJ müziği").slice(0, 100);
-    const dataUrl = String(data.dataUrl || "");
-
-    if (!dataUrl.startsWith("data:audio/")) {
-      return callback?.({ ok: false, message: "Geçerli bir ses dosyası seç." });
-    }
-
-    if (dataUrl.length > 18 * 1024 * 1024) {
-      return callback?.({ ok: false, message: "Dosya çok büyük. Daha küçük bir dosya dene." });
-    }
-
-    room.dj = { fileName, dataUrl };
-    io.to(room.code).emit("dj-ready", room.dj);
-    callback?.({ ok: true });
-  });
-
-  socket.on("dj-control", (data, callback) => {
-    const room = getRoom(socket, data?.code);
-
-    if (!room) return callback?.({ ok: false, message: "Oda bulunamadı." });
-    if (room.host !== socket.id) {
-      return callback?.({ ok: false, message: "DJ kontrolleri oda sahibinde." });
-    }
-
-    const action = ["play", "pause", "stop", "volume"].includes(data.action)
-      ? data.action
-      : null;
-
-    if (!action) return callback?.({ ok: false, message: "Geçersiz DJ komutu." });
-
-    io.to(room.code).emit("dj-control", {
-      action,
-      volume: clamp(data.volume, 0, 1, 0.7)
-    });
-
-    callback?.({ ok: true });
-  });
-
-  socket.on("disconnect", () => {
-    removePlayer(socket);
-  });
-});
-
-function clamp(value, min, max, fallback) {
-  const n = Number(value);
-  return Number.isFinite(n) ? Math.max(min, Math.min(max, n)) : fallback;
-}
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`Müzik Partisi çalışıyor: ${PORT}`);
-});
