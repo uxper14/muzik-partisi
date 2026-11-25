@@ -41,30 +41,46 @@ const server = http.createServer((req, res) => {
 
 const wss = new WebSocket.Server({ server });
 
-function broadcastRoom(room) {
-  const payload = JSON.stringify({
-    type: "room_state",
-    room: {
-      code: room.code,
-      hostId: room.hostId,
-      started: room.started,
-      finished: room.finished,
-      settings: room.settings,
-      players: room.players,
-      turnIndex: room.turnIndex,
-      currentRound: room.currentRound,
-      concept: room.concept,
-      djEffect: room.djEffect,
-      layers: room.layers,
-      challenge: room.challenge,
-      submissions: room.submissions,
-      tabu: room.tabu
-    }
-  });
+function serializeRoomForClient(room, viewerId) {
+  const isSecretActive = Boolean(room.settings?.secretMode) && room.started && !room.finished;
+  const visibleLayers = isSecretActive
+    ? room.layers.map((l, idx) => ({
+        ...l,
+        playerName: "Gizli Oyuncu",
+        avatar: "🕵️",
+        instrumentName: `Gizli Katman #${idx + 1}`
+      }))
+    : room.layers;
 
+  return {
+    code: room.code,
+    hostId: room.hostId,
+    started: room.started,
+    finished: room.finished,
+    settings: room.settings,
+    players: room.players,
+    turnIndex: room.turnIndex,
+    currentRound: room.currentRound,
+    concept: room.concept,
+    djEffect: room.djEffect,
+    layers: visibleLayers,
+    challenge: room.challenge,
+    submissions: room.submissions,
+    votes: room.votes,
+    myVotedFor: room.votes?.[viewerId] || null,
+    tabu: room.tabu
+  };
+}
+
+function broadcastRoom(room) {
   room.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
-      client.send(payload);
+      client.send(
+        JSON.stringify({
+          type: "room_state",
+          room: serializeRoomForClient(room, client.playerId)
+        })
+      );
     }
   });
 }
@@ -120,9 +136,9 @@ wss.on("connection", (ws) => {
           mode: msg.settings?.mode || "collab",
           bpm: Number(msg.settings?.bpm) || 110,
           beats: Number(msg.settings?.beats) || 8,
-          rhythmHits: Number(msg.settings?.rhythmHits) || 7,
           totalRounds: Number(msg.settings?.totalRounds) || 2,
-          turnDuration: Number(msg.settings?.turnDuration) || 0
+          turnDuration: Number(msg.settings?.turnDuration) || 0,
+          secretMode: Boolean(msg.settings?.secretMode)
         },
         players: [
           {
@@ -138,6 +154,7 @@ wss.on("connection", (ws) => {
         layers: [],
         challenge: null,
         submissions: {},
+        votes: {},
         tabu: {
           card: null,
           scores: {},
@@ -190,6 +207,7 @@ wss.on("connection", (ws) => {
       room.djEffect = "normal";
       room.layers = [];
       room.submissions = {};
+      room.votes = {};
       if (msg.concept) room.concept = msg.concept;
       if (msg.challenge) room.challenge = msg.challenge;
 
@@ -211,10 +229,17 @@ wss.on("connection", (ws) => {
       room.djEffect = "normal";
       room.layers = [];
       room.submissions = {};
+      room.votes = {};
       broadcastRoom(room);
     } else if (msg.type === "set_dj_effect" && ws.playerId === room.hostId) {
       room.djEffect = String(msg.effect || "normal");
       broadcastRoom(room);
+    } else if (msg.type === "cast_vote") {
+      const targetId = String(msg.targetPlayerId || "");
+      if (room.players.some((p) => p.id === targetId)) {
+        room.votes[ws.playerId] = targetId;
+        broadcastRoom(room);
+      }
     } else if (msg.type === "submit_challenge") {
       const player = room.players.find((p) => p.id === ws.playerId);
       if (player) {
@@ -270,7 +295,13 @@ wss.on("connection", (ws) => {
     } else if (msg.type === "live_note") {
       broadcastEvent(
         room,
-        { type: "live_note", freq: msg.freq, slot: msg.slot, instrumentId: msg.instrumentId },
+        {
+          type: "live_note",
+          freq: msg.freq,
+          slot: msg.slot,
+          instrumentId: msg.instrumentId,
+          synthParams: msg.synthParams
+        },
         ws
       );
     } else if (msg.type === "tabu_guess") {
@@ -336,6 +367,7 @@ wss.on("connection", (ws) => {
     room.clients.delete(ws);
     room.players = room.players.filter((p) => p.id !== ws.playerId);
     delete room.submissions[ws.playerId];
+    delete room.votes[ws.playerId];
     if (room.players.length === 0) {
       rooms.delete(room.code);
       return;
