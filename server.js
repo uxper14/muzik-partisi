@@ -48,11 +48,14 @@ function broadcastRoom(room) {
       code: room.code,
       hostId: room.hostId,
       started: room.started,
+      finished: room.finished,
       settings: room.settings,
       players: room.players,
       turnIndex: room.turnIndex,
       concept: room.concept,
-      layers: room.layers
+      layers: room.layers,
+      challenge: room.challenge,
+      submissions: room.submissions
     }
   });
   room.clients.forEach((client) => {
@@ -91,9 +94,10 @@ wss.on("connection", (ws) => {
         code,
         hostId: ws.playerId,
         started: false,
+        finished: false,
         settings: {
           mode: msg.settings?.mode || "collab",
-          bpm: Number(msg.settings?.bpm) || 115,
+          bpm: Number(msg.settings?.bpm) || 110,
           beats: Number(msg.settings?.beats) || 8,
           turnDuration: Number(msg.settings?.turnDuration) || 0
         },
@@ -107,6 +111,8 @@ wss.on("connection", (ws) => {
         turnIndex: 0,
         concept: "Yağmurda Koşmak",
         layers: [],
+        challenge: null,
+        submissions: {},
         clients: new Set([ws])
       };
       rooms.set(code, room);
@@ -147,14 +153,49 @@ wss.on("connection", (ws) => {
       broadcastRoom(room);
     } else if (msg.type === "start_game" && ws.playerId === room.hostId) {
       room.started = true;
+      room.finished = false;
       room.turnIndex = 0;
       room.layers = [];
+      room.submissions = {};
       if (msg.concept) room.concept = msg.concept;
+      if (msg.challenge) room.challenge = msg.challenge;
       broadcastRoom(room);
     } else if (msg.type === "restart_game") {
       room.started = false;
+      room.finished = false;
       room.turnIndex = 0;
       room.layers = [];
+      room.submissions = {};
+      broadcastRoom(room);
+    } else if (msg.type === "submit_challenge") {
+      const player = room.players.find((p) => p.id === ws.playerId);
+      if (player) {
+        room.submissions[ws.playerId] = {
+          playerId: ws.playerId,
+          name: player.name,
+          avatar: player.avatar,
+          accuracy: Math.max(0, Math.min(100, Math.round(Number(msg.accuracy) || 0))),
+          detail: String(msg.detail || "")
+        };
+      }
+      const allDone = room.players.every((p) => Boolean(room.submissions[p.id]));
+      if (allDone) {
+        room.finished = true;
+      }
+      broadcastRoom(room);
+    } else if (msg.type === "force_finish_challenge" && ws.playerId === room.hostId) {
+      room.players.forEach((p) => {
+        if (!room.submissions[p.id]) {
+          room.submissions[p.id] = {
+            playerId: p.id,
+            name: p.name,
+            avatar: p.avatar,
+            accuracy: 0,
+            detail: "Süre doldu"
+          };
+        }
+      });
+      room.finished = true;
       broadcastRoom(room);
     } else if (msg.type === "add_layer") {
       if (msg.layer) {
@@ -184,7 +225,7 @@ wss.on("connection", (ws) => {
     } else if (msg.type === "live_note") {
       broadcastEvent(
         room,
-        { type: "live_note", freq: msg.freq, keyId: msg.keyId, instrumentId: msg.instrumentId },
+        { type: "live_note", freq: msg.freq, slot: msg.slot, instrumentId: msg.instrumentId },
         ws
       );
     }
@@ -195,6 +236,7 @@ wss.on("connection", (ws) => {
     if (!room) return;
     room.clients.delete(ws);
     room.players = room.players.filter((p) => p.id !== ws.playerId);
+    delete room.submissions[ws.playerId];
     if (room.players.length === 0) {
       rooms.delete(room.code);
       return;
@@ -203,6 +245,11 @@ wss.on("connection", (ws) => {
       room.hostId = room.players[0].id;
     }
     room.turnIndex = room.turnIndex % room.players.length;
+    if (room.started && !room.finished && (room.settings.mode === "rhythm" || room.settings.mode === "melody")) {
+      if (room.players.every((p) => Boolean(room.submissions[p.id]))) {
+        room.finished = true;
+      }
+    }
     broadcastRoom(room);
   });
 });
