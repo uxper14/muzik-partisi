@@ -45,11 +45,11 @@ function makeCode() {
 
 function generateChallenge() {
   const scales = [
-    [60, 62, 64, 65, 67, 69, 71, 72], // Do Majör
-    [60, 62, 63, 65, 67, 68, 70, 72], // Do Minör
-    [62, 64, 66, 67, 69, 71, 73, 74], // Re Majör
-    [64, 66, 67, 69, 71, 72, 74, 76], // Mi Minör
-    [67, 69, 71, 72, 74, 76, 78, 79]  // Sol Majör
+    [60, 62, 64, 65, 67, 69, 71, 72],
+    [60, 62, 63, 65, 67, 68, 70, 72],
+    [62, 64, 66, 67, 69, 71, 73, 74],
+    [64, 66, 67, 69, 71, 72, 74, 76],
+    [67, 69, 71, 72, 74, 76, 78, 79]
   ];
   const scale = scales[Math.floor(Math.random() * scales.length)];
   const length = 4;
@@ -220,22 +220,10 @@ io.on("connection", socket => {
     const name = String(data?.name || "Oyuncu").trim().slice(0, 18);
     const room = rooms.get(code);
 
-    if (!room) {
-      return callback?.({ ok: false, message: "Oda bulunamadı." });
-    }
-
-    if (room.solo) {
-      return callback?.({ ok: false, message: "Bu oda tek kişilik olarak açılmış." });
-    }
-
-    if (room.started) {
-      return callback?.({ ok: false, message: "Oyun başlamış." });
-    }
-
-    if (room.players.length >= MAX_PLAYERS) {
-      return callback?.({ ok: false, message: "Oda dolu. En fazla 8 kişi." });
-    }
-
+    if (!room) return callback?.({ ok: false, message: "Oda bulunamadı." });
+    if (room.solo) return callback?.({ ok: false, message: "Bu oda tek kişilik." });
+    if (room.started) return callback?.({ ok: false, message: "Oyun başlamış." });
+    if (room.players.length >= MAX_PLAYERS) return callback?.({ ok: false, message: "Oda dolu." });
     if (room.players.some(p => p.name.toLowerCase() === name.toLowerCase())) {
       return callback?.({ ok: false, message: "Bu isim odada kullanılıyor." });
     }
@@ -249,11 +237,8 @@ io.on("connection", socket => {
 
   socket.on("start-game", (data, callback) => {
     const room = getRoom(socket, data?.code);
-
     if (!room) return callback?.({ ok: false, message: "Oda bulunamadı." });
-    if (room.host !== socket.id) {
-      return callback?.({ ok: false, message: "Oyunu yalnızca oda sahibi başlatabilir." });
-    }
+    if (room.host !== socket.id) return callback?.({ ok: false, message: "Yalnızca oda sahibi başlatabilir." });
 
     room.started = true;
     room.actions = [];
@@ -273,17 +258,10 @@ io.on("connection", socket => {
 
   socket.on("add-sound", (data, callback) => {
     const room = getRoom(socket, data?.code);
-
-    if (!room || !room.started) {
-      return callback?.({ ok: false, message: "Oyun başlamamış." });
-    }
-
-    if (room.mode === "mimic") {
-      return callback?.({ ok: false, message: "Bu modda melodi gönderme alanını kullan." });
-    }
+    if (!room || !room.started) return callback?.({ ok: false, message: "Oyun başlamamış." });
+    if (room.mode === "mimic") return callback?.({ ok: false, message: "Bu modda melodi gönder." });
 
     const playerIndex = room.players.findIndex(p => p.id === socket.id);
-
     if (room.mode === "party" && playerIndex !== room.currentTurn) {
       return callback?.({ ok: false, message: "Henüz senin sıran değil." });
     }
@@ -292,9 +270,7 @@ io.on("connection", socket => {
       ? data.notes.slice(0, 16).map(n => Math.max(0, Math.min(127, Number(n) || 60)))
       : [];
 
-    if (notes.length === 0) {
-      return callback?.({ ok: false, message: "Önce piyanodan nota seç." });
-    }
+    if (notes.length === 0) return callback?.({ ok: false, message: "Önce nota seç." });
 
     const action = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -330,12 +306,8 @@ io.on("connection", socket => {
   socket.on("play-song", (data, callback) => {
     const room = getRoom(socket, data?.code);
     if (!room) return callback?.({ ok: false, message: "Oda bulunamadı." });
-    if (room.host !== socket.id) {
-      return callback?.({ ok: false, message: "Müziği yalnızca oda sahibi başlatabilir." });
-    }
-    if (!room.actions || room.actions.length === 0) {
-      return callback?.({ ok: false, message: "Çalınacak eklenmiş bir ses yok." });
-    }
+    if (room.host !== socket.id) return callback?.({ ok: false, message: "Yalnızca oda sahibi çalabilir." });
+    if (!room.actions || room.actions.length === 0) return callback?.({ ok: false, message: "Ses yok." });
 
     io.to(room.code).emit("song-playback", { action: "play" });
     callback?.({ ok: true });
@@ -344,9 +316,7 @@ io.on("connection", socket => {
   socket.on("stop-song", (data, callback) => {
     const room = getRoom(socket, data?.code);
     if (!room) return callback?.({ ok: false, message: "Oda bulunamadı." });
-    if (room.host !== socket.id) {
-      return callback?.({ ok: false, message: "Müziği yalnızca oda sahibi durdurabilir." });
-    }
+    if (room.host !== socket.id) return callback?.({ ok: false, message: "Yalnızca oda sahibi durdurabilir." });
 
     io.to(room.code).emit("song-playback", { action: "stop" });
     callback?.({ ok: true });
@@ -359,7 +329,7 @@ io.on("connection", socket => {
     }
 
     if (room.challenge.revealed) {
-      return callback?.({ ok: false, message: "Bu tur sonuçlandı. Yeni tur başlatılmasını bekle." });
+      return callback?.({ ok: false, message: "Bu tur sonuçlandı. Yeni tur başlat." });
     }
 
     const player = room.players.find(p => p.id === socket.id);
@@ -375,7 +345,7 @@ io.on("connection", socket => {
     if (sequence.length !== room.challenge.sequence.length || sequence.some(s => s.length === 0)) {
       return callback?.({
         ok: false,
-        message: `Lütfen tüm ${room.challenge.sequence.length} adımı da doldur.`
+        message: `Lütfen 4 adımın tamamına nota seç (boş adım var).`
       });
     }
 
@@ -397,19 +367,19 @@ io.on("connection", socket => {
       room.challenge.submissions.push(entry);
     }
 
-    if (room.challenge.submissions.length >= room.players.length) {
+    if (room.solo || room.challenge.submissions.length >= room.players.length) {
       room.challenge.revealed = true;
       room.challenge.submissions.sort((a, b) => b.score - a.score);
     }
 
     sendRoom(room);
-    callback?.({ ok: true });
+    callback?.({ ok: true, room: publicRoom(room) });
   });
 
   socket.on("reveal-mimic", (data, callback) => {
     const room = getRoom(socket, data?.code);
     if (!room || room.mode !== "mimic" || !room.challenge) {
-      return callback?.({ ok: false, message: "Oda bulunamadı." });
+      return callback?.({ ok: false, message: "Aktif yarışma bulunamadı." });
     }
     if (room.host !== socket.id) {
       return callback?.({ ok: false, message: "Sonuçları yalnızca oda sahibi açıklayabilir." });
@@ -418,16 +388,13 @@ io.on("connection", socket => {
     room.challenge.revealed = true;
     room.challenge.submissions.sort((a, b) => b.score - a.score);
     sendRoom(room);
-    callback?.({ ok: true });
+    callback?.({ ok: true, room: publicRoom(room) });
   });
 
   socket.on("next-round", (data, callback) => {
     const room = getRoom(socket, data?.code);
-
     if (!room) return callback?.({ ok: false, message: "Oda bulunamadı." });
-    if (room.host !== socket.id) {
-      return callback?.({ ok: false, message: "Bu işlemi yalnızca oda sahibi yapabilir." });
-    }
+    if (room.host !== socket.id) return callback?.({ ok: false, message: "Yalnızca oda sahibi sıfırlayabilir." });
 
     room.actions = [];
     room.currentTurn = 0;
