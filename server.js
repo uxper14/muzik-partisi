@@ -52,12 +52,15 @@ function broadcastRoom(room) {
       settings: room.settings,
       players: room.players,
       turnIndex: room.turnIndex,
+      currentRound: room.currentRound,
       concept: room.concept,
       layers: room.layers,
       challenge: room.challenge,
-      submissions: room.submissions
+      submissions: room.submissions,
+      tabu: room.tabu
     }
   });
+
   room.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(payload);
@@ -72,6 +75,23 @@ function broadcastEvent(room, data, excludeWs = null) {
       client.send(payload);
     }
   });
+}
+
+function advanceStudioTurn(room, nextConcept) {
+  if (nextConcept) room.concept = nextConcept;
+  const totalPlayers = Math.max(1, room.players.length);
+  const nextIndex = room.turnIndex + 1;
+
+  if (nextIndex >= totalPlayers) {
+    room.turnIndex = 0;
+    if (room.currentRound >= room.settings.totalRounds) {
+      room.finished = true;
+    } else {
+      room.currentRound += 1;
+    }
+  } else {
+    room.turnIndex = nextIndex;
+  }
 }
 
 wss.on("connection", (ws) => {
@@ -99,6 +119,7 @@ wss.on("connection", (ws) => {
           mode: msg.settings?.mode || "collab",
           bpm: Number(msg.settings?.bpm) || 110,
           beats: Number(msg.settings?.beats) || 8,
+          totalRounds: Number(msg.settings?.totalRounds) || 2,
           turnDuration: Number(msg.settings?.turnDuration) || 0
         },
         players: [
@@ -109,10 +130,16 @@ wss.on("connection", (ws) => {
           }
         ],
         turnIndex: 0,
-        concept: "Yağmurda Koşmak",
+        currentRound: 1,
+        concept: "Gergin Robot",
         layers: [],
         challenge: null,
         submissions: {},
+        tabu: {
+          card: null,
+          scores: {},
+          guesses: []
+        },
         clients: new Set([ws])
       };
       rooms.set(code, room);
@@ -155,15 +182,26 @@ wss.on("connection", (ws) => {
       room.started = true;
       room.finished = false;
       room.turnIndex = 0;
+      room.currentRound = 1;
       room.layers = [];
       room.submissions = {};
       if (msg.concept) room.concept = msg.concept;
       if (msg.challenge) room.challenge = msg.challenge;
+
+      const scores = {};
+      room.players.forEach((p) => { scores[p.id] = 0; });
+      room.tabu = {
+        card: msg.tabuCard || null,
+        scores,
+        guesses: []
+      };
+
       broadcastRoom(room);
     } else if (msg.type === "restart_game") {
       room.started = false;
       room.finished = false;
       room.turnIndex = 0;
+      room.currentRound = 1;
       room.layers = [];
       room.submissions = {};
       broadcastRoom(room);
@@ -178,8 +216,7 @@ wss.on("connection", (ws) => {
           detail: String(msg.detail || "")
         };
       }
-      const allDone = room.players.every((p) => Boolean(room.submissions[p.id]));
-      if (allDone) {
+      if (room.players.every((p) => Boolean(room.submissions[p.id]))) {
         room.finished = true;
       }
       broadcastRoom(room);
@@ -201,12 +238,10 @@ wss.on("connection", (ws) => {
       if (msg.layer) {
         room.layers.push(msg.layer);
       }
-      room.turnIndex = (room.turnIndex + 1) % Math.max(1, room.players.length);
-      if (msg.nextConcept) room.concept = msg.nextConcept;
+      advanceStudioTurn(room, msg.nextConcept);
       broadcastRoom(room);
     } else if (msg.type === "skip_turn") {
-      room.turnIndex = (room.turnIndex + 1) % Math.max(1, room.players.length);
-      if (msg.nextConcept) room.concept = msg.nextConcept;
+      advanceStudioTurn(room, msg.nextConcept);
       broadcastRoom(room);
     } else if (msg.type === "new_concept") {
       room.concept = msg.concept || room.concept;
@@ -228,6 +263,59 @@ wss.on("connection", (ws) => {
         { type: "live_note", freq: msg.freq, slot: msg.slot, instrumentId: msg.instrumentId },
         ws
       );
+    } else if (msg.type === "tabu_guess") {
+      const player = room.players.find((p) => p.id === ws.playerId);
+      const text = String(msg.text || "").trim().slice(0, 40);
+      if (!player || !text || !room.tabu?.card) return;
+
+      const normGuess = text.toLocaleLowerCase("tr-TR");
+      const normTarget = String(room.tabu.card.word || "").toLocaleLowerCase("tr-TR");
+      const isCorrect = normGuess === normTarget;
+
+      room.tabu.guesses.push({
+        name: player.name,
+        avatar: player.avatar,
+        text,
+        correct: isCorrect
+      });
+      if (room.tabu.guesses.length > 18) room.tabu.guesses.shift();
+
+      if (isCorrect) {
+        const teller = room.players[room.turnIndex];
+        room.tabu.scores[ws.playerId] = (room.tabu.scores[ws.playerId] || 0) + 1;
+        if (teller) {
+          room.tabu.scores[teller.id] = (room.tabu.scores[teller.id] || 0) + 1;
+        }
+        if (msg.nextCard) room.tabu.card = msg.nextCard;
+      }
+      broadcastRoom(room);
+    } else if (msg.type === "tabu_correct") {
+      const teller = room.players[room.turnIndex];
+      if (teller) {
+        room.tabu.scores[teller.id] = (room.tabu.scores[teller.id] || 0) + 1;
+      }
+      if (msg.nextCard) room.tabu.card = msg.nextCard;
+      room.tabu.guesses.push({
+        name: "Sistem",
+        avatar: "✅",
+        text: "Doğru bilindi! (+1)",
+        correct: true
+      });
+      broadcastRoom(room);
+    } else if (msg.type === "tabu_pass") {
+      if (msg.nextCard) room.tabu.card = msg.nextCard;
+      room.tabu.guesses.push({
+        name: "Sistem",
+        avatar: "⏭️",
+        text: "Kart pas geçildi.",
+        correct: false
+      });
+      broadcastRoom(room);
+    } else if (msg.type === "tabu_next_turn") {
+      room.turnIndex = (room.turnIndex + 1) % Math.max(1, room.players.length);
+      if (msg.nextCard) room.tabu.card = msg.nextCard;
+      room.tabu.guesses = [];
+      broadcastRoom(room);
     }
   });
 
