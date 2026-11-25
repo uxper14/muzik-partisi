@@ -9,7 +9,7 @@
     [data-theme="neon"] {
       --bg: #0c0f1a;
       --panel: rgba(22, 28, 46, 0.94);
-      --panel-soft: rgba(255, 255, 255, 0.04);
+      --panel-soft: rgba(255, 255, 255, 0.045);
       --border: rgba(124, 92, 255, 0.28);
       --text: #f4f6ff;
       --muted: #9aa6c4;
@@ -133,7 +133,7 @@
     .app {
       position: relative;
       z-index: 1;
-      max-width: 1120px;
+      max-width: 1140px;
       margin: 0 auto;
       padding: 16px 14px 48px;
       display: flex;
@@ -147,28 +147,30 @@
       justify-content: space-between;
       align-items: center;
       gap: 12px;
-      padding: 13px 18px;
+      padding: 14px 20px;
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
     }
 
     .brand { display: flex; align-items: center; gap: 12px; }
     .brand-icon {
-      width: 42px; height: 42px; border-radius: 12px;
+      width: 44px; height: 44px; border-radius: 13px;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
       display: grid; place-items: center; font-size: 1.35rem; color: #fff;
       transition: transform 0.12s ease;
     }
     .brand-icon.bounce { transform: scale(1.18) rotate(-5deg); }
-    .brand h1 { font-size: 1.3rem; }
+    .brand h1 { font-size: 1.32rem; }
     .topbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
     .card {
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 20px;
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     }
 
     .hidden { display: none !important; }
@@ -200,7 +202,7 @@
       align-items: center;
       justify-content: center;
       gap: 7px;
-      transition: transform 0.08s ease, opacity 0.15s ease;
+      transition: transform 0.08s ease, opacity 0.15s ease, background 0.15s ease;
     }
     .btn:hover:not(:disabled) { transform: translateY(-1px); }
     .btn:disabled { opacity: 0.45; cursor: not-allowed; }
@@ -209,24 +211,24 @@
     .btn-secondary.active { background: var(--accent); color: #fff; border-color: transparent; }
     .btn-success { background: var(--success); color: #09131a; }
     .btn-danger { background: var(--danger); color: #fff; }
-    .btn-lg { padding: 13px 22px; font-size: 1rem; width: 100%; }
+    .btn-lg { padding: 14px 22px; font-size: 1rem; width: 100%; border-radius: 13px; }
 
     .step-badge {
       display: inline-block;
       font-size: 0.72rem;
       font-weight: 700;
-      letter-spacing: 0.04em;
-      padding: 3px 9px;
+      letter-spacing: 0.05em;
+      padding: 3px 10px;
       border-radius: 999px;
-      background: var(--accent);
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
       color: #fff;
       margin-bottom: 6px;
     }
-    .muted { color: var(--muted); font-size: 0.87rem; }
+    .muted { color: var(--muted); font-size: 0.87rem; line-height: 1.4; }
 
     .entry-box {
-      max-width: 500px;
-      margin: 14px auto;
+      max-width: 520px;
+      margin: 16px auto;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -268,13 +270,14 @@
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
+      gap: 14px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
     }
 
     .room-code-badge {
-      padding: 9px 15px;
-      border-radius: 12px;
+      padding: 10px 16px;
+      border-radius: 13px;
       background: var(--panel-soft);
       border: 1px dashed var(--accent-2);
       font-size: 1.05rem;
@@ -283,46 +286,44 @@
 
     .mode-cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
-      gap: 10px;
-      margin: 10px 0 18px;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 11px;
+      margin: 16px 0 20px;
     }
 
     .mode-card {
       text-align: left;
-      padding: 14px;
-      border-radius: 14px;
+      padding: 15px;
+      border-radius: 15px;
       border: 1px solid var(--border);
       background: var(--panel-soft);
       color: var(--text);
       cursor: pointer;
       display: flex;
       flex-direction: column;
-      gap: 5px;
-      transition: transform 0.1s ease, border-color 0.15s ease, background 0.15s ease;
+      gap: 6px;
+      transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease;
     }
-    .mode-card:hover:not(:disabled) { transform: translateY(-2px); }
+    .mode-card:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--accent); }
     .mode-card.selected {
       border: 2px solid var(--accent-2);
-      background: rgba(124, 92, 255, 0.18);
+      background: rgba(124, 92, 255, 0.2);
     }
-    .mode-card:disabled { opacity: 0.72; cursor: default; }
-    .mode-card-title { font-weight: 700; font-size: 0.95rem; }
+    .mode-card:disabled { opacity: 0.75; cursor: default; }
+    .mode-card-title { font-weight: 700; font-size: 0.96rem; }
     .mode-card-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.35; }
 
     .lobby-settings-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
       gap: 18px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
     }
 
     .lobby-panel {
       background: var(--panel-soft);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 15px;
+      border-radius: 16px;
+      padding: 16px;
     }
 
     .secret-toggle-box {
@@ -332,7 +333,7 @@
       gap: 12px;
       padding: 12px 14px;
       border-radius: 12px;
-      background: rgba(124, 92, 255, 0.1);
+      background: rgba(124, 92, 255, 0.12);
       border: 1px solid var(--border);
       margin-top: 8px;
     }
@@ -346,9 +347,9 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 12px;
+      padding: 8px 13px;
       border-radius: 999px;
-      background: var(--panel-soft);
+      background: var(--panel);
       border: 1px solid var(--border);
       font-size: 0.9rem;
     }
@@ -566,6 +567,39 @@
       font-weight: 600;
     }
 
+    .chord-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 11px 14px;
+      border-radius: 14px;
+      background: var(--panel-soft);
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+    .chord-type-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .chord-pill-btn {
+      padding: 6px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .chord-pill-btn.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      border-color: transparent;
+    }
+
     .perc-pad-row {
       display: flex;
       flex-wrap: wrap;
@@ -703,7 +737,7 @@
         <div class="brand-icon" id="brandIcon">🎵</div>
         <div>
           <h1>Kollay Gelsin!</h1>
-          <span class="muted" id="topRoomInfo">Çok Oyunculu Müzik, Synth Loop &amp; Tabu Oyunu</span>
+          <span class="muted" id="topRoomInfo">Çok Oyunculu Müzik, Synth Loop, Müzikinyo &amp; Tabu</span>
         </div>
       </div>
 
@@ -749,13 +783,13 @@
       <div id="entryError" class="error-banner hidden"></div>
     </section>
 
-    <!-- 2. ADIM: DÜZENLİ ODA LOBİSİ -->
+    <!-- 2. ADIM: YENİLENMİŞ ODA LOBİSİ -->
     <section id="lobbyView" class="card hidden">
       <div class="lobby-header">
         <div>
           <span class="step-badge">ADIM 2 — MOD &amp; ODA AYARLARI</span>
           <h2>Oyun Modunu Seç</h2>
-          <p class="muted">Kurucu modu ve ayarları belirler; herkes sırayla ortak döngüye katman ekler.</p>
+          <p class="muted">Kurucu modu seçer; loop veya doğrudan canlı performans (Müzikinyo) ile oyunu başlatır.</p>
         </div>
         <div class="room-code-badge">
           Oda Kodu: <strong id="lobbyRoomCode">-----</strong>
@@ -826,7 +860,7 @@
         </div>
       </div>
 
-      <div style="margin-top: 16px;">
+      <div style="margin-top: 18px;">
         <button id="startGameBtn" class="btn btn-primary btn-lg">🚀 Oyunu Başlat</button>
       </div>
     </section>
@@ -847,7 +881,7 @@
 
       <div class="steps-bar">
         <div class="step-box"><strong>1. Dinle</strong>Bu el için rastgele üretilen ritmi dinle.</div>
-        <div class="step-box"><strong>2. Taklit Et</strong>Zorla yuvarlanmadan kendi zamanlamanla vur.</div>
+        <div class="step-box"><strong>2. Taklit Et</strong>Kendi zamanlamanla vur (5–7 sık, 8–12 nadir).</div>
         <div class="step-box"><strong>3. Bitir</strong>"Bitir"e bas, herkes bitince yüzdeleri gör.</div>
       </div>
 
@@ -903,7 +937,7 @@
       </div>
     </section>
 
-    <!-- 3C. ORTAK BİTİŞ, TOPLU DİNLEME & OYLAMA EKRANI -->
+    <!-- 3C. ORTAK BİTİŞ, TOPLU DİNLEME & TEKİL OYLAMA EKRANI -->
     <section id="resultsView" class="card hidden">
       <div class="section-head">
         <div>
@@ -920,8 +954,8 @@
       <div id="correctAnswerBox" class="answer-reveal-box hidden"></div>
 
       <div id="votingSection" class="voting-box hidden">
-        <strong>🗳️ Final Oylaması — En Beğendiğin Oyuncuya Puan Ver</strong>
-        <p class="muted" id="voteStatusText" style="margin-top: 4px;">Bir oyuncuya oy ver; aldığı toplam oylar yanında görünür.</p>
+        <strong>🗳️ Final Oylaması — Tek Bir Oyuncu Seç ve Oyunu Ver</strong>
+        <p class="muted" id="voteStatusText" style="margin-top: 4px;">Her oyuncu listede 1 kere görünür ve yalnızca tek bir kişiye oy verebilir.</p>
         <div id="voteButtonsWrap" class="vote-grid"></div>
       </div>
 
@@ -973,7 +1007,7 @@
       </div>
     </section>
 
-    <!-- 3E. LOOP STATION & SYNTH STÜDYO MODLARI -->
+    <!-- 3E. LOOP STATION, MÜZİKİNYO & SYNTH STÜDYO MODLARI -->
     <main id="studioGameView" class="hidden" style="display: flex; flex-direction: column; gap: 14px;">
       <section class="card turn-bar">
         <div class="turn-who">
@@ -987,6 +1021,7 @@
 
         <div class="controls-cluster">
           <span class="muted" id="turnTimerText" style="margin-right: 6px;">Süresiz</span>
+          <button id="finishMuzikinyoBtn" class="btn btn-secondary hidden">🏁 Oylamaya Geç</button>
           <button id="skipTurnBtn" class="btn btn-secondary">⏭️ Pas Geç</button>
           <button id="saveTurnBtn" class="btn btn-primary">✅ Onayla &amp; Katmanı Ekle</button>
         </div>
@@ -1062,7 +1097,7 @@
       </section>
 
       <!-- ORTAK / SENKRON DÖNGÜ KONTROLÜ -->
-      <section class="card loop-bar">
+      <section class="card loop-bar" id="loopControlCard">
         <div class="controls-cluster">
           <button id="loopToggleBtn" class="btn btn-primary">▶️ Döngüyü Başlat</button>
           <button id="clearTakeBtn" class="btn btn-secondary">🧹 Mevcut Kaydı Sil</button>
@@ -1122,7 +1157,7 @@
 
       <section class="card">
         <div class="section-head">
-          <h3>🎚️ Döngü Katmanları</h3>
+          <h3 id="layersSectionTitle">🎚️ Döngü Katmanları</h3>
           <span class="muted" id="layerCountText">0 katman</span>
         </div>
         <div id="layersList" class="layers-list">
@@ -1131,7 +1166,7 @@
       </section>
     </main>
 
-    <!-- TEK PİYANO & ZENGİN RİTİM/PERKÜSYON PEDİ -->
+    <!-- TEK PİYANO, AKOR MODU & ZENGİN RİTİM/PERKÜSYON PEDİ -->
     <section class="card hidden" id="pianoCard">
       <div class="section-head">
         <h3>🎹 Piyano</h3>
@@ -1149,6 +1184,14 @@
         </div>
       </div>
 
+      <div id="chordModeBar" class="chord-bar">
+        <div class="controls-cluster">
+          <button type="button" id="chordModeToggleBtn" class="btn btn-secondary">🎼 Akor Modu: Kapalı</button>
+          <span class="muted" id="chordActiveHint">Tek nota çalar; açınca tuşlar seçili akoru çalar.</span>
+        </div>
+        <div class="chord-type-pills" id="chordTypePills"></div>
+      </div>
+
       <div class="piano-scroll">
         <div class="piano" id="pianoBoard"></div>
       </div>
@@ -1159,6 +1202,9 @@
         <button type="button" class="perc-pad-btn" data-perc="kick_drum">💥 Kick</button>
         <button type="button" class="perc-pad-btn" data-perc="hihat_closed">🔔 Hi-Hat</button>
         <button type="button" class="perc-pad-btn" data-perc="hihat_open">✨ Açık Hi-Hat</button>
+        <button type="button" class="perc-pad-btn" data-perc="hihat_pedal">🦶 Pedal Hi-Hat</button>
+        <button type="button" class="perc-pad-btn" data-perc="crash_cymbal">💥 Crash Zil</button>
+        <button type="button" class="perc-pad-btn" data-perc="ride_cymbal">🛎️ Ride Zil</button>
         <button type="button" class="perc-pad-btn" data-perc="rimshot">🥢 Rimshot</button>
         <button type="button" class="perc-pad-btn" data-perc="tom_drum">🪘 Tom</button>
         <button type="button" class="perc-pad-btn" data-perc="shaker">🪇 Shaker</button>
@@ -1175,13 +1221,28 @@
     const GAME_MODES = [
       { id: "collab", title: "🤝 Herkes Bir Şey Eklesin", desc: "Sırayla ortak döngüye kendi katmanını ekle, sonunda oyla." },
       { id: "theme", title: "🎭 Temalı Beste", desc: "Gelen sahne temasına uygun müzik yap ve ortak döngüye ekle." },
+      { id: "muzikinyo", title: "🎼 Müzikinyo", desc: "Loop döngüsüne bağlı kalmadan doğrudan müzik çal, kaydet ve sahneye çık." },
       { id: "rhythm", title: "🥁 Ritmi Taklit Et", desc: "Rastgele üretilen ritmi dinle, yap, herkes bitince yüzdeleri gör." },
       { id: "melody", title: "🎹 Melodiyi Taklit Et", desc: "Rastgele seçilen tek oktavdaki melodiyi dinle, çal ve cevabı gör." },
       { id: "tabu", title: "🗣️ Tabu", desc: "Klasik Tabu: yasaklı kelimeleri kullanmadan anlat, tahmin et." }
     ];
 
+    const CHORD_MODES = [
+      { id: "maj", name: "Majör", intervals: [0, 4, 7] },
+      { id: "min", name: "Minör", intervals: [0, 3, 7] },
+      { id: "dom7", name: "7'li (Dom7)", intervals: [0, 4, 7, 10] },
+      { id: "maj7", name: "Maj7", intervals: [0, 4, 7, 11] },
+      { id: "min7", name: "Min7", intervals: [0, 3, 7, 10] },
+      { id: "sus2", name: "Sus2", intervals: [0, 2, 7] },
+      { id: "sus4", name: "Sus4", intervals: [0, 5, 7] },
+      { id: "add9", name: "Add9", intervals: [0, 4, 7, 14] },
+      { id: "dim", name: "Azaltılmış (Dim)", intervals: [0, 3, 6] },
+      { id: "aug", name: "Artırılmış (Aug)", intervals: [0, 4, 8] }
+    ];
+
     const PERC_TYPES = new Set([
-      "kick", "snare", "hihat", "open_hihat", "rimshot", "tom", "shaker", "cowbell", "handshake"
+      "kick", "snare", "hihat", "open_hihat", "pedal_hihat", "crash", "ride",
+      "rimshot", "tom", "shaker", "cowbell", "handshake"
     ]);
 
     const INSTRUMENTS = [
@@ -1210,6 +1271,9 @@
       { id: "kick_drum", name: "Kick Davul", type: "kick" },
       { id: "hihat_closed", name: "Hi-Hat Zil", type: "hihat" },
       { id: "hihat_open", name: "Açık Hi-Hat", type: "open_hihat" },
+      { id: "hihat_pedal", name: "Pedal Hi-Hat", type: "pedal_hihat" },
+      { id: "crash_cymbal", name: "Crash Zil", type: "crash" },
+      { id: "ride_cymbal", name: "Ride Zil", type: "ride" },
       { id: "rimshot", name: "Rimshot", type: "rimshot" },
       { id: "tom_drum", name: "Tom Davul", type: "tom" },
       { id: "shaker", name: "Shaker", type: "shaker" },
@@ -1295,7 +1359,16 @@
 
     function getPianoKeysForOctave(octave) {
       const baseMidi = (octave + 1) * 12;
-      return BASE_KEYS.map((k) => ({ ...k, freq: midiToFreq(baseMidi + k.semi) }));
+      return BASE_KEYS.map((k) => ({ ...k, midi: baseMidi + k.semi, freq: midiToFreq(baseMidi + k.semi) }));
+    }
+
+    function getChordNotesForKey(keyObj, chordModeId) {
+      const cm = CHORD_MODES.find((c) => c.id === chordModeId) || CHORD_MODES[0];
+      const baseMidi = keyObj.midi || ((app.octave + 1) * 12 + keyObj.semi);
+      return cm.intervals.map((iv) => ({
+        freq: midiToFreq(baseMidi + iv),
+        label: `${keyObj.label} ${cm.name}`
+      }));
     }
 
     const DEFAULT_SYNTH = Object.freeze({
@@ -1327,6 +1400,8 @@
       bpm: 110,
       beats: 8,
       octave: 4,
+      chordModeEnabled: false,
+      chordTypeId: "maj",
       djEffect: "normal",
       synth: cloneSynth(DEFAULT_SYNTH),
       isPlaying: false,
@@ -1360,7 +1435,9 @@
         const Ctx = window.AudioContext || window.webkitAudioContext;
         audioCtx = new Ctx();
       }
-      if (audioCtx.state === "suspended") audioCtx.resume();
+      if (audioCtx.state === "suspended") {
+        audioCtx.resume().catch(() => {});
+      }
       return audioCtx;
     }
 
@@ -1461,7 +1538,7 @@
       return destination;
     }
 
-    // Gerçekçi enstrüman & perküsyon sentezi (kilitli synthParams ile)
+    // Gerçekçi enstrüman, bakır/tahta üflemeli & zil/perküsyon sentezi
     function synthesizeNoteAt(
       ctx,
       destination,
@@ -1496,68 +1573,133 @@
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = "sine";
-        osc.frequency.setValueAtTime(155 * pitchFactor, now);
-        osc.frequency.exponentialRampToValueAtTime(36 * pitchFactor, now + 0.2 * durScale);
-        gain.gain.setValueAtTime(0.72, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.26 * durScale);
+        osc.frequency.setValueAtTime(160 * pitchFactor, now);
+        osc.frequency.exponentialRampToValueAtTime(34 * pitchFactor, now + 0.22 * durScale);
+        gain.gain.setValueAtTime(0.8, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28 * durScale);
         osc.connect(gain).connect(stageOut);
         osc.start(now);
-        osc.stop(now + 0.28 * durScale);
+        osc.stop(now + 0.3 * durScale);
         return;
       }
 
       if (inst.type === "snare") {
         const noise = ctx.createBufferSource();
-        noise.buffer = createNoiseBuffer(ctx, 0.28 * durScale);
+        noise.buffer = createNoiseBuffer(ctx, 0.3 * durScale);
         const bp = ctx.createBiquadFilter();
         bp.type = "bandpass";
-        bp.frequency.value = Math.min(4800, Math.max(750, sp.cutoff * 0.55));
+        bp.frequency.value = Math.min(5200, Math.max(850, sp.cutoff * 0.6));
         bp.Q.value = 1.1;
         const nGain = ctx.createGain();
-        nGain.gain.setValueAtTime(0.45, now);
-        nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.22 * durScale);
+        nGain.gain.setValueAtTime(0.5, now);
+        nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.24 * durScale);
         noise.connect(bp).connect(nGain).connect(stageOut);
         noise.start(now);
 
         const body = ctx.createOscillator();
         const bGain = ctx.createGain();
         body.type = "triangle";
-        body.frequency.setValueAtTime(210 * pitchFactor, now);
-        body.frequency.exponentialRampToValueAtTime(92 * pitchFactor, now + 0.12 * durScale);
-        bGain.gain.setValueAtTime(0.36, now);
-        bGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15 * durScale);
+        body.frequency.setValueAtTime(220 * pitchFactor, now);
+        body.frequency.exponentialRampToValueAtTime(95 * pitchFactor, now + 0.13 * durScale);
+        bGain.gain.setValueAtTime(0.4, now);
+        bGain.gain.exponentialRampToValueAtTime(0.001, now + 0.16 * durScale);
         body.connect(bGain).connect(stageOut);
         body.start(now);
-        body.stop(now + 0.17 * durScale);
+        body.stop(now + 0.18 * durScale);
         return;
       }
 
       if (inst.type === "hihat") {
         const noise = ctx.createBufferSource();
-        noise.buffer = createNoiseBuffer(ctx, 0.1 * durScale);
+        noise.buffer = createNoiseBuffer(ctx, 0.12 * durScale);
         const filter = ctx.createBiquadFilter();
         filter.type = "highpass";
-        filter.frequency.value = Math.max(4800, sp.cutoff);
+        filter.frequency.value = Math.max(5200, sp.cutoff);
         const gain = ctx.createGain();
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08 * durScale);
+        gain.gain.setValueAtTime(0.36, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09 * durScale);
         noise.connect(filter).connect(gain).connect(stageOut);
         noise.start(now);
         return;
       }
 
       if (inst.type === "open_hihat") {
-        const hDur = 0.34 * durScale;
+        const hDur = 0.42 * durScale;
         const noise = ctx.createBufferSource();
         noise.buffer = createNoiseBuffer(ctx, hDur);
         const hp = ctx.createBiquadFilter();
         hp.type = "highpass";
-        hp.frequency.value = Math.max(4200, sp.cutoff * 0.85);
+        hp.frequency.value = Math.max(4400, sp.cutoff * 0.85);
         const gain = ctx.createGain();
-        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.setValueAtTime(0.35, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + hDur);
         noise.connect(hp).connect(gain).connect(stageOut);
         noise.start(now);
+        return;
+      }
+
+      if (inst.type === "pedal_hihat") {
+        const pDur = 0.14 * durScale;
+        const noise = ctx.createBufferSource();
+        noise.buffer = createNoiseBuffer(ctx, pDur);
+        const bp = ctx.createBiquadFilter();
+        bp.type = "bandpass";
+        bp.frequency.value = 6200 * pitchFactor;
+        bp.Q.value = 1.5;
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.34, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + pDur);
+        noise.connect(bp).connect(gain).connect(stageOut);
+        noise.start(now);
+        return;
+      }
+
+      if (inst.type === "crash") {
+        const cDur = 0.85 * durScale;
+        const noise = ctx.createBufferSource();
+        noise.buffer = createNoiseBuffer(ctx, cDur);
+        const hp = ctx.createBiquadFilter();
+        hp.type = "highpass";
+        hp.frequency.value = 2900;
+        const shimmer = ctx.createOscillator();
+        const sGain = ctx.createGain();
+        shimmer.type = "square";
+        shimmer.frequency.setValueAtTime(760 * pitchFactor, now);
+        sGain.gain.setValueAtTime(0.09, now);
+        sGain.gain.exponentialRampToValueAtTime(0.001, now + cDur * 0.7);
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.42, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + cDur);
+        noise.connect(hp).connect(gain).connect(stageOut);
+        shimmer.connect(sGain).connect(stageOut);
+        noise.start(now);
+        shimmer.start(now);
+        shimmer.stop(now + cDur * 0.75);
+        return;
+      }
+
+      if (inst.type === "ride") {
+        const rDur = 0.58 * durScale;
+        const noise = ctx.createBufferSource();
+        noise.buffer = createNoiseBuffer(ctx, rDur);
+        const bp = ctx.createBiquadFilter();
+        bp.type = "bandpass";
+        bp.frequency.value = 6800;
+        bp.Q.value = 1.8;
+        const ping = ctx.createOscillator();
+        const pGain = ctx.createGain();
+        ping.type = "triangle";
+        ping.frequency.setValueAtTime(1280 * pitchFactor, now);
+        pGain.gain.setValueAtTime(0.22, now);
+        pGain.gain.exponentialRampToValueAtTime(0.001, now + rDur * 0.65);
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.26, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + rDur);
+        noise.connect(bp).connect(gain).connect(stageOut);
+        ping.connect(pGain).connect(stageOut);
+        noise.start(now);
+        ping.start(now);
+        ping.stop(now + rDur * 0.7);
         return;
       }
 
@@ -1588,13 +1730,13 @@
       }
 
       if (inst.type === "tom") {
-        const tDur = 0.32 * durScale;
+        const tDur = 0.34 * durScale;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = "sine";
-        osc.frequency.setValueAtTime(175 * pitchFactor, now);
-        osc.frequency.exponentialRampToValueAtTime(64 * pitchFactor, now + tDur);
-        gain.gain.setValueAtTime(0.54, now);
+        osc.frequency.setValueAtTime(185 * pitchFactor, now);
+        osc.frequency.exponentialRampToValueAtTime(62 * pitchFactor, now + tDur);
+        gain.gain.setValueAtTime(0.58, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + tDur);
         osc.connect(gain).connect(stageOut);
         osc.start(now);
@@ -1603,7 +1745,7 @@
       }
 
       if (inst.type === "shaker") {
-        const sDur = 0.14 * durScale;
+        const sDur = 0.15 * durScale;
         const noise = ctx.createBufferSource();
         noise.buffer = createNoiseBuffer(ctx, sDur);
         const bp = ctx.createBiquadFilter();
@@ -1612,7 +1754,7 @@
         bp.Q.value = 1.6;
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0.001, now);
-        gain.gain.linearRampToValueAtTime(0.26, now + 0.04 * durScale);
+        gain.gain.linearRampToValueAtTime(0.28, now + 0.04 * durScale);
         gain.gain.exponentialRampToValueAtTime(0.001, now + sDur);
         noise.connect(bp).connect(gain).connect(stageOut);
         noise.start(now);
@@ -1620,7 +1762,7 @@
       }
 
       if (inst.type === "cowbell") {
-        const cDur = 0.24 * durScale;
+        const cDur = 0.25 * durScale;
         [540, 810].forEach((baseF) => {
           const osc = ctx.createOscillator();
           const bp = ctx.createBiquadFilter();
@@ -1630,7 +1772,7 @@
           bp.type = "bandpass";
           bp.frequency.value = baseF * pitchFactor * 1.15;
           bp.Q.value = 5.0;
-          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.setValueAtTime(0.22, now);
           gain.gain.exponentialRampToValueAtTime(0.001, now + cDur);
           osc.connect(bp).connect(gain).connect(stageOut);
           osc.start(now);
@@ -1651,7 +1793,7 @@
           bp.Q.value = Math.max(0.8, Math.min(6, sp.resonance));
           const gain = ctx.createGain();
           const t0 = now + offset * durScale;
-          gain.gain.setValueAtTime(isTail ? 0.36 : 0.3, t0);
+          gain.gain.setValueAtTime(isTail ? 0.38 : 0.32, t0);
           gain.gain.exponentialRampToValueAtTime(0.001, t0 + nDur);
           noise.connect(bp).connect(gain).connect(stageOut);
           noise.start(t0);
@@ -1665,178 +1807,188 @@
 
       let attack = 0.012;
       let decay = duration * durScale;
-      let peak = 0.27;
-      let baseCutoff = Math.min(8500, Math.max(220, sp.cutoff));
+      let peak = 0.32;
+      let baseCutoff = Math.min(9000, Math.max(240, sp.cutoff));
       let qVal = Math.max(0.6, Math.min(14, sp.resonance));
       let partials = [{ ratio: 1, wave: "triangle", gain: 1, cents: 0 }];
       let addBreathNoise = false;
+      let brassSweep = false;
 
       switch (inst.type) {
         case "piano":
-          attack = 0.004; decay = 0.96 * durScale; peak = 0.29;
-          baseCutoff = Math.min(baseCutoff, Math.max(550, f * 7.5));
+          attack = 0.004; decay = 0.98 * durScale; peak = 0.34;
+          baseCutoff = Math.min(baseCutoff, Math.max(600, f * 7.5));
           partials = [
-            { ratio: 1, wave: "triangle", gain: 0.76, cents: -detuneCents * 0.2 },
-            { ratio: 2, wave: "sine", gain: 0.42, cents: detuneCents * 0.2 },
-            { ratio: 3, wave: "sine", gain: 0.2, cents: 0 },
-            { ratio: 4, wave: "sine", gain: 0.09, cents: 0 }
+            { ratio: 1, wave: "triangle", gain: 0.78, cents: -detuneCents * 0.2 },
+            { ratio: 2, wave: "sine", gain: 0.44, cents: detuneCents * 0.2 },
+            { ratio: 3, wave: "sine", gain: 0.22, cents: 0 },
+            { ratio: 4, wave: "sine", gain: 0.1, cents: 0 }
           ];
           break;
         case "upright":
-          attack = 0.006; decay = 0.7 * durScale;
-          baseCutoff = Math.min(baseCutoff, Math.max(450, f * 5.6));
+          attack = 0.006; decay = 0.72 * durScale; peak = 0.32;
+          baseCutoff = Math.min(baseCutoff, Math.max(500, f * 5.8));
           partials = [
             { ratio: 1, wave: "triangle", gain: 0.78, cents: -detuneCents * 0.4 },
-            { ratio: 1.003, wave: "sine", gain: 0.28, cents: detuneCents * 0.4 },
-            { ratio: 2, wave: "triangle", gain: 0.32, cents: 0 }
+            { ratio: 1.003, wave: "sine", gain: 0.3, cents: detuneCents * 0.4 },
+            { ratio: 2, wave: "triangle", gain: 0.34, cents: 0 }
           ];
           break;
         case "epiano":
-          attack = 0.01; decay = 0.95 * durScale;
-          baseCutoff = Math.min(baseCutoff, Math.max(450, f * 4.8));
+          attack = 0.01; decay = 0.96 * durScale; peak = 0.32;
           partials = [
             { ratio: 1, wave: "sine", gain: 0.85, cents: 0 },
-            { ratio: 2, wave: "sine", gain: 0.3, cents: detuneCents * 0.3 },
-            { ratio: 7, wave: "sine", gain: 0.07, cents: 0 }
+            { ratio: 2, wave: "sine", gain: 0.32, cents: detuneCents * 0.3 },
+            { ratio: 7, wave: "sine", gain: 0.08, cents: 0 }
           ];
           break;
         case "eguitar":
-          attack = 0.005; decay = 0.76 * durScale;
+          attack = 0.005; decay = 0.78 * durScale; peak = 0.32;
           partials = [
-            { ratio: 1, wave: "sawtooth", gain: 0.65, cents: -detuneCents * 0.5 },
-            { ratio: 1, wave: "square", gain: 0.34, cents: detuneCents * 0.5 }
+            { ratio: 1, wave: "sawtooth", gain: 0.68, cents: -detuneCents * 0.5 },
+            { ratio: 1, wave: "square", gain: 0.36, cents: detuneCents * 0.5 }
           ];
           break;
         case "guitar":
-          attack = 0.005; decay = 0.78 * durScale;
+          attack = 0.005; decay = 0.8 * durScale; peak = 0.32;
           partials = [
-            { ratio: 1, wave: "triangle", gain: 0.72, cents: 0 },
+            { ratio: 1, wave: "triangle", gain: 0.74, cents: 0 },
             { ratio: 2, wave: "sawtooth", gain: 0.28, cents: detuneCents * 0.3 },
-            { ratio: 3, wave: "sine", gain: 0.14, cents: 0 }
+            { ratio: 3, wave: "sine", gain: 0.15, cents: 0 }
           ];
           break;
         case "harp":
-          attack = 0.006; decay = 1.1 * durScale;
+          attack = 0.006; decay = 1.12 * durScale; peak = 0.32;
           partials = [
             { ratio: 1, wave: "sine", gain: 0.82, cents: 0 },
-            { ratio: 2, wave: "triangle", gain: 0.26, cents: detuneCents * 0.2 }
+            { ratio: 2, wave: "triangle", gain: 0.28, cents: detuneCents * 0.2 }
           ];
           break;
         case "strings":
-          attack = 0.11; decay = 0.98 * durScale;
+          attack = 0.1; decay = 1.0 * durScale; peak = 0.33;
           partials = [
-            { ratio: 1, wave: "sawtooth", gain: 0.55, cents: -10 - detuneCents * 0.5 },
-            { ratio: 1, wave: "sawtooth", gain: 0.5, cents: 10 + detuneCents * 0.5 },
-            { ratio: 2, wave: "sine", gain: 0.22, cents: 0 }
+            { ratio: 1, wave: "sawtooth", gain: 0.58, cents: -10 - detuneCents * 0.5 },
+            { ratio: 1, wave: "sawtooth", gain: 0.54, cents: 10 + detuneCents * 0.5 },
+            { ratio: 2, wave: "sine", gain: 0.24, cents: 0 }
           ];
           break;
         case "cello":
-          attack = 0.095; decay = 1.0 * durScale;
+          attack = 0.09; decay = 1.02 * durScale; peak = 0.35;
           partials = [
-            { ratio: 0.5, wave: "sawtooth", gain: 0.65, cents: -detuneCents * 0.3 },
-            { ratio: 1, wave: "triangle", gain: 0.5, cents: detuneCents * 0.3 },
-            { ratio: 1.5, wave: "sine", gain: 0.18, cents: 0 }
+            { ratio: 0.5, wave: "sawtooth", gain: 0.68, cents: -detuneCents * 0.3 },
+            { ratio: 1, wave: "triangle", gain: 0.54, cents: detuneCents * 0.3 },
+            { ratio: 1.5, wave: "sine", gain: 0.2, cents: 0 }
           ];
           break;
         case "flute":
-          attack = 0.05; decay = 0.7 * durScale;
+          attack = 0.04; decay = 0.74 * durScale; peak = 0.34;
           addBreathNoise = true;
           partials = [
             { ratio: 1, wave: "sine", gain: 0.92, cents: 0 },
-            { ratio: 2, wave: "sine", gain: 0.18, cents: detuneCents * 0.2 }
+            { ratio: 2, wave: "sine", gain: 0.22, cents: detuneCents * 0.2 }
           ];
           break;
         case "clarinet":
-          attack = 0.036; decay = 0.76 * durScale; peak = 0.31;
+          attack = 0.032; decay = 0.78 * durScale; peak = 0.35;
           filter.type = "bandpass";
-          baseCutoff = Math.min(3800, Math.max(480, f * 2.8 + (sp.cutoff - 4200) * 0.22));
-          qVal = Math.max(1.1, Math.min(5.5, qVal * 0.75));
+          baseCutoff = Math.min(4200, Math.max(550, f * 3.0 + (sp.cutoff - 4200) * 0.22));
+          qVal = Math.max(1.2, Math.min(5.5, qVal * 0.8));
           addBreathNoise = true;
           partials = [
             { ratio: 1, wave: "sine", gain: 0.92, cents: 0 },
-            { ratio: 3, wave: "sine", gain: 0.54, cents: detuneCents * 0.15 },
-            { ratio: 5, wave: "sine", gain: 0.28, cents: 0 },
-            { ratio: 7, wave: "sine", gain: 0.14, cents: 0 },
-            { ratio: 2, wave: "sine", gain: 0.05, cents: 0 }
+            { ratio: 3, wave: "sine", gain: 0.58, cents: detuneCents * 0.15 },
+            { ratio: 5, wave: "sine", gain: 0.3, cents: 0 },
+            { ratio: 7, wave: "sine", gain: 0.15, cents: 0 }
           ];
           break;
         case "brass":
-          attack = 0.042; decay = 0.7 * durScale;
+          // Parlak ve duyulur Trompet sentezi
+          attack = 0.025; decay = 0.78 * durScale; peak = 0.42;
+          brassSweep = true;
+          baseCutoff = Math.max(1600, Math.min(8800, f * 5.2 + (sp.cutoff - 4200) * 0.35));
+          qVal = Math.max(2.4, Math.min(8.5, qVal));
           partials = [
-            { ratio: 1, wave: "sawtooth", gain: 0.7, cents: -detuneCents * 0.35 },
-            { ratio: 2, wave: "sawtooth", gain: 0.36, cents: detuneCents * 0.35 },
-            { ratio: 3, wave: "triangle", gain: 0.18, cents: 0 }
+            { ratio: 1, wave: "sawtooth", gain: 0.78, cents: -6 - detuneCents * 0.3 },
+            { ratio: 1, wave: "square", gain: 0.34, cents: 6 + detuneCents * 0.3 },
+            { ratio: 2, wave: "sawtooth", gain: 0.46, cents: 0 },
+            { ratio: 3, wave: "triangle", gain: 0.25, cents: 0 }
           ];
           break;
         case "sax":
-          attack = 0.034; decay = 0.72 * durScale;
+          attack = 0.03; decay = 0.76 * durScale; peak = 0.36;
           addBreathNoise = true;
           partials = [
-            { ratio: 1, wave: "sawtooth", gain: 0.65, cents: -detuneCents * 0.3 },
-            { ratio: 2, wave: "square", gain: 0.25, cents: detuneCents * 0.3 },
-            { ratio: 3, wave: "sine", gain: 0.22, cents: 0 }
+            { ratio: 1, wave: "sawtooth", gain: 0.68, cents: -detuneCents * 0.3 },
+            { ratio: 2, wave: "square", gain: 0.28, cents: detuneCents * 0.3 },
+            { ratio: 3, wave: "sine", gain: 0.24, cents: 0 }
           ];
           break;
         case "marimba":
-          attack = 0.003; decay = 0.28 * durScale;
+          attack = 0.003; decay = 0.32 * durScale; peak = 0.35;
           partials = [
             { ratio: 1, wave: "sine", gain: 0.92, cents: 0 },
-            { ratio: 4, wave: "sine", gain: 0.24, cents: 0 }
-          ];
-          break;
-        case "kalimba":
-          attack = 0.004; decay = 0.4 * durScale;
-          partials = [
-            { ratio: 1, wave: "triangle", gain: 0.86, cents: 0 },
-            { ratio: 2.75, wave: "sine", gain: 0.18, cents: 0 }
-          ];
-          break;
-        case "vibraphone":
-          attack = 0.008; decay = 0.98 * durScale;
-          partials = [
-            { ratio: 1, wave: "sine", gain: 0.88, cents: 0 },
-            { ratio: 2, wave: "sine", gain: 0.22, cents: detuneCents * 0.25 }
-          ];
-          break;
-        case "organ":
-          attack = 0.016; decay = 0.85 * durScale;
-          partials = [
-            { ratio: 0.5, wave: "sine", gain: 0.45, cents: 0 },
-            { ratio: 1, wave: "sine", gain: 0.68, cents: -detuneCents * 0.2 },
-            { ratio: 2, wave: "sine", gain: 0.42, cents: detuneCents * 0.2 },
-            { ratio: 3, wave: "sine", gain: 0.22, cents: 0 }
-          ];
-          break;
-        case "accordion":
-          attack = 0.025; decay = 0.7 * durScale;
-          partials = [
-            { ratio: 1, wave: "sawtooth", gain: 0.5, cents: -8 - detuneCents * 0.4 },
-            { ratio: 1, wave: "sawtooth", gain: 0.5, cents: 8 + detuneCents * 0.4 }
-          ];
-          break;
-        case "bass":
-          attack = 0.008; decay = 0.65 * durScale;
-          partials = [
-            { ratio: 0.5, wave: "triangle", gain: 0.9, cents: 0 },
-            { ratio: 1, wave: "sine", gain: 0.54, cents: detuneCents * 0.2 }
-          ];
-          break;
-        case "musicbox":
-          attack = 0.002; decay = 0.74 * durScale;
-          partials = [
-            { ratio: 2, wave: "sine", gain: 0.86, cents: 0 },
             { ratio: 4, wave: "sine", gain: 0.26, cents: 0 }
           ];
           break;
-        default:
-          attack = 0.012; decay = 0.56 * durScale;
+        case "kalimba":
+          attack = 0.004; decay = 0.44 * durScale; peak = 0.34;
           partials = [
-            { ratio: 1, wave: "sawtooth", gain: 0.58, cents: -detuneCents * 0.5 },
-            { ratio: 2, wave: "triangle", gain: 0.36, cents: detuneCents * 0.5 }
+            { ratio: 1, wave: "triangle", gain: 0.86, cents: 0 },
+            { ratio: 2.75, wave: "sine", gain: 0.2, cents: 0 }
+          ];
+          break;
+        case "vibraphone":
+          attack = 0.008; decay = 1.0 * durScale; peak = 0.33;
+          partials = [
+            { ratio: 1, wave: "sine", gain: 0.88, cents: 0 },
+            { ratio: 2, wave: "sine", gain: 0.24, cents: detuneCents * 0.25 }
+          ];
+          break;
+        case "organ":
+          attack = 0.016; decay = 0.88 * durScale; peak = 0.34;
+          partials = [
+            { ratio: 0.5, wave: "sine", gain: 0.48, cents: 0 },
+            { ratio: 1, wave: "sine", gain: 0.7, cents: -detuneCents * 0.2 },
+            { ratio: 2, wave: "sine", gain: 0.44, cents: detuneCents * 0.2 },
+            { ratio: 3, wave: "sine", gain: 0.24, cents: 0 }
+          ];
+          break;
+        case "accordion":
+          attack = 0.025; decay = 0.74 * durScale; peak = 0.34;
+          partials = [
+            { ratio: 1, wave: "sawtooth", gain: 0.54, cents: -9 - detuneCents * 0.4 },
+            { ratio: 1, wave: "sawtooth", gain: 0.54, cents: 9 + detuneCents * 0.4 }
+          ];
+          break;
+        case "bass":
+          attack = 0.008; decay = 0.7 * durScale; peak = 0.38;
+          partials = [
+            { ratio: 0.5, wave: "triangle", gain: 0.92, cents: 0 },
+            { ratio: 1, wave: "sine", gain: 0.56, cents: detuneCents * 0.2 }
+          ];
+          break;
+        case "musicbox":
+          attack = 0.002; decay = 0.76 * durScale; peak = 0.32;
+          partials = [
+            { ratio: 2, wave: "sine", gain: 0.86, cents: 0 },
+            { ratio: 4, wave: "sine", gain: 0.28, cents: 0 }
+          ];
+          break;
+        default:
+          attack = 0.012; decay = 0.6 * durScale; peak = 0.32;
+          partials = [
+            { ratio: 1, wave: "sawtooth", gain: 0.6, cents: -detuneCents * 0.5 },
+            { ratio: 2, wave: "triangle", gain: 0.38, cents: detuneCents * 0.5 }
           ];
       }
 
-      filter.frequency.setValueAtTime(baseCutoff, now);
+      if (brassSweep && filter.type === "lowpass") {
+        filter.frequency.setValueAtTime(Math.max(450, baseCutoff * 0.45), now);
+        filter.frequency.linearRampToValueAtTime(baseCutoff, now + attack * 1.4);
+        filter.frequency.exponentialRampToValueAtTime(Math.max(550, baseCutoff * 0.65), now + decay);
+      } else {
+        filter.frequency.setValueAtTime(baseCutoff, now);
+      }
       filter.Q.setValueAtTime(qVal, now);
 
       master.gain.setValueAtTime(0.0001, now);
@@ -1854,7 +2006,7 @@
         g.gain.value = p.gain;
         osc.connect(g).connect(filter);
         osc.start(now);
-        osc.stop(now + decay + 0.05);
+        osc.stop(now + decay + 0.06);
       });
 
       if (addBreathNoise) {
@@ -1865,7 +2017,7 @@
         bBp.frequency.value = Math.min(4200, Math.max(400, f * 2.2));
         bBp.Q.value = 2.8;
         const bGain = ctx.createGain();
-        bGain.gain.setValueAtTime(0.03, now);
+        bGain.gain.setValueAtTime(0.035, now);
         bGain.gain.exponentialRampToValueAtTime(0.0001, now + Math.max(0.05, decay * 0.6));
         breath.connect(bBp).connect(bGain).connect(stageOut);
         breath.start(now);
@@ -1923,7 +2075,6 @@
       return app.djEffect === "slowed" ? baseMs * 1.2 : baseMs;
     }
 
-    // Her notaya kendi o anki kilitli synthParams kopyası kaydedilir; gönderildikten sonra değişmez
     function recordStudioNote({ slot, freq, label, instrumentId }) {
       const inst = INSTRUMENTS.find((i) => i.id === instrumentId) || INSTRUMENTS[0];
       const cycleMs = getCycleDurationMs();
@@ -1955,6 +2106,7 @@
     }
 
     function onPianoKeyPlay(keyObj) {
+      getAudioCtx();
       const mode = app.room?.settings?.mode;
       if (mode === "melody") {
         const guessId = document.getElementById("melodyGuessSelect").value || "grand_piano";
@@ -1972,8 +2124,30 @@
       }
 
       const lockedSynth = cloneSynth(app.synth);
-      playFreqSound(keyObj.freq, app.instrumentId, 0.45, true, lockedSynth);
       flashPianoKey(keyObj.slot);
+
+      if (app.chordModeEnabled && mode !== "melody") {
+        const chordNotes = getChordNotesForKey(keyObj, app.chordTypeId);
+        chordNotes.forEach((cn) => {
+          playFreqSound(cn.freq, app.instrumentId, 0.62, true, lockedSynth);
+          sendWs({
+            type: "live_note",
+            slot: keyObj.slot,
+            freq: cn.freq,
+            instrumentId: app.instrumentId,
+            synthParams: lockedSynth
+          });
+          recordStudioNote({
+            slot: keyObj.slot,
+            freq: cn.freq,
+            label: cn.label,
+            instrumentId: app.instrumentId
+          });
+        });
+        return;
+      }
+
+      playFreqSound(keyObj.freq, app.instrumentId, 0.45, true, lockedSynth);
       sendWs({
         type: "live_note",
         slot: keyObj.slot,
@@ -1989,14 +2163,25 @@
       });
     }
 
-    // Ritmi Taklit Et: Tam rastgele ritimler & max 12 vuruş
-    // Melodiyi Taklit Et: Rastgele seçilmiş TEK bir oktav içinden melodi
+    // Ritmi Taklit Et: 5-7 normal sıklıkta, 8-12 düşük ihtimalle (max 12)
+    function pickRhythmHitCount() {
+      const roll = Math.random();
+      if (roll < 0.78) {
+        return 5 + Math.floor(Math.random() * 3); // 5, 6 veya 7
+      }
+      return 8 + Math.floor(Math.random() * 5); // 8..12 (nadir)
+    }
+
     function buildChallengeForMode(mode) {
       if (mode === "rhythm") {
-        const soundPool = ["handshake", "snare_drum", "kick_drum", "hihat_closed", "rimshot", "tom_drum", "shaker", "cowbell", "marimba", "kalimba"];
+        const soundPool = [
+          "handshake", "snare_drum", "kick_drum", "hihat_closed", "hihat_open",
+          "hihat_pedal", "crash_cymbal", "ride_cymbal", "rimshot", "tom_drum",
+          "shaker", "cowbell", "marimba", "kalimba"
+        ];
         const chosenId = soundPool[Math.floor(Math.random() * soundPool.length)];
         const soundInst = INSTRUMENTS.find((i) => i.id === chosenId) || INSTRUMENTS[0];
-        const totalHits = 4 + Math.floor(Math.random() * 9); // 4..12 vuruş (max 12)
+        const totalHits = pickRhythmHitCount();
 
         const randomRhythmPatterns = [
           [240, 240, 460, 250, 480],
@@ -2049,6 +2234,7 @@
     }
 
     function playCurrentChallenge() {
+      getAudioCtx();
       const ch = app.room?.challenge;
       if (!ch) return;
       if (ch.mode === "rhythm") {
@@ -2146,11 +2332,12 @@
     }
 
     function updateLobbyModeFields(mode) {
-      const isStudio = ["collab", "theme"].includes(mode);
-      document.getElementById("fieldRounds").classList.toggle("hidden", !isStudio);
-      document.getElementById("fieldBpm").classList.toggle("hidden", !isStudio);
-      document.getElementById("fieldBeats").classList.toggle("hidden", !isStudio);
-      document.getElementById("fieldSecretMode").classList.toggle("hidden", !isStudio);
+      const isLoopMode = ["collab", "theme"].includes(mode);
+      const isMuzikinyo = mode === "muzikinyo";
+      document.getElementById("fieldRounds").classList.toggle("hidden", !isLoopMode && !isMuzikinyo);
+      document.getElementById("fieldBpm").classList.toggle("hidden", !isLoopMode);
+      document.getElementById("fieldBeats").classList.toggle("hidden", !isLoopMode);
+      document.getElementById("fieldSecretMode").classList.toggle("hidden", !isLoopMode);
       document.getElementById("fieldTimer").classList.remove("hidden");
     }
 
@@ -2183,6 +2370,7 @@
           app.room = msg.room;
           renderRoomState();
         } else if (msg.type === "live_note") {
+          getAudioCtx();
           playFreqSound(msg.freq, msg.instrumentId, 0.35, true, msg.synthParams);
           flashPianoKey(msg.slot);
         }
@@ -2251,30 +2439,44 @@
       }, 1000);
     }
 
+    // Final oylaması: her oyuncu yalnızca 1 kere görünür ve tek bir oy verebilir
     function renderVotingPanel(room) {
       const voteSec = document.getElementById("votingSection");
       const wrap = document.getElementById("voteButtonsWrap");
       const statusEl = document.getElementById("voteStatusText");
 
-      if (!room.players?.length) {
+      const uniquePlayers = [];
+      const seenIds = new Set();
+      (room.players || []).forEach((p) => {
+        if (!p || !p.id || seenIds.has(p.id)) return;
+        seenIds.add(p.id);
+        uniquePlayers.push(p);
+      });
+
+      if (!uniquePlayers.length) {
         voteSec.classList.add("hidden");
         return;
       }
 
       voteSec.classList.remove("hidden");
+      const validIds = new Set(uniquePlayers.map((p) => p.id));
       const voteCounts = {};
+      uniquePlayers.forEach((p) => { voteCounts[p.id] = 0; });
+
       Object.values(room.votes || {}).forEach((targetId) => {
-        voteCounts[targetId] = (voteCounts[targetId] || 0) + 1;
+        if (validIds.has(targetId)) {
+          voteCounts[targetId] += 1;
+        }
       });
 
-      const myChoice = room.myVotedFor;
-      const chosenPlayer = room.players.find((p) => p.id === myChoice);
+      const myChoice = room.myVotedFor && validIds.has(room.myVotedFor) ? room.myVotedFor : null;
+      const chosenPlayer = uniquePlayers.find((p) => p.id === myChoice);
       statusEl.textContent = chosenPlayer
-        ? `Oyun ${chosenPlayer.avatar} ${chosenPlayer.name} kişisine verildi. Dilediğin zaman değiştirebilirsin.`
-        : "Bir oyuncuya oy ver; aldığı toplam oylar yanında görünür.";
+        ? `Tek oyun ${chosenPlayer.avatar} ${chosenPlayer.name} kişisine verildi (başka birine basarsan oyun ona taşınır).`
+        : "Her oyuncu 1 kere listelenir; tek bir kişiye basarak oyunu ver.";
 
       wrap.innerHTML = "";
-      room.players.forEach((p) => {
+      uniquePlayers.forEach((p) => {
         const btn = document.createElement("button");
         btn.type = "button";
         const isPicked = myChoice === p.id;
@@ -2287,7 +2489,8 @@
     }
 
     function syncLoopStateWithRoom(room) {
-      const shouldPlay = Boolean(room.started && room.loopPlaying);
+      const isLoopMode = ["collab", "theme"].includes(room.settings?.mode);
+      const shouldPlay = Boolean(room.started && room.loopPlaying && isLoopMode);
       const anchor = Number(room.loopAnchorServerMs) || estimatedServerNow();
       const cycleKey = `${anchor}_${app.bpm}_${app.beats}_${app.djEffect}`;
 
@@ -2302,6 +2505,30 @@
       }
     }
 
+    function playPerformanceSequence(perf) {
+      if (!perf) return;
+      getAudioCtx();
+      const notes = perf.notes || [];
+      if (notes.length) {
+        const firstT = notes[0].offsetMs || 0;
+        notes.forEach((n) => {
+          const delay = Math.max(0, (n.offsetMs || 0) - firstT);
+          setTimeout(() => {
+            playFreqSound(n.freq, n.instrumentId, 0.45, true, n.synthParams || perf.synthParams);
+          }, delay);
+        });
+      }
+      if (perf.vocalData) {
+        decodeAndPlayVocal(perf.vocalData, {
+          reverse: perf.reverse,
+          effect: perf.vocalEffect || "normal",
+          sourceBpm: perf.sourceBpm || app.bpm,
+          targetBpm: app.bpm,
+          djEffect: app.djEffect
+        });
+      }
+    }
+
     function renderRoomState() {
       const room = app.room;
       if (!room) return;
@@ -2311,6 +2538,7 @@
 
       const isHost = room.hostId === app.myId;
       const mode = room.settings.mode;
+      const isMuzikinyo = mode === "muzikinyo";
       app.bpm = Number(room.loopBpm || room.settings.bpm) || 110;
       app.beats = Number(room.settings.beats) || 8;
       app.djEffect = room.djEffect || "normal";
@@ -2367,7 +2595,7 @@
       document.getElementById("restartGameBtn").classList.remove("hidden");
       hideAllGameViews();
 
-      // OYUN BİTTİ & TOPLU DİNLEME & OYLAMA
+      // OYUN BİTTİ & TOPLU DİNLEME & TEKİL OYLAMA EKRANI
       if (room.finished) {
         clearInterval(app.challengeTimer);
         clearInterval(app.turnTimer);
@@ -2408,6 +2636,46 @@
               </div>
               <div class="result-score">%${s.accuracy}</div>
             `;
+            list.appendChild(row);
+          });
+        } else if (isMuzikinyo) {
+          stopLocalLoop();
+          document.getElementById("resultsTitle").textContent = "Müzikinyo Sahne Sonuçları & Oylama";
+          document.getElementById("resultsSubtitle").textContent =
+            "Döngü olmadan sergilenen performansları dinle ve favori oyuncuna tek oy ver.";
+          document.getElementById("resultsPlaySongBtn").classList.add("hidden");
+
+          renderVotingPanel(room);
+
+          const voteCounts = {};
+          Object.values(room.votes || {}).forEach((targetId) => {
+            voteCounts[targetId] = (voteCounts[targetId] || 0) + 1;
+          });
+
+          (room.performances || []).forEach((perf, idx) => {
+            const row = document.createElement("div");
+            row.className = "result-row";
+            const pVotes = voteCounts[perf.playerId] || 0;
+            const leftDiv = document.createElement("div");
+            leftDiv.innerHTML = `
+              <strong>${idx + 1}. ${perf.avatar} ${perf.playerName}</strong>
+              <div class="muted">${perf.instrumentName} • ${perf.notes.length} nota${perf.hasVocal ? " + Mikrofon" : ""}</div>
+            `;
+            const rightDiv = document.createElement("div");
+            rightDiv.className = "controls-cluster";
+
+            const playBtn = document.createElement("button");
+            playBtn.type = "button";
+            playBtn.className = "btn btn-secondary";
+            playBtn.textContent = "▶️ Dinle";
+            playBtn.onclick = () => playPerformanceSequence(perf);
+
+            const scoreSpan = document.createElement("span");
+            scoreSpan.className = "result-score";
+            scoreSpan.textContent = `${pVotes} oy`;
+
+            rightDiv.append(playBtn, scoreSpan);
+            row.append(leftDiv, rightDiv);
             list.appendChild(row);
           });
         } else {
@@ -2470,6 +2738,7 @@
         document.getElementById("melodyGameView").classList.remove("hidden");
         const pianoCard = document.getElementById("pianoCard");
         pianoCard.classList.remove("hidden");
+        document.getElementById("chordModeBar").classList.add("hidden");
         document.getElementById("studioInstWrap").classList.add("hidden");
         document.getElementById("studioPercWrap").classList.add("hidden");
         document.getElementById("melodyPianoMount").appendChild(pianoCard);
@@ -2543,13 +2812,23 @@
         return;
       }
 
-      // LOOP STATION & SYNTH STÜDYO MODLARI
+      // LOOP STATION, MÜZİKİNYO & SYNTH STÜDYO MODLARI
       document.getElementById("studioGameView").classList.remove("hidden");
       const pianoCard = document.getElementById("pianoCard");
       pianoCard.classList.remove("hidden");
+      document.getElementById("chordModeBar").classList.remove("hidden");
       document.getElementById("studioInstWrap").classList.remove("hidden");
       document.getElementById("studioPercWrap").classList.remove("hidden");
       document.getElementById("studioPianoMount").appendChild(pianoCard);
+
+      document.getElementById("loopControlCard").classList.toggle("hidden", isMuzikinyo);
+      document.getElementById("finishMuzikinyoBtn").classList.toggle("hidden", !isMuzikinyo || !isHost);
+      document.getElementById("saveTurnBtn").textContent = isMuzikinyo
+        ? "✅ Performansı Gönder"
+        : "✅ Onayla & Katmanı Ekle";
+      document.getElementById("layersSectionTitle").textContent = isMuzikinyo
+        ? "🎼 Sahne Performansları"
+        : "🎚️ Döngü Katmanları";
 
       document.getElementById("themeBanner").classList.toggle("hidden", mode !== "theme");
       document.getElementById("conceptTitle").textContent = room.concept;
@@ -2568,8 +2847,9 @@
         btn.disabled = !isHost;
       });
 
+      const modeTag = isMuzikinyo ? " • 🎼 MÜZİKİNYO" : (room.settings.secretMode ? " • 🕵️ GİZLİ" : "");
       document.getElementById("studioRoundBadge").textContent =
-        `TUR ${room.currentRound || 1} / ${room.settings.totalRounds || 2}${room.settings.secretMode ? " • 🕵️ GİZLİ" : ""}`;
+        `TUR ${room.currentRound || 1} / ${room.settings.totalRounds || 2}${modeTag}`;
 
       const activePlayer = room.players[room.turnIndex] || room.players[0];
       const nextPlayer = room.players[(room.turnIndex + 1) % room.players.length] || activePlayer;
@@ -2731,6 +3011,35 @@
 
     function renderLayersList() {
       const list = document.getElementById("layersList");
+      const isMuzikinyo = app.room?.settings?.mode === "muzikinyo";
+
+      if (isMuzikinyo) {
+        const perfs = app.room?.performances || [];
+        document.getElementById("layerCountText").textContent = `${perfs.length} performans`;
+        if (!perfs.length) {
+          list.innerHTML = `<p class="muted">Henüz performans gönderilmedi. Çalıp "Performansı Gönder"e bas.</p>`;
+          return;
+        }
+        list.innerHTML = "";
+        perfs.forEach((perf) => {
+          const row = document.createElement("div");
+          row.className = "layer-row";
+          const vocalTag = perf.hasVocal ? ` • 🎙️ ${perf.vocalEffect || "Vokal"}` : "";
+          const info = document.createElement("div");
+          info.innerHTML = `<span>${perf.avatar}</span> <strong>${perf.playerName}</strong> <span class="muted">— ${perf.instrumentName} • ${perf.notes.length} nota${vocalTag}</span>`;
+
+          const playBtn = document.createElement("button");
+          playBtn.type = "button";
+          playBtn.className = "btn btn-secondary";
+          playBtn.textContent = "▶️ Çal";
+          playBtn.onclick = () => playPerformanceSequence(perf);
+
+          row.append(info, playBtn);
+          list.appendChild(row);
+        });
+        return;
+      }
+
       const layers = app.room?.layers || [];
       document.getElementById("layerCountText").textContent = `${layers.length} katman`;
 
@@ -2905,6 +3214,7 @@
     }
 
     async function toggleMic() {
+      getAudioCtx();
       const btn = document.getElementById("micRecBtn");
       const st = document.getElementById("micStatus");
       if (!app.isMicRecording) {
@@ -2976,6 +3286,37 @@
       document.getElementById("synthDriveVal").textContent = `${Math.round(app.synth.drive)}%`;
     }
 
+    function renderChordControlsUI() {
+      const toggleBtn = document.getElementById("chordModeToggleBtn");
+      const hint = document.getElementById("chordActiveHint");
+      const pillsWrap = document.getElementById("chordTypePills");
+
+      toggleBtn.classList.toggle("active", app.chordModeEnabled);
+      toggleBtn.textContent = app.chordModeEnabled ? "🎼 Akor Modu: Açık" : "🎼 Akor Modu: Kapalı";
+
+      const activeChord = CHORD_MODES.find((c) => c.id === app.chordTypeId) || CHORD_MODES[0];
+      hint.textContent = app.chordModeEnabled
+        ? `Aktif Akor: ${activeChord.name} — Herhangi bir tuşa basınca doğrudan çalar.`
+        : "Tek nota çalar; açınca tuşlar seçili akoru çalar.";
+
+      pillsWrap.innerHTML = "";
+      CHORD_MODES.forEach((cm) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "chord-pill-btn" + (app.chordTypeId === cm.id ? " active" : "");
+        b.textContent = cm.name;
+        b.onclick = () => {
+          getAudioCtx();
+          app.chordTypeId = cm.id;
+          if (!app.chordModeEnabled) {
+            app.chordModeEnabled = true;
+          }
+          renderChordControlsUI();
+        };
+        pillsWrap.appendChild(b);
+      });
+    }
+
     (function init() {
       const avGrid = document.getElementById("avatarGrid");
       AVATARS.forEach((av, idx) => {
@@ -3032,9 +3373,17 @@
 
       buildPianoBoard();
       syncSynthSlidersUI();
+      renderChordControlsUI();
+
+      document.getElementById("chordModeToggleBtn").onclick = () => {
+        getAudioCtx();
+        app.chordModeEnabled = !app.chordModeEnabled;
+        renderChordControlsUI();
+      };
 
       const bindSynthRange = (elId, key) => {
         document.getElementById(elId).oninput = (e) => {
+          getAudioCtx();
           app.synth[key] = Number(e.target.value);
           syncSynthSlidersUI();
         };
@@ -3047,6 +3396,7 @@
       bindSynthRange("synthDrive", "drive");
 
       document.getElementById("synthWildRandomBtn").onclick = () => {
+        getAudioCtx();
         app.synth = {
           cutoff: 320 + Math.floor(Math.random() * 7500),
           resonance: Number((1.0 + Math.random() * 11).toFixed(1)),
@@ -3060,12 +3410,14 @@
       };
 
       document.getElementById("synthResetBtn").onclick = () => {
+        getAudioCtx();
         app.synth = cloneSynth(DEFAULT_SYNTH);
         syncSynthSlidersUI();
       };
 
       document.querySelectorAll(".perc-pad-btn").forEach((btn) => {
         btn.onpointerdown = () => {
+          getAudioCtx();
           const percId = btn.dataset.perc;
           btn.classList.add("hit");
           setTimeout(() => btn.classList.remove("hit"), 110);
@@ -3078,6 +3430,7 @@
 
       document.querySelectorAll("#djButtonsWrap button").forEach((btn) => {
         btn.onclick = () => {
+          getAudioCtx();
           sendWs({ type: "set_dj_effect", effect: btn.dataset.dj });
         };
       });
@@ -3103,6 +3456,7 @@
       };
 
       document.getElementById("createRoomBtn").onclick = () => {
+        getAudioCtx();
         const name = document.getElementById("myNameInput").value.trim() || "Oyuncu";
         sendWs({
           type: "create_room",
@@ -3112,6 +3466,7 @@
       };
 
       document.getElementById("joinRoomBtn").onclick = () => {
+        getAudioCtx();
         const name = document.getElementById("myNameInput").value.trim() || "Oyuncu";
         const code = document.getElementById("roomCodeInput").value.trim().toUpperCase();
         if (!code) return;
@@ -3140,6 +3495,7 @@
       });
 
       document.getElementById("startGameBtn").onclick = () => {
+        getAudioCtx();
         const mode = app.room?.settings?.mode || "collab";
         app.rhythmTaps = [];
         app.melodyPlayed = [];
@@ -3186,6 +3542,7 @@
 
       const rhythmTapBtn = document.getElementById("rhythmTapBtn");
       rhythmTapBtn.onpointerdown = () => {
+        getAudioCtx();
         rhythmTapBtn.classList.add("hit");
         setTimeout(() => rhythmTapBtn.classList.remove("hit"), 110);
         const ch = app.room?.challenge;
@@ -3277,7 +3634,13 @@
         document.getElementById("takeStatus").textContent = "Mevcut kayıt loop'tan ve bellekten tamamen silindi.";
       };
 
+      document.getElementById("finishMuzikinyoBtn").onclick = () => {
+        sendWs({ type: "finish_muzikinyo_now" });
+      };
+
       document.getElementById("saveTurnBtn").onclick = async () => {
+        getAudioCtx();
+        const isMuzikinyo = app.room?.settings?.mode === "muzikinyo";
         const me = (app.room?.players || []).find((p) => p.id === app.myId) || { id: app.myId, name: "Oyuncu", avatar: app.myAvatar };
         const inst = INSTRUMENTS.find((i) => i.id === app.instrumentId) || INSTRUMENTS[0];
         const vocalData = app.micBuffer ? await bufferToBase64(app.micBuffer) : null;
@@ -3291,25 +3654,47 @@
           const uniqueInsts = [...new Set(cleanNotes.map((n) => n.instrumentName))];
           const layerInstSummary = uniqueInsts.length > 1 ? uniqueInsts.join(" + ") : (uniqueInsts[0] || inst.name);
 
-          sendWs({
-            type: "add_layer",
-            nextConcept: nextRandomConcept(),
-            layer: {
-              id: "l_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
-              playerId: me.id,
-              playerName: me.name,
-              avatar: me.avatar,
-              instrumentName: layerInstSummary,
-              notes: cleanNotes,
-              synthParams: lockedLayerSynth,
-              vocalData,
-              hasVocal: Boolean(vocalData),
-              vocalEffect: app.micEffect,
-              sourceBpm: app.bpm,
-              reverse: app.reverseTake || app.micReverse,
-              muted: false
-            }
-          });
+          if (isMuzikinyo) {
+            sendWs({
+              type: "submit_muzikinyo",
+              nextConcept: nextRandomConcept(),
+              performance: {
+                id: "m_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+                playerId: me.id,
+                playerName: me.name,
+                avatar: me.avatar,
+                instrumentName: layerInstSummary,
+                notes: cleanNotes,
+                synthParams: lockedLayerSynth,
+                vocalData,
+                hasVocal: Boolean(vocalData),
+                vocalEffect: app.micEffect,
+                sourceBpm: app.bpm,
+                reverse: app.reverseTake || app.micReverse
+              }
+            });
+          } else {
+            sendWs({
+              type: "add_layer",
+              nextConcept: nextRandomConcept(),
+              layer: {
+                id: "l_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+                playerId: me.id,
+                playerName: me.name,
+                avatar: me.avatar,
+                instrumentName: layerInstSummary,
+                notes: cleanNotes,
+                synthParams: lockedLayerSynth,
+                vocalData,
+                hasVocal: Boolean(vocalData),
+                vocalEffect: app.micEffect,
+                sourceBpm: app.bpm,
+                reverse: app.reverseTake || app.micReverse,
+                muted: false
+              }
+            });
+          }
+
           app.currentTakeNotes = [];
           app.micBuffer = null;
           app.reverseTake = false;
@@ -3317,7 +3702,9 @@
           document.getElementById("micPlayBtn").disabled = true;
           document.getElementById("micRevBtn").disabled = true;
           document.getElementById("micDelBtn").disabled = true;
-          document.getElementById("takeStatus").textContent = "Katman onaylandı, diğerlerine aktarıldı ve sıra devredildi!";
+          document.getElementById("takeStatus").textContent = isMuzikinyo
+            ? "Müzikinyo performansın gönderildi ve sıra devredildi!"
+            : "Katman onaylandı, diğerlerine aktarıldı ve sıra devredildi!";
         } else {
           sendWs({ type: "skip_turn", nextConcept: nextRandomConcept() });
         }
