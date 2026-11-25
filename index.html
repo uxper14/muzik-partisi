@@ -6,951 +6,865 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Müzik Partisi</title>
 <script src="/socket.io/socket.io.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/soundfont-player@0.12.0/dist/soundfont-player.js"></script>
 <style>
 :root {
-  --bg: #090b16;
-  --panel: #14182a;
-  --panel2: #1c2238;
-  --text: #f4f5ff;
-  --muted: #9ba3c4;
-  --purple: #9b6cff;
-  --cyan: #40e0d0;
-  --pink: #ff5ca8;
-  --border: #303653;
+  color-scheme: dark;
+  --bg:#10121b;
+  --panel:#1b1e2b;
+  --panel2:#25293a;
+  --text:#f5f6ff;
+  --muted:#a9aec2;
+  --accent:#9b7bff;
+  --accent2:#52d6bd;
+  --danger:#ff6c82;
 }
-* { box-sizing: border-box; }
+* { box-sizing:border-box; }
 body {
-  margin: 0;
-  background: radial-gradient(circle at top, #202044 0%, var(--bg) 55%);
-  color: var(--text);
-  font-family: Arial, sans-serif;
-  min-height: 100vh;
+  margin:0;
+  background:radial-gradient(circle at top,#25213d 0,#10121b 48%);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+  min-height:100vh;
 }
-button, input, select { font: inherit; }
-button {
-  border: 0;
-  cursor: pointer;
-  border-radius: 12px;
-  padding: 12px 16px;
-  font-weight: bold;
-  color: white;
-  background: linear-gradient(135deg, var(--purple), #6651df);
-  transition: .15s;
-}
-button:hover { filter: brightness(1.15); transform: translateY(-1px); }
-button:disabled { opacity: .35; cursor: not-allowed; transform: none; }
-input, select {
-  width: 100%;
-  padding: 12px;
-  color: white;
-  background: #0d1121;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  outline: none;
-}
-input:focus, select:focus { border-color: var(--purple); }
-label { display: block; color: var(--muted); font-size: 13px; margin-bottom: 7px; }
-h1, h2, h3, p { margin-top: 0; }
-.hidden { display: none !important; }
-.muted { color: var(--muted); }
-.small { font-size: 12px; }
-.container { width: min(1100px, 94%); margin: auto; padding: 28px 0 60px; }
-.logo { font-size: clamp(34px, 7vw, 58px); font-weight: 900; text-align: center; letter-spacing: -2px; }
-.logo span { color: var(--cyan); }
-.subtitle { text-align: center; color: var(--muted); margin: 12px 0 35px; }
+main { width:min(1100px,94%); margin:25px auto 60px; }
+h1 { text-align:center; font-size:clamp(28px,5vw,44px); margin:12px 0 6px; }
+.subtitle { text-align:center; color:var(--muted); margin-bottom:25px; }
 .panel {
-  background: linear-gradient(145deg, rgba(28,34,56,.96), rgba(16,20,37,.96));
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 20px;
-  box-shadow: 0 12px 40px #0004;
+  background:rgba(27,30,43,.96);
+  border:1px solid #34384d;
+  border-radius:18px;
+  padding:18px;
+  margin:15px 0;
+  box-shadow:0 12px 35px #0003;
 }
-.home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-.field { margin-bottom: 15px; }
-.mode-list { display: grid; gap: 10px; }
-.mode {
-  padding: 14px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  cursor: pointer;
-  background: #101529;
+h2 { margin:0 0 14px; font-size:21px; }
+h3 { margin:0 0 10px; font-size:16px; }
+label { display:block; color:var(--muted); font-size:13px; margin:12px 0 6px; }
+input,select {
+  width:100%;
+  background:#111522;
+  color:white;
+  border:1px solid #454a62;
+  border-radius:10px;
+  padding:12px;
+  font-size:15px;
 }
-.mode.selected { border-color: var(--cyan); background: #183039; }
-.mode strong { display: block; margin-bottom: 5px; }
-.mode span { color: var(--muted); font-size: 13px; }
-.primary { width: 100%; margin-top: 8px; }
-.secondary { background: #303956; }
-.danger { background: #a83b62; }
-.green { background: linear-gradient(135deg, #18b99e, #148b91); }
-.topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
-.room-code { font-size: 22px; font-weight: 900; letter-spacing: 4px; color: var(--cyan); }
-.game-grid { display: grid; grid-template-columns: 280px 1fr; gap: 18px; }
-.players { display: grid; gap: 9px; }
+button {
+  border:0;
+  border-radius:11px;
+  padding:11px 15px;
+  background:var(--accent);
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  font-size:14px;
+}
+button:hover { filter:brightness(1.12); }
+button:disabled { opacity:.4; cursor:not-allowed; }
+button.secondary { background:#3a4056; }
+button.green { background:#178d79; }
+button.red { background:#a83f57; }
+button.small { padding:8px 11px; }
+.row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.row > * { flex:1; }
+.hidden { display:none !important; }
+.muted { color:var(--muted); font-size:13px; }
+.status { padding:12px; background:#121625; border-radius:10px; color:#d9d4ff; margin:10px 0; }
+.player-list { display:flex; flex-wrap:wrap; gap:8px; }
 .player {
-  padding: 11px;
-  border-radius: 10px;
-  background: #101529;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px solid transparent;
+  background:#30354a;
+  padding:9px 12px;
+  border-radius:10px;
+  font-size:13px;
 }
-.player.active { border-color: var(--cyan); background: #17323b; }
-.host-tag { color: #ffd66b; font-size: 11px; }
-.turn-tag { color: var(--cyan); font-size: 11px; }
-.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.toolbar button { padding: 9px 12px; }
-.section-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
-.sound-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
-.sound {
-  min-height: 85px;
-  background: #222945;
-  border: 1px solid #394363;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  font-size: 23px;
+.player.active { outline:2px solid var(--accent2); background:#214b4b; }
+.mode-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.mode-card {
+  background:#25293a;
+  border:1px solid #444a64;
+  border-radius:14px;
+  padding:15px;
 }
-.sound span { font-size: 12px; }
-.sound:active { transform: scale(.96); }
-.settings-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-.range-row { display: flex; justify-content: space-between; gap: 10px; }
-input[type=range] { padding: 0; accent-color: var(--cyan); }
-.feed { display: grid; gap: 8px; max-height: 260px; overflow-y: auto; }
-.feed-item { background: #101529; border-radius: 10px; padding: 11px; font-size: 13px; }
-.feed-item b { color: var(--cyan); }
-.actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.actions button { flex: 1; }
-.card-gap { margin-top: 18px; }
-.note-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; }
-.note-btn { padding: 13px 4px; background: #27304e; }
-.note-btn.selected { background: var(--cyan); color: #08131b; }
-.status { padding: 10px; border-radius: 10px; background: #101529; color: var(--cyan); font-size: 13px; }
-.dj-controls { display: flex; flex-wrap: wrap; gap: 8px; }
-.dj-controls button { flex: 1; }
-#toast {
-  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-  background: #252d49; border: 1px solid var(--border);
-  border-radius: 12px; padding: 12px 18px; z-index: 20;
-  box-shadow: 0 8px 30px #0008;
+.mode-card strong { display:block; margin-bottom:7px; }
+.mode-card p { color:var(--muted); font-size:13px; line-height:1.5; }
+.settings-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.control { background:#222638; padding:12px; border-radius:12px; }
+.control label { margin:0 0 8px; color:#e4e5f0; }
+.control input[type=range] { padding:0; accent-color:var(--accent); }
+.value { color:var(--accent2); float:right; font-weight:bold; }
+.keyboard-wrap {
+  background:#121522;
+  border-radius:14px;
+  padding:12px;
+  overflow-x:auto;
 }
-@media(max-width:760px) {
-  .home-grid, .game-grid { grid-template-columns: 1fr; }
-  .sound-grid { grid-template-columns: repeat(3, 1fr); }
-  .settings-grid { grid-template-columns: 1fr; }
-  .note-grid { grid-template-columns: repeat(4, 1fr); }
+.keyboard {
+  position:relative;
+  height:190px;
+  min-width:600px;
+  user-select:none;
+  touch-action:manipulation;
+}
+.key {
+  position:absolute;
+  top:0;
+  border-radius:0 0 7px 7px;
+  cursor:pointer;
+  display:flex;
+  justify-content:center;
+  align-items:flex-end;
+  padding-bottom:10px;
+  font-size:10px;
+  font-weight:bold;
+}
+.key.white {
+  height:185px;
+  background:linear-gradient(#fff,#dedee5);
+  color:#222;
+  border:1px solid #999;
+  z-index:1;
+}
+.key.black {
+  height:112px;
+  background:linear-gradient(#555,#090a10);
+  color:white;
+  border:1px solid #000;
+  z-index:2;
+  padding-bottom:8px;
+  font-size:9px;
+  box-shadow:0 4px 5px #0008;
+}
+.key.selected { background:linear-gradient(#b7a3ff,#7757d7); color:white; }
+.key.white.selected { background:linear-gradient(#d3c5ff,#9b7bff); color:#171322; }
+.note-list { display:flex; flex-wrap:wrap; gap:7px; margin-top:12px; min-height:32px; }
+.note-chip {
+  background:#393158;
+  border:1px solid #7962bc;
+  border-radius:20px;
+  padding:7px 10px;
+  font-size:12px;
+}
+.actions { display:flex; flex-direction:column; gap:8px; }
+.action {
+  background:#25293a;
+  border-left:4px solid var(--accent);
+  border-radius:9px;
+  padding:11px;
+  font-size:13px;
+}
+.action small { color:var(--muted); display:block; margin-top:5px; }
+hr { border:0; border-top:1px solid #373b50; margin:17px 0; }
+#message { position:sticky; top:8px; z-index:5; }
+@media(max-width:650px) {
+  main { width:96%; margin-top:12px; }
+  .panel { padding:13px; }
+  .settings-grid,.mode-grid { grid-template-columns:1fr; }
+  .keyboard { height:165px; }
+  .key.white { height:160px; }
+  .key.black { height:98px; }
 }
 </style>
 </head>
-
 <body>
-<div class="container">
+<main>
+  <h1>🎹 Müzik Partisi</h1>
+  <div class="subtitle">Arkadaşlarınla birlikte müzik yap!</div>
+  <div id="message" class="status">Hoş geldin! Oda oluştur veya bir odaya katıl.</div>
 
-<section id="home">
-  <div class="logo">MÜZİK <span>PARTİSİ</span></div>
-  <p class="subtitle">Arkadaşlarınla sesleri birleştir, ortaya çılgın müzikler çıkar.</p>
-
-  <div class="home-grid">
+  <section id="home">
     <div class="panel">
-      <h2>🎧 Oda oluştur</h2>
-      <div class="field">
-        <label>Oyuncu adın</label>
-        <input id="createName" maxlength="18" placeholder="Adını yaz">
+      <h2>Oyuna katıl</h2>
+      <label>Oyuncu adın</label>
+      <input id="playerName" maxlength="18" placeholder="Adını yaz">
+      <hr>
+      <h3>Yeni oda oluştur</h3>
+      <div class="mode-grid">
+        <div class="mode-card">
+          <strong>🎼 Sıra Sende</strong>
+          <p>Oyuncular sırayla piyano tuşlarından ses ekler.</p>
+          <button onclick="createRoom('party')">Bu modu seç</button>
+        </div>
+        <div class="mode-card">
+          <strong>🎉 Herkes Serbest</strong>
+          <p>Herkes istediği zaman ses ekleyebilir.</p>
+          <button onclick="createRoom('free')">Bu modu seç</button>
+        </div>
+      </div>
+      <hr>
+      <h3>Mevcut odaya katıl</h3>
+      <label>Oda kodu</label>
+      <div class="row">
+        <input id="roomCode" maxlength="5" placeholder="Örn. A2BCD">
+        <button onclick="joinRoom()">Odaya katıl</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="game" class="hidden">
+    <div class="panel">
+      <div class="row">
+        <div>
+          <h2>Oda: <span id="roomCodeText"></span></h2>
+          <div id="modeText" class="muted"></div>
+        </div>
+        <button class="secondary" onclick="copyRoom()">Kodu kopyala</button>
+      </div>
+      <div id="players" class="player-list"></div>
+      <div id="turnStatus" class="status">Oyun başlamayı bekliyor.</div>
+      <div class="row">
+        <button id="startButton" onclick="startGame()">Oyunu başlat</button>
+        <button id="clearButton" class="secondary" onclick="nextRound()">Müziği sıfırla</button>
+        <button class="secondary" onclick="enableAudio()">🔊 Sesi etkinleştir</button>
+      </div>
+    </div>
+
+    <div id="studio" class="panel hidden">
+      <h2>🎹 Ses stüdyosu</h2>
+      <p class="muted">Piyano tuşlarına dokun. Birden fazla nota seçerek akor oluşturabilirsin.</p>
+
+      <div class="row">
+        <div>
+          <label>Enstrüman</label>
+          <select id="instrument">
+            <optgroup label="Piyano ve klavyeler">
+              <option value="acoustic_grand_piano">Kuyruklu piyano</option>
+              <option value="bright_acoustic_piano">Parlak piyano</option>
+              <option value="electric_piano_1">Elektrik piyano</option>
+              <option value="electric_piano_2">Yumuşak elektrik piyano</option>
+              <option value="honkytonk_piano">Honky-tonk piyano</option>
+              <option value="clavinet">Klavinet</option>
+              <option value="church_organ">Kilise orgu</option>
+              <option value="drawbar_organ">Hammond org</option>
+              <option value="music_box">Müzik kutusu</option>
+            </optgroup>
+            <optgroup label="Yaylı çalgılar">
+              <option value="violin">Keman</option>
+              <option value="viola">Viyola</option>
+              <option value="cello">Çello</option>
+              <option value="contrabass">Kontrbas</option>
+              <option value="string_ensemble_1">Yaylı orkestra</option>
+              <option value="slow_strings">Yumuşak yaylılar</option>
+              <option value="pizzicato_strings">Çekmeli yaylılar</option>
+              <option value="orchestral_harp">Arp</option>
+            </optgroup>
+            <optgroup label="Gitar ve bas">
+              <option value="acoustic_guitar_nylon">Klasik gitar</option>
+              <option value="acoustic_guitar_steel">Akustik gitar</option>
+              <option value="electric_guitar_clean">Temiz elektro gitar</option>
+              <option value="electric_guitar_jazz">Caz elektro gitar</option>
+              <option value="electric_guitar_muted">Sessiz elektro gitar</option>
+              <option value="overdriven_guitar">Kirli elektro gitar</option>
+              <option value="distortion_guitar">Distortion gitar</option>
+              <option value="acoustic_bass">Akustik bas gitar</option>
+              <option value="electric_bass_finger">Bas gitar</option>
+              <option value="electric_bass_pick">Penalı bas gitar</option>
+              <option value="synth_bass_1">Elektronik bas</option>
+            </optgroup>
+            <optgroup label="Üflemeliler">
+              <option value="flute">Flüt</option>
+              <option value="piccolo">Pikolo flüt</option>
+              <option value="recorder">Blok flüt</option>
+              <option value="pan_flute">Pan flüt</option>
+              <option value="clarinet">Klarnet</option>
+              <option value="oboe">Obua</option>
+              <option value="bassoon">Fagot</option>
+              <option value="soprano_sax">Soprano saksafon</option>
+              <option value="alto_sax">Alto saksafon</option>
+              <option value="tenor_sax">Tenor saksafon</option>
+              <option value="baritone_sax">Bariton saksafon</option>
+              <option value="trumpet">Trompet</option>
+              <option value="trombone">Trombon</option>
+              <option value="muted_trumpet">Susturuculu trompet</option>
+              <option value="french_horn">Korno</option>
+            </optgroup>
+            <optgroup label="Diğer enstrümanlar">
+              <option value="tinkle_bell">Çan</option>
+              <option value="glockenspiel">Glockenspiel</option>
+              <option value="vibraphone">Vibrafon</option>
+              <option value="marimba">Marimba</option>
+              <option value="xylophone">Ksilofon</option>
+              <option value="tubular_bells">Boru çanları</option>
+              <option value="steel_drums">Çelik davul</option>
+              <option value="voice_oohs">Koro sesi</option>
+              <option value="synth_strings_1">Elektronik yaylı</option>
+              <option value="synth_choir">Elektronik koro</option>
+              <option value="lead_2_sawtooth">Testere synth</option>
+              <option value="lead_8_bass_lead">Elektronik solo</option>
+              <option value="pad_2_warm">Sıcak elektronik pad</option>
+              <option value="pad_3_polysynth">Polisynth</option>
+              <option value="pad_7_halo">Uzay pad'i</option>
+            </optgroup>
+          </select>
+        </div>
+        <div>
+          <label>Oktav</label>
+          <select id="octave" onchange="buildKeyboard()">
+            <option value="1">1 – Çok kalın</option>
+            <option value="2">2 – Kalın</option>
+            <option value="3">3</option>
+            <option value="4" selected>4 – Orta</option>
+            <option value="5">5</option>
+            <option value="6">6 – İnce</option>
+            <option value="7">7 – Çok ince</option>
+            <option value="8">8 – En ince</option>
+          </select>
+        </div>
       </div>
 
-      <label>Oyun modu</label>
-      <div class="mode-list">
-        <div class="mode selected" data-mode="party" onclick="selectMode('party',this)">
-          <strong>🎵 Sıra Sende</strong>
-          <span>Oyuncular sırayla ses ekler ve ortak müzik oluşturur.</span>
+      <label>Piyano klavyesi</label>
+      <div class="keyboard-wrap">
+        <div id="keyboard" class="keyboard"></div>
+      </div>
+      <div class="note-list" id="selectedNotes">
+        <span class="muted">Henüz nota seçilmedi.</span>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="secondary" onclick="clearSelected()">Notaları temizle</button>
+        <button class="green" id="addButton" onclick="addSound()">🎵 Müziğe ekle</button>
+      </div>
+
+      <hr>
+      <h3>🎛️ Ses ayarları</h3>
+      <div class="settings-grid">
+        <div class="control">
+          <label>Ses seviyesi <span class="value" id="volumeValue">70%</span></label>
+          <input id="volume" type="range" min="0" max="100" value="70">
         </div>
-        <div class="mode" data-mode="free" onclick="selectMode('free',this)">
-          <strong>🔥 Herkes Serbest</strong>
-          <span>Herkes istediği zaman ses ekleyebilir.</span>
+        <div class="control">
+          <label>Ses inceliği / kalınlığı <span class="value" id="pitchValue">0</span></label>
+          <input id="pitch" type="range" min="-12" max="12" value="0">
         </div>
-        <div class="mode" data-mode="challenge" onclick="selectMode('challenge',this)">
-          <strong>🏆 Melodi Kapışması</strong>
-          <span>Aynı melodiyi çalmaya çalış, en yüksek puanı al.</span>
+        <div class="control">
+          <label>Nota süresi <span class="value" id="durationValue">0.8 sn</span></label>
+          <input id="duration" type="range" min="1" max="50" value="8">
+        </div>
+        <div class="control">
+          <label>Başlangıç yumuşaklığı <span class="value" id="attackValue">0.02 sn</span></label>
+          <input id="attack" type="range" min="0" max="200" value="2">
+        </div>
+        <div class="control">
+          <label>Ses bitiş yumuşaklığı <span class="value" id="releaseValue">0.2 sn</span></label>
+          <input id="release" type="range" min="0" max="300" value="20">
+        </div>
+        <div class="control">
+          <label>Ses devamlılığı <span class="value" id="sustainValue">80%</span></label>
+          <input id="sustain" type="range" min="0" max="100" value="80">
+        </div>
+        <div class="control">
+          <label>Oda efekti <span class="value" id="reverbValue">15%</span></label>
+          <input id="reverb" type="range" min="0" max="100" value="15">
+        </div>
+        <div class="control">
+          <label>Yankı <span class="value" id="echoValue">0%</span></label>
+          <input id="echo" type="range" min="0" max="100" value="0">
+        </div>
+        <div class="control">
+          <label>Ses bozulması <span class="value" id="distortionValue">0%</span></label>
+          <input id="distortion" type="range" min="0" max="100" value="0">
+        </div>
+        <div class="control">
+          <label>Ses filtresi <span class="value" id="filterValue">12000 Hz</span></label>
+          <input id="filter" type="range" min="200" max="12000" value="12000">
         </div>
       </div>
-      <button class="primary" onclick="createRoom()">Oda oluştur</button>
     </div>
 
     <div class="panel">
-      <h2>🚀 Odaya katıl</h2>
-      <div class="field">
-        <label>Oyuncu adın</label>
-        <input id="joinName" maxlength="18" placeholder="Adını yaz">
+      <h2>🎧 Ortak müzik</h2>
+      <div id="actions" class="actions">
+        <div class="muted">Henüz ses eklenmedi.</div>
       </div>
-      <div class="field">
-        <label>Oda kodu</label>
-        <input id="joinCode" maxlength="6" placeholder="Örn: A1B2C3">
-      </div>
-      <button class="primary green" onclick="joinRoom()">Odaya katıl</button>
     </div>
-  </div>
-</section>
 
-<section id="game" class="hidden">
-  <div class="topbar">
-    <div>
-      <div class="muted small">ODA KODU</div>
-      <div class="room-code" id="roomCode">------</div>
+    <div class="panel">
+      <h2>🎚️ Ortak DJ</h2>
+      <p class="muted">DJ yalnızca oda sahibinin kontrolündedir. Oyun modlarından bağımsızdır.</p>
+      <div id="djHostControls" class="hidden">
+        <label>Bilgisayarından MP3 veya WAV seç</label>
+        <input type="file" id="djFile" accept="audio/*">
+        <button style="margin-top:10px" onclick="uploadDJ()">DJ müziğini herkese gönder</button>
+        <div class="row" style="margin-top:12px">
+          <button onclick="djCommand('play')">▶ Başlat</button>
+          <button class="secondary" onclick="djCommand('pause')">⏸ Duraklat</button>
+          <button class="red" onclick="djCommand('stop')">⏹ Durdur</button>
+        </div>
+        <label>DJ ses seviyesi</label>
+        <input id="djVolume" type="range" min="0" max="100" value="70">
+      </div>
+      <div id="djGuestText" class="muted">DJ kontrolleri oda sahibinde.</div>
+      <div id="djName" class="status">Henüz DJ müziği yüklenmedi.</div>
+      <audio id="djAudio" controls style="width:100%;margin-top:8px"></audio>
     </div>
-    <div class="toolbar">
-      <button class="secondary" onclick="copyCode()">📋 Kodu kopyala</button>
-      <button class="danger" onclick="leaveRoom()">Çıkış</button>
-    </div>
-  </div>
-
-  <div class="game-grid">
-    <aside>
-      <div class="panel">
-        <div class="section-title">
-          <h3>👥 Oyuncular</h3>
-          <span class="muted small" id="playerCount">0/8</span>
-        </div>
-        <div class="players" id="players"></div>
-      </div>
-
-      <div class="panel card-gap">
-        <h3>🎚️ Tempo</h3>
-        <div class="range-row">
-          <label>BPM</label><b id="tempoValue">110</b>
-        </div>
-        <input type="range" min="50" max="200" value="110" id="tempo"
-          oninput="changeTempo(this.value)">
-      </div>
-
-      <div class="panel card-gap">
-        <h3>🎛️ Müzik</h3>
-        <div class="actions">
-          <button onclick="playMusic()">▶ Çal</button>
-          <button class="secondary" onclick="stopMusic()">■ Durdur</button>
-        </div>
-      </div>
-    </aside>
-
-    <main>
-      <div class="panel">
-        <div class="section-title">
-          <div>
-            <h2>🎹 Ses stüdyosu</h2>
-            <p class="muted small" id="turnInfo">Oyun bekleniyor...</p>
-          </div>
-          <span class="muted small" id="roundInfo">Tur 1</span>
-        </div>
-
-        <div id="lobbyControls">
-          <p class="muted">Arkadaşların odaya katıldığında oyunu başlatabilirsin.</p>
-          <button id="startButton" onclick="startGame()">Oyunu başlat</button>
-        </div>
-
-        <div id="studio" class="hidden">
-          <h3>🎼 Ses seç</h3>
-          <div class="sound-grid" id="soundGrid">
-            <button class="sound" onclick="addSound('note',60,'Do')">🎹<span>Do</span></button>
-            <button class="sound" onclick="addSound('note',62,'Re')">🎹<span>Re</span></button>
-            <button class="sound" onclick="addSound('note',64,'Mi')">🎹<span>Mi</span></button>
-            <button class="sound" onclick="addSound('note',65,'Fa')">🎹<span>Fa</span></button>
-            <button class="sound" onclick="addSound('note',67,'Sol')">🎹<span>Sol</span></button>
-            <button class="sound" onclick="addSound('note',69,'La')">🎹<span>La</span></button>
-            <button class="sound" onclick="addSound('note',71,'Si')">🎹<span>Si</span></button>
-            <button class="sound" onclick="addSound('note',72,'Do+')">🎹<span>Do+</span></button>
-            <button class="sound" onclick="addSound('drums',0,'Kick')">🥁<span>Kick</span></button>
-            <button class="sound" onclick="addSound('drums',1,'Snare')">🥁<span>Snare</span></button>
-            <button class="sound" onclick="addSound('drums',2,'Hi-hat')">🥁<span>Hi-hat</span></button>
-            <button class="sound" onclick="addSound('bass',40,'Bas')">🔊<span>Bas</span></button>
-            <button class="sound" onclick="addSound('instrument',60,'Piyano')">🎹<span>Piyano</span></button>
-            <button class="sound" onclick="addSound('instrument',64,'Gitar')">🎸<span>Gitar</span></button>
-            <button class="sound" onclick="addSound('instrument',67,'Synth')">🎛️<span>Synth</span></button>
-            <button class="sound" onclick="addSound('instrument',48,'808')">💥<span>808</span></button>
-            <button class="sound" onclick="addSound('funny',1,'Robot')">🤖<span>Robot</span></button>
-            <button class="sound" onclick="addSound('funny',2,'Uzaylı')">👽<span>Uzaylı</span></button>
-            <button class="sound" onclick="addSound('funny',3,'Korna')">📯<span>Korna</span></button>
-            <button class="sound" onclick="addSound('funny',4,'Lazer')">⚡<span>Lazer</span></button>
-          </div>
-
-          <div class="panel card-gap">
-            <h3>🧪 Sesini özelleştir</h3>
-            <div class="settings-grid">
-              <div>
-                <div class="range-row"><label>Ses seviyesi</label><b id="volumeVal">70%</b></div>
-                <input id="volume" type="range" min="0" max="100" value="70"
-                  oninput="updateSettings()">
-              </div>
-              <div>
-                <div class="range-row"><label>Ses perdesi</label><b id="pitchVal">0</b></div>
-                <input id="pitch" type="range" min="-12" max="12" value="0"
-                  oninput="updateSettings()">
-              </div>
-              <div>
-                <div class="range-row"><label>Hız</label><b id="speedVal">1x</b></div>
-                <input id="speed" type="range" min="50" max="200" value="100"
-                  oninput="updateSettings()">
-              </div>
-              <div>
-                <div class="range-row"><label>Yankı</label><b id="echoVal">0%</b></div>
-                <input id="echo" type="range" min="0" max="100" value="0"
-                  oninput="updateSettings()">
-              </div>
-              <div>
-                <div class="range-row"><label>Distortion</label><b id="distVal">0%</b></div>
-                <input id="distortion" type="range" min="0" max="100" value="0"
-                  oninput="updateSettings()">
-              </div>
-              <div>
-                <label>Ses karakteri</label>
-                <select id="wave">
-                  <option value="sine">Yumuşak</option>
-                  <option value="triangle">Elektronik</option>
-                  <option value="square">8-bit</option>
-                  <option value="sawtooth">Agresif synth</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="actions card-gap">
-            <button onclick="previewCurrent()">🔊 Ön dinleme</button>
-            <button class="green" onclick="addCurrent()">➕ Müziğe ekle</button>
-          </div>
-
-          <div id="challengeArea" class="panel card-gap hidden">
-            <h3>🏆 Melodi Kapışması</h3>
-            <p class="muted small">Gösterilen melodiyi aynı notalarla çalmaya çalış.</p>
-            <div class="status" id="challengeStatus">Melodi hazırlanıyor...</div>
-            <div id="targetMelody" class="note-grid card-gap"></div>
-            <h3 class="card-gap">Senin melodin</h3>
-            <div id="myMelody" class="status">Henüz nota eklemedin.</div>
-            <div class="note-grid card-gap" id="challengeNotes">
-              <button class="note-btn" onclick="challengeNote(60)">Do</button>
-              <button class="note-btn" onclick="challengeNote(62)">Re</button>
-              <button class="note-btn" onclick="challengeNote(64)">Mi</button>
-              <button class="note-btn" onclick="challengeNote(65)">Fa</button>
-              <button class="note-btn" onclick="challengeNote(67)">Sol</button>
-              <button class="note-btn" onclick="challengeNote(69)">La</button>
-              <button class="note-btn" onclick="challengeNote(71)">Si</button>
-              <button class="note-btn" onclick="challengeNote(72)">Do+</button>
-            </div>
-            <button class="primary" onclick="submitChallenge()">Melodimi gönder</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel card-gap">
-        <div class="section-title">
-          <h3>🎶 Oluşan müzik</h3>
-          <span class="muted small" id="actionCount">0 ses</span>
-        </div>
-        <div class="feed" id="feed">
-          <p class="muted">Henüz ses eklenmedi.</p>
-        </div>
-        <div class="actions card-gap">
-          <button onclick="playMusic()">▶ Müziği dinle</button>
-          <button class="secondary" onclick="stopMusic()">■ Durdur</button>
-        </div>
-        <div id="nextRoundArea" class="card-gap hidden">
-          <button class="green" onclick="nextRound()">➡ Yeni tur</button>
-        </div>
-      </div>
-
-      <div class="panel card-gap">
-        <h3>🎧 Ortak DJ</h3>
-        <p class="muted small">Oda sahibi müzik dosyası seçebilir. Diğer oyuncular da aynı dosyayı dinler.</p>
-        <div id="djHostControls" class="hidden">
-          <div class="field">
-            <label>MP3 veya WAV dosyası (en fazla yaklaşık 13 MB)</label>
-            <input id="djFile" type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/*">
-          </div>
-          <button onclick="uploadDJ()">📤 Müziği herkese gönder</button>
-        </div>
-        <div id="djFileName" class="status card-gap">Henüz DJ müziği seçilmedi.</div>
-        <div class="dj-controls card-gap">
-          <button onclick="djControl('play')">▶ Başlat</button>
-          <button onclick="djControl('pause')">⏸ Duraklat</button>
-          <button onclick="djControl('resume')">⏵ Devam</button>
-          <button class="danger" onclick="djControl('stop')">■ Durdur</button>
-        </div>
-        <div class="field card-gap">
-          <label>DJ ses seviyesi</label>
-          <input id="djVolume" type="range" min="0" max="100" value="70" oninput="setDJVolume(this.value)">
-        </div>
-        <audio id="djAudio" controls style="width:100%; margin-top:12px;"></audio>
-        <p class="muted small card-gap">Not: Tarayıcıların otomatik oynatma izni nedeniyle bazı oyuncuların ilk kez oynat düğmesine basması gerekebilir.</p>
-      </div>
-    </main>
-  </div>
-</section>
-</div>
-
-<div id="toast" class="hidden"></div>
+  </section>
+</main>
 
 <script>
 const socket = io();
 
-let selectedMode = "party";
 let roomCode = null;
 let roomState = null;
+let selected = new Set();
 let audioContext = null;
 let masterGain = null;
-let currentSettings = {};
-let myMelody = [];
-let challengeTarget = [];
-let challengeSubmitted = false;
-let djSource = null;
-let djFileReady = false;
+let instrumentCache = new Map();
+let djUrl = null;
 
 const $ = id => document.getElementById(id);
 
-function toast(message) {
-  const el = $("toast");
-  el.textContent = message;
-  el.classList.remove("hidden");
-  clearTimeout(toast.timer);
-  toast.timer = setTimeout(() => el.classList.add("hidden"), 2800);
+function message(text) {
+  $("message").textContent = text;
 }
 
-function selectMode(mode, element) {
-  selectedMode = mode;
-  document.querySelectorAll(".mode").forEach(el => el.classList.remove("selected"));
-  element.classList.add("selected");
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
 }
 
-async function ensureAudio() {
-  if (!audioContext) {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    masterGain = audioContext.createGain();
-    masterGain.gain.value = 0.8;
-    masterGain.connect(audioContext.destination);
-  }
-  if (audioContext.state === "suspended") await audioContext.resume();
+function playerName() {
+  return $("playerName").value.trim() || "Oyuncu";
 }
 
-function createRoom() {
-  const name = $("createName").value.trim() || "Oyuncu";
-  socket.emit("create-room", { name, mode: selectedMode }, result => {
-    if (!result?.success) return toast(result?.message || "Oda oluşturulamadı.");
-    roomCode = result.code;
-    showGame();
-    toast("Oda oluşturuldu!");
+function createRoom(mode) {
+  socket.emit("create-room", { name: playerName(), mode }, result => {
+    if (!result?.ok) return message(result?.message || "Oda oluşturulamadı.");
+    enterRoom(result.room);
   });
 }
 
 function joinRoom() {
-  const name = $("joinName").value.trim() || "Oyuncu";
-  const code = $("joinCode").value.trim().toUpperCase();
-
-  if (!code) return toast("Oda kodunu yaz.");
-
-  socket.emit("join-room", { name, code }, result => {
-    if (!result?.success) return toast(result?.message || "Odaya katılınamadı.");
-    roomCode = result.code;
-    showGame();
-    toast("Odaya katıldın!");
+  const code = $("roomCode").value.trim().toUpperCase();
+  socket.emit("join-room", { code, name: playerName() }, result => {
+    if (!result?.ok) return message(result?.message || "Odaya katılınamadı.");
+    enterRoom(result.room);
   });
 }
 
-function showGame() {
+function enterRoom(room) {
+  roomCode = room.code;
   $("home").classList.add("hidden");
   $("game").classList.remove("hidden");
-  $("roomCode").textContent = roomCode;
-  ensureAudio();
+  $("roomCodeText").textContent = room.code;
+  updateRoom(room);
+  enableAudio();
 }
 
-function leaveRoom() {
-  location.reload();
-}
-
-function copyCode() {
-  navigator.clipboard?.writeText(roomCode).then(
-    () => toast("Oda kodu kopyalandı."),
-    () => toast("Oda kodu: " + roomCode)
-  );
+function copyRoom() {
+  navigator.clipboard?.writeText(roomCode)
+    .then(() => message("Oda kodu kopyalandı: " + roomCode))
+    .catch(() => message("Oda kodun: " + roomCode));
 }
 
 function startGame() {
   socket.emit("start-game", { code: roomCode }, result => {
-    if (!result?.success) toast(result?.message || "Oyun başlatılamadı.");
+    if (!result?.ok) message(result?.message || "Oyun başlatılamadı.");
   });
 }
 
 function nextRound() {
   socket.emit("next-round", { code: roomCode }, result => {
-    if (!result?.success) toast(result?.message || "Yeni tur başlatılamadı.");
+    if (!result?.ok) message(result?.message || "Müzik sıfırlanamadı.");
   });
 }
 
-function changeTempo(value) {
-  $("tempoValue").textContent = value;
-  socket.emit("change-tempo", { code: roomCode, tempo: Number(value) });
+function updateRoom(room) {
+  roomState = room;
+  $("roomCodeText").textContent = room.code;
+  $("modeText").textContent = room.mode === "party"
+    ? "🎼 Sıra Sende"
+    : "🎉 Herkes Serbest";
+
+  const isHost = room.host === socket.id;
+  $("startButton").classList.toggle("hidden", !isHost || room.started);
+  $("clearButton").classList.toggle("hidden", !isHost || !room.started);
+  $("djHostControls").classList.toggle("hidden", !isHost);
+  $("djGuestText").classList.toggle("hidden", isHost);
+
+  $("players").innerHTML = room.players.map((p, i) => {
+    const active = room.mode === "party" && room.started && i === room.currentTurn;
+    return `<div class="player ${active ? "active" : ""}">
+      ${escapeHTML(p.name)} ${p.id === room.host ? "👑" : ""}
+      ${active ? " 🎵 Sıra onda" : ""}
+    </div>`;
+  }).join("");
+
+  if (!room.started) {
+    $("turnStatus").textContent = "Oyun başlamayı bekliyor. Oda sahibi oyunu başlatabilir.";
+    $("studio").classList.add("hidden");
+  } else {
+    $("studio").classList.remove("hidden");
+    if (room.mode === "party") {
+      const current = room.players[room.currentTurn];
+      const myTurn = current?.id === socket.id;
+      $("turnStatus").textContent = myTurn
+        ? "🎵 Sıra sende! Piyanodan notalarını seç."
+        : `🎧 Şimdi ${current?.name || "başka bir oyuncu"} ses ekliyor.`;
+      $("addButton").disabled = !myTurn;
+    } else {
+      $("turnStatus").textContent = "🎉 Herkes istediği zaman ses ekleyebilir!";
+      $("addButton").disabled = false;
+    }
+  }
+
+  renderActions(room.actions || []);
 }
 
-function isMyTurn() {
-  if (!roomState) return false;
-  if (roomState.mode === "free") return true;
-  if (roomState.mode === "challenge") return false;
-  return roomState.players[roomState.turn]?.id === socket.id;
+function renderActions(actions) {
+  if (!actions.length) {
+    $("actions").innerHTML = '<div class="muted">Henüz ses eklenmedi.</div>';
+    return;
+  }
+
+  $("actions").innerHTML = actions.map((a, i) => {
+    const notes = a.notes.map(n => noteName(n)).join(" + ");
+    return `<div class="action">
+      <b>${i + 1}. ${escapeHTML(a.playerName)}</b> — ${escapeHTML(instrumentName(a.instrument))}
+      <small>Notalar: ${escapeHTML(notes)}</small>
+    </div>`;
+  }).join("");
 }
 
-function updateSettings() {
-  const volume = Number($("volume").value);
-  const pitch = Number($("pitch").value);
-  const speed = Number($("speed").value);
-  const echo = Number($("echo").value);
-  const distortion = Number($("distortion").value);
+function instrumentName(value) {
+  const select = $("instrument");
+  const option = [...select.options].find(o => o.value === value);
+  return option ? option.textContent : value;
+}
 
-  $("volumeVal").textContent = volume + "%";
-  $("pitchVal").textContent = pitch;
-  $("speedVal").textContent = (speed / 100).toFixed(2) + "x";
-  $("echoVal").textContent = echo + "%";
-  $("distVal").textContent = distortion + "%";
+function noteName(midi) {
+  const names = ["Do","Do♯ / Re♭","Re","Re♯ / Mi♭","Mi","Fa",
+    "Fa♯ / Sol♭","Sol","Sol♯ / La♭","La","La♯ / Si♭","Si"];
+  const octave = Math.floor(midi / 12) - 1;
+  return `${names[midi % 12]} ${octave}`;
+}
 
-  currentSettings = {
-    volume: volume / 100,
-    pitch,
-    speed: speed / 100,
-    echo: echo / 100,
-    distortion: distortion / 100,
-    wave: $("wave").value
+const noteNames = ["Do","Do♯","Re","Re♯","Mi","Fa","Fa♯","Sol","Sol♯","La","La♯","Si"];
+const blackNotes = new Set([1,3,6,8,10]);
+
+function buildKeyboard() {
+  selected.clear();
+  renderSelected();
+
+  const octave = Number($("octave").value);
+  const count = octave === 8 ? 12 : 24;
+  const keyboard = $("keyboard");
+  keyboard.innerHTML = "";
+
+  const whiteSemitones = [0,2,4,5,7,9,11];
+  const whiteCount = octave === 8 ? 7 : 14;
+  const whiteWidth = 100 / whiteCount;
+
+  for (let i = 0; i < count; i++) {
+    const semitone = i % 12;
+    if (blackNotes.has(semitone)) continue;
+
+    const octaveOffset = Math.floor(i / 12);
+    const whiteIndex = octaveOffset * 7 + whiteSemitones.indexOf(semitone);
+    const midi = 12 * (octave + 1) + i;
+    const key = document.createElement("button");
+
+    key.className = "key white";
+    key.style.left = `${whiteIndex * whiteWidth}%`;
+    key.style.width = `${whiteWidth}%`;
+    key.textContent = noteNames[semitone];
+    key.dataset.midi = midi;
+    key.onclick = () => selectNote(midi, key);
+    keyboard.appendChild(key);
+  }
+
+  for (let i = 0; i < count; i++) {
+    const semitone = i % 12;
+    if (!blackNotes.has(semitone)) continue;
+
+    const octaveOffset = Math.floor(i / 12);
+    const previousWhite = [0,2,4,5,7,9,11].filter(n => n < semitone).length;
+    const whiteIndex = octaveOffset * 7 + previousWhite;
+    const midi = 12 * (octave + 1) + i;
+    const key = document.createElement("button");
+
+    key.className = "key black";
+    key.style.left = `${(whiteIndex + 0.68) * whiteWidth}%`;
+    key.style.width = `${whiteWidth * 0.64}%`;
+    key.textContent = noteNames[semitone];
+    key.dataset.midi = midi;
+    key.onclick = () => selectNote(midi, key);
+    keyboard.appendChild(key);
+  }
+}
+
+function selectNote(midi, element) {
+  if (selected.has(midi)) {
+    selected.delete(midi);
+    element.classList.remove("selected");
+  } else {
+    selected.add(midi);
+    element.classList.add("selected");
+  }
+
+  renderSelected();
+  playNotes([midi], $("instrument").value, getSettings());
+}
+
+function renderSelected() {
+  const notes = [...selected].sort((a,b) => a-b);
+  $("selectedNotes").innerHTML = notes.length
+    ? notes.map(n => `<span class="note-chip">${escapeHTML(noteName(n))}</span>`).join("")
+    : '<span class="muted">Henüz nota seçilmedi.</span>';
+}
+
+function clearSelected() {
+  selected.clear();
+  document.querySelectorAll(".key.selected").forEach(k => k.classList.remove("selected"));
+  renderSelected();
+}
+
+function getSettings() {
+  return {
+    volume: Number($("volume").value) / 100,
+    pitch: Number($("pitch").value),
+    duration: Number($("duration").value) / 10,
+    attack: Number($("attack").value) / 100,
+    release: Number($("release").value) / 100,
+    sustain: Number($("sustain").value) / 100,
+    reverb: Number($("reverb").value) / 100,
+    echo: Number($("echo").value) / 100,
+    distortion: Number($("distortion").value) / 100,
+    filter: Number($("filter").value)
   };
 }
 
-function readSettings() {
-  updateSettings();
-  return { ...currentSettings };
+function addSound() {
+  const notes = [...selected].sort((a,b) => a-b);
+  if (!notes.length) return message("Önce piyano tuşlarından nota seç.");
+
+  socket.emit("add-sound", {
+    code: roomCode,
+    notes,
+    instrument: $("instrument").value,
+    settings: getSettings()
+  }, result => {
+    if (!result?.ok) {
+      message(result?.message || "Ses eklenemedi.");
+    } else {
+      message("🎵 Sesin müziğe eklendi!");
+      clearSelected();
+    }
+  });
 }
 
-function midiFrequency(note) {
-  return 440 * Math.pow(2, (note - 69) / 12);
+/* Ses sistemi */
+async function enableAudio() {
+  try {
+    if (!audioContext) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      audioContext = new AudioCtx();
+      masterGain = audioContext.createGain();
+      masterGain.gain.value = 0.9;
+      masterGain.connect(audioContext.destination);
+    }
+    if (audioContext.state === "suspended") await audioContext.resume();
+    message("🔊 Ses sistemi hazır.");
+  } catch (e) {
+    message("Tarayıcı ses sistemini başlatamadı.");
+  }
 }
 
 function makeDistortion(amount) {
   const curve = new Float32Array(44100);
-  const k = amount * 450;
+  const k = amount * 180;
   for (let i = 0; i < curve.length; i++) {
     const x = i * 2 / curve.length - 1;
-    curve[i] = ((3 + k) * x * 20 * Math.PI / 180) /
+    curve[i] = k === 0 ? x : ((3 + k) * x * 20 * Math.PI / 180) /
       (Math.PI + k * Math.abs(x));
   }
-  const shaper = audioContext.createWaveShaper();
-  shaper.curve = curve;
-  shaper.oversample = "4x";
-  return shaper;
+  return curve;
 }
 
-function playTone(note, settings = {}, duration = 0.28, type = "note") {
-  ensureAudio();
-  if (!audioContext) return;
+async function getInstrument(name, settings) {
+  await enableAudio();
+  if (!window.Soundfont) throw new Error("Enstrüman ses kütüphanesi yüklenemedi.");
 
-  const now = audioContext.currentTime;
-  const volume = Math.max(0, Math.min(1, Number(settings.volume ?? .7)));
-  const speed = Math.max(.5, Math.min(2, Number(settings.speed ?? 1)));
-  const pitch = Number(settings.pitch || 0);
-  const wave = settings.wave || "sine";
-  const freq = midiFrequency(Number(note || 60) + pitch);
+  const key = [
+    name,
+    Math.round(settings.filter),
+    Math.round(settings.echo * 10),
+    Math.round(settings.reverb * 10),
+    Math.round(settings.distortion * 10)
+  ].join("|");
 
-  const osc = audioContext.createOscillator();
-  const gain = audioContext.createGain();
+  if (instrumentCache.has(key)) return instrumentCache.get(key);
 
-  osc.type = wave;
-  osc.frequency.setValueAtTime(freq, now);
+  const filter = audioContext.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.value = settings.filter;
 
-  if (type === "bass") osc.frequency.setValueAtTime(freq / 2, now);
+  const distortion = audioContext.createWaveShaper();
+  distortion.curve = makeDistortion(settings.distortion);
+  distortion.oversample = "4x";
 
-  gain.gain.setValueAtTime(0, now);
-  gain.gain.linearRampToValueAtTime(volume * .28, now + .015);
-  gain.gain.exponentialRampToValueAtTime(.001, now + duration / speed);
+  const delay = audioContext.createDelay(2);
+  delay.delayTime.value = 0.28;
 
-  let lastNode = osc;
+  const dry = audioContext.createGain();
+  dry.gain.value = 1;
 
-  if (settings.distortion > 0) {
-    const distortion = makeDistortion(settings.distortion);
-    osc.connect(distortion);
-    lastNode = distortion;
-  }
+  const wet = audioContext.createGain();
+  wet.gain.value = Math.min(0.75, settings.echo * 0.7 + settings.reverb * 0.35);
 
-  lastNode.connect(gain);
-  gain.connect(masterGain);
+  const feedback = audioContext.createGain();
+  feedback.gain.value = Math.min(0.55, settings.echo * 0.5 + settings.reverb * 0.2);
 
-  if (settings.echo > 0) {
-    const delay = audioContext.createDelay(1);
-    const feedback = audioContext.createGain();
-    const echoGain = audioContext.createGain();
+  const input = audioContext.createGain();
 
-    delay.delayTime.value = .2;
-    feedback.gain.value = settings.echo * .55;
-    echoGain.gain.value = settings.echo * .6;
+  input.connect(filter);
+  filter.connect(distortion);
+  distortion.connect(dry);
+  dry.connect(masterGain);
 
-    gain.connect(delay);
-    delay.connect(feedback);
-    feedback.connect(delay);
-    delay.connect(echoGain);
-    echoGain.connect(masterGain);
-  }
+  distortion.connect(delay);
+  delay.connect(wet);
+  wet.connect(masterGain);
+  delay.connect(feedback);
+  feedback.connect(delay);
 
-  osc.start(now);
-  osc.stop(now + duration / speed + .05);
-}
-
-function playDrum(kind, settings = {}) {
-  ensureAudio();
-  const now = audioContext.currentTime;
-  const gain = audioContext.createGain();
-  const volume = Number(settings.volume ?? .7);
-  gain.gain.value = volume * .7;
-  gain.connect(masterGain);
-
-  if (kind === 0) {
-    const osc = audioContext.createOscillator();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(150, now);
-    osc.frequency.exponentialRampToValueAtTime(40, now + .15);
-    gain.gain.setValueAtTime(volume, now);
-    gain.gain.exponentialRampToValueAtTime(.001, now + .22);
-    osc.connect(gain);
-    osc.start(now);
-    osc.stop(now + .23);
-  } else {
-    const length = audioContext.sampleRate * .15;
-    const buffer = audioContext.createBuffer(1, length, audioContext.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < length; i++) data[i] = Math.random() * 2 - 1;
-
-    const noise = audioContext.createBufferSource();
-    noise.buffer = buffer;
-    const filter = audioContext.createBiquadFilter();
-    filter.type = kind === 1 ? "lowpass" : "highpass";
-    filter.frequency.value = kind === 1 ? 1500 : 8000;
-
-    gain.gain.setValueAtTime(volume * .65, now);
-    gain.gain.exponentialRampToValueAtTime(.001, now + .14);
-    noise.connect(filter);
-    filter.connect(gain);
-    noise.start(now);
-  }
-}
-
-function previewSound(type, note, settings) {
-  if (type === "drums") playDrum(note, settings);
-  else if (type === "funny") {
-    playTone(note === 1 ? 84 : note === 2 ? 92 : note === 3 ? 48 : 96,
-      { ...settings, wave: "square" }, .4);
-  } else {
-    playTone(note, settings, type === "bass" ? .5 : .28, type);
-  }
-}
-
-function addSound(type, note, label) {
-  $("soundLabel")?.remove();
-  previewSound(type, note, readSettings());
-  window.lastSound = { type, note, label };
-}
-
-function previewCurrent() {
-  if (!window.lastSound) {
-    return toast("Önce bir ses seç.");
-  }
-  previewSound(window.lastSound.type, window.lastSound.note, readSettings());
-}
-
-function addCurrent() {
-  if (!window.lastSound) return toast("Önce bir ses seç.");
-  addAction(window.lastSound.type, window.lastSound.note, window.lastSound.label);
-}
-
-function addAction(type, note, label) {
-  if (!roomState?.started) return toast("Oyun henüz başlamadı.");
-  if (roomState.finished) return toast("Bu tur bitti.");
-
-  if (roomState.mode === "party" && !isMyTurn()) {
-    return toast("Şu an sıra sende değil.");
-  }
-
-  const settings = readSettings();
-
-  socket.emit("add-action", {
-    code: roomCode,
-    type,
-    sound: label,
-    note,
-    data: settings
-  });
-}
-
-function playMusic() {
-  if (!roomState?.actions?.length) return toast("Henüz müzik oluşturulmadı.");
-
-  ensureAudio();
-
-  const actions = [...roomState.actions];
-  const bpm = roomState.tempo || 110;
-  const beat = 60 / bpm;
-
-  actions.forEach((action, index) => {
-    setTimeout(() => {
-      if (action.type === "drums") {
-        playDrum(action.note, action.data);
-      } else {
-        playTone(action.note || 60, action.data || {}, .3, action.type);
-      }
-    }, index * beat * 1000);
-  });
-}
-
-function stopMusic() {
-  if (audioContext && masterGain) {
-    masterGain.gain.cancelScheduledValues(audioContext.currentTime);
-    masterGain.gain.setValueAtTime(0, audioContext.currentTime);
-    masterGain.gain.setTargetAtTime(.8, audioContext.currentTime + .05, .02);
-  }
-}
-
-function renderRoom(room) {
-  roomState = room;
-  $("roomCode").textContent = room.code;
-  $("playerCount").textContent = room.players.length + "/8";
-  $("roundInfo").textContent = "Tur " + room.round;
-  $("tempo").value = room.tempo;
-  $("tempoValue").textContent = room.tempo;
-
-  const isHost = room.host === socket.id;
-  const me = room.players.find(p => p.id === socket.id);
-
-  $("players").innerHTML = room.players.map((player, index) => {
-    const isTurn = room.mode === "party" && room.turn === index && room.started && !room.finished;
-    return `
-      <div class="player ${isTurn ? "active" : ""}">
-        <div>
-          <b>${escapeHTML(player.name)}</b>
-          ${player.id === room.host ? '<div class="host-tag">👑 ODA SAHİBİ</div>' : ""}
-          ${isTurn ? '<div class="turn-tag">🎵 SIRA SENDE</div>' : ""}
-        </div>
-        <span>${index + 1}</span>
-      </div>`;
-  }).join("");
-
-  $("lobbyControls").classList.toggle("hidden", room.started);
-  $("studio").classList.toggle("hidden", !room.started);
-  $("startButton").disabled = !isHost || room.players.length < 2;
-
-  if (!isHost) $("startButton").textContent = "Oda sahibinin başlatması bekleniyor";
-  else $("startButton").textContent = "Oyunu başlat";
-
-  $("djHostControls").classList.toggle("hidden", !isHost);
-
-  const challengeMode = room.mode === "challenge";
-  $("challengeArea").classList.toggle("hidden", !challengeMode);
-
-  if (room.mode === "party") {
-    $("turnInfo").textContent = room.finished
-      ? "Tur tamamlandı!"
-      : (isMyTurn() ? "🎵 Sıra sende, sesini ekle!" : "Diğer oyuncunun sırası bekleniyor.");
-  } else if (room.mode === "free") {
-    $("turnInfo").textContent = "🔥 Herkes istediği zaman ses ekleyebilir.";
-  } else {
-    $("turnInfo").textContent = "🏆 Melodi Kapışması: melodiyi doğru çalmaya çalış!";
-  }
-
-  document.querySelectorAll("#soundGrid button").forEach(button => {
-    button.disabled = !room.started || room.finished ||
-      (room.mode === "party" && !isMyTurn()) ||
-      room.mode === "challenge";
+  const promise = Soundfont.instrument(audioContext, name, {
+    soundfont: "FluidR3_GM",
+    destination: input
   });
 
-  $("nextRoundArea").classList.toggle(
-    "hidden",
-    !(room.finished && isHost && room.mode !== "challenge")
-  );
-
-  renderFeed(room.actions || []);
-
-  if (challengeMode && room.challenge) {
-    $("challengeStatus").textContent = room.challenge.active
-      ? "⏳ Melodini tamamla! Süre dolunca sonuçlar açıklanacak."
-      : "Kapışma tamamlandı!";
-  }
+  instrumentCache.set(key, promise);
+  return promise;
 }
 
-function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[char]);
-}
+async function playNotes(notes, instrumentNameValue, settings) {
+  try {
+    await enableAudio();
+    const instrument = await getInstrument(instrumentNameValue, settings);
+    const now = audioContext.currentTime;
 
-function renderFeed(actions) {
-  $("actionCount").textContent = actions.length + " ses";
-
-  if (!actions.length) {
-    $("feed").innerHTML = '<p class="muted">Henüz ses eklenmedi.</p>';
-    return;
-  }
-
-  $("feed").innerHTML = actions.slice().reverse().map(action => `
-    <div class="feed-item">
-      <b>${escapeHTML(action.playerName)}</b>
-      ${escapeHTML(action.sound || "Ses")}
-      <span class="muted"> · ${escapeHTML(action.type)}</span>
-    </div>
-  `).join("");
-}
-
-function challengeNote(note) {
-  if (challengeSubmitted || myMelody.length >= 30) return;
-
-  myMelody.push(note);
-  playTone(note, { volume: .7, wave: "sine" }, .25);
-
-  $("myMelody").textContent = myMelody.map(n => midiName(n)).join(" - ");
-}
-
-function midiName(note) {
-  const names = ["Do","Do#","Re","Re#","Mi","Fa","Fa#","Sol","Sol#","La","La#","Si"];
-  return names[note % 12] + (Math.floor(note / 12) - 1);
-}
-
-function submitChallenge() {
-  if (!myMelody.length) return toast("Önce melodiyi çal.");
-  if (challengeSubmitted) return toast("Melodini zaten gönderdin.");
-
-  challengeSubmitted = true;
-  socket.emit("challenge-submit", { code: roomCode, notes: myMelody });
-  $("challengeStatus").textContent = "Melodin gönderildi. Diğer oyuncular bekleniyor...";
-}
-
-function resetChallenge() {
-  myMelody = [];
-  challengeSubmitted = false;
-  $("myMelody").textContent = "Henüz nota eklemedin.";
-}
-
-function renderChallengeTarget(melody) {
-  challengeTarget = melody || [];
-  $("targetMelody").innerHTML = challengeTarget.map(note =>
-    `<div class="status">${midiName(note)}</div>`
-  ).join("");
-}
-
-socket.on("room-state", room => {
-  renderRoom(room);
-});
-
-socket.on("new-action", action => {
-  if (roomState) {
-    roomState.actions.push(action);
-    renderFeed(roomState.actions);
-  }
-});
-
-socket.on("challenge-start", data => {
-  resetChallenge();
-
-  renderChallengeTarget(data.melody || []);
-
-  $("challengeStatus").textContent =
-    "Melodiyi dinle ve aynısını çalmaya çalış! Süre: " +
-    data.timeLimit + " saniye.";
-
-  if (data.melody) {
-    data.melody.forEach((note, index) => {
-      setTimeout(() => {
-        playTone(note, { volume: 0.7, wave: "sine" }, 0.3);
-      }, index * 450);
+    notes.forEach(midi => {
+      const shifted = Math.max(0, Math.min(127, midi + settings.pitch));
+      instrument.play(shifted, now, {
+        duration: settings.duration + settings.release,
+        gain: settings.volume * settings.sustain
+      });
     });
+  } catch (e) {
+    console.error(e);
+    message("Ses yüklenemedi. İnternet bağlantını kontrol et ve tekrar dene.");
   }
+}
+
+/* Ayar göstergeleri */
+const rangeLabels = {
+  volume: v => v + "%",
+  pitch: v => (v > 0 ? "+" : "") + v + " yarım ses",
+  duration: v => (v / 10).toFixed(1) + " sn",
+  attack: v => (v / 100).toFixed(2) + " sn",
+  release: v => (v / 100).toFixed(2) + " sn",
+  sustain: v => v + "%",
+  reverb: v => v + "%",
+  echo: v => v + "%",
+  distortion: v => v + "%",
+  filter: v => v + " Hz"
+};
+
+Object.keys(rangeLabels).forEach(id => {
+  $(id).addEventListener("input", () => {
+    $(id + "Value").textContent = rangeLabels[id]($(id).value);
+  });
 });
 
-socket.on("challenge-result", results => {
-  const message = results.map((result, index) =>
-    `${index + 1}. ${result.name}: ${result.score} puan`
-  ).join("\n");
-
-  $("challengeStatus").textContent = message || "Sonuç yok.";
-  toast("Melodi kapışması tamamlandı!");
-});
-
-socket.on("challenge-submitted", data => {
-  toast(data.playerName + " melodisini gönderdi.");
-});
-
-socket.on("dj-audio", data => {
-  const audio = $("djAudio");
-  audio.src = data.audio;
-  $("djFileName").textContent = "🎵 " + data.fileName;
-  toast("DJ müziği geldi. Dinlemek için oynat düğmesine bas.");
-});
-
-socket.on("dj-control", data => {
-  const audio = $("djAudio");
-
-  if (data.command === "play" || data.command === "resume") {
-    audio.play().catch(() => {
-      toast("Müziği duymak için oynat düğmesine bas.");
-    });
-  }
-
-  if (data.command === "pause") audio.pause();
-
-  if (data.command === "stop") {
-    audio.pause();
-    audio.currentTime = 0;
-  }
-
-  if (data.command === "seek") {
-    audio.currentTime = Number(data.value) || 0;
-  }
-
-  if (data.command === "volume") {
-    audio.volume = Number(data.value) / 100;
-  }
-});
-
-async function uploadDJ() {
+/* DJ */
+function uploadDJ() {
   const file = $("djFile").files[0];
-
-  if (!file) return toast("Önce müzik dosyası seç.");
-  if (!file.type.startsWith("audio/")) return toast("Bir ses dosyası seçmelisin.");
-  if (file.size > 13 * 1024 * 1024) return toast("Dosya 13 MB'dan küçük olmalı.");
+  if (!file) return message("Önce bir MP3 veya WAV dosyası seç.");
+  if (!file.type.startsWith("audio/")) return message("Bu bir ses dosyası değil.");
+  if (file.size > 13 * 1024 * 1024) {
+    return message("Dosya 13 MB'dan küçük olmalı.");
+  }
 
   const reader = new FileReader();
-
   reader.onload = () => {
-    socket.emit("dj-audio", {
+    socket.emit("dj-upload", {
       code: roomCode,
       fileName: file.name,
-      audio: reader.result
+      dataUrl: reader.result
+    }, result => {
+      message(result?.ok ? "DJ müziği herkese gönderildi." : result?.message || "Yükleme başarısız.");
     });
-    toast("Müzik gönderiliyor...");
   };
-
-  reader.onerror = () => toast("Dosya okunamadı.");
   reader.readAsDataURL(file);
 }
 
-function djControl(command) {
-  if (!roomCode) return;
-  socket.emit("dj-control", { code: roomCode, command });
-}
-
-function setDJVolume(value) {
-  $("djAudio").volume = Number(value) / 100;
+function djCommand(action) {
   socket.emit("dj-control", {
     code: roomCode,
-    command: "volume",
-    value: Number(value)
+    action,
+    volume: Number($("djVolume").value) / 100
+  }, result => {
+    if (!result?.ok) message(result?.message || "DJ komutu gönderilemedi.");
   });
 }
 
-$("djAudio").volume = .7;
+function setDJ(data) {
+  if (!data?.dataUrl) return;
+  $("djName").textContent = "🎵 " + data.fileName;
+  const audio = $("djAudio");
+  audio.src = data.dataUrl;
+  audio.volume = Number($("djVolume").value) / 100;
+  audio.load();
+  message("DJ müziği hazır. Her oyuncu gerekirse oynat düğmesine basmalı.");
+}
 
-updateSettings();
+$("djVolume").addEventListener("input", () => {
+  $("djAudio").volume = Number($("djVolume").value) / 100;
+});
+
+socket.on("dj-ready", setDJ);
+
+socket.on("dj-control", data => {
+  const audio = $("djAudio");
+  if (data.action === "volume") audio.volume = data.volume;
+  if (data.action === "play") audio.play().catch(() => {
+    message("DJ müziğini duymak için ses oynat düğmesine bas.");
+  });
+  if (data.action === "pause") audio.pause();
+  if (data.action === "stop") {
+    audio.pause();
+    audio.currentTime = 0;
+  }
+});
+
+socket.on("room-state", room => {
+  if (roomCode && room.code === roomCode) updateRoom(room);
+});
+
+socket.on("game-started", () => {
+  $("studio").classList.remove("hidden");
+  buildKeyboard();
+  message("Oyun başladı! Piyanodan nota seç.");
+});
+
+socket.on("sound-added", action => {
+  renderActions([...(roomState?.actions || []).filter(a => a.id !== action.id), action]);
+  playNotes(action.notes, action.instrument, action.settings);
+});
+
+socket.on("round-cleared", () => {
+  renderActions([]);
+  message("Yeni müzik turu başladı!");
+});
+
+socket.on("connect", () => {
+  message("Sunucuya bağlandın.");
+});
+
+socket.on("disconnect", () => {
+  message("Bağlantı kesildi. Yeniden bağlanmaya çalışılıyor...");
+});
+
+buildKeyboard();
 </script>
 </body>
 </html>
