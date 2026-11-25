@@ -1094,7 +1094,7 @@
             <button type="button" id="micDelBtn" class="btn btn-secondary" disabled>🗑️</button>
           </div>
 
-          <p class="muted" id="micStatus">Kayda bastığında loop başlar, loop bitince kayıt otomatik durur.</p>
+          <p class="muted" id="micStatus">Kayda bastığında loop başını bekler, loop başlayınca kayıt açılır ve loop bitince kapanır.</p>
         </section>
       </div>
 
@@ -1469,7 +1469,96 @@
       { word: "EJDERHA", forbidden: ["Ateş", "Kanat", "Efsane", "Masal", "Uçmak"] },
       { word: "KASET", forbidden: ["Eski", "Bant", "Kalem", "Müzik", "Çalar"] },
       { word: "MİKROFON", forbidden: ["Ses", "Konuşmak", "Şarkı", "Sahne", "Kayıt"] },
-      { word: "KARAVAN", forbidden: ["Tekerlek", "Seyahat", "Ev", "Kamp", "Yol"] }
+      { word: "KARAVAN", forbidden: ["Tekerlek", "Seyahat", "Ev", "Kamp", "Yol"] },
+      { word: "GÖZLÜK", forbidden: ["Cam", "Görmek", "Numara", "Güneş", "Çerçeve"] },
+      { word: "YASTIK", forbidden: ["Uyumak", "Yatak", "Baş", "Kılıf", "Gece"] },
+      { word: "TREN", forbidden: ["Ray", "Vagon", "İstasyon", "Yolculuk", "Hızlı"] },
+      { word: "FOTOĞRAF", forbidden: ["Kamera", "Çekmek", "Poz", "Albüm", "Makine"] },
+      { word: "ANAHTAR", forbidden: ["Kapı", "Kilit", "Açmak", "Çelik", "Daire"] },
+      { word: "KAR", forbidden: ["Kış", "Beyaz", "Soğuk", "Yağmak", "Kardan Adam"] },
+      { word: "HARİTA", forbidden: ["Yol", "Ülke", "Şehir", "Pusula", "Gösterir"] },
+      { word: "PİZZA", forbidden: ["İtalyan", "Dilim", "Hamur", "Peynir", "Fırın"] },
+      { word: "KÖPRÜ", forbidden: ["Karşı", "Geçmek", "Boğaz", "Nehir", "Yol"] },
+      { word: "RÜYA", forbidden: ["Uyumak", "Gece", "Görmek", "Kabus", "Bilinç"] },
+      { word: "BALIK", forbidden: ["Deniz", "Yüzmek", "Olta", "Akvaryum", "Pul"] },
+      { word: "DÜĞÜN", forbidden: ["Gelin", "Damat", "Evlenmek", "Halay", "Nikah"] },
+      { word: "BÜTÇE", forbidden: ["Para", "Harcama", "Gelir", "Gider", "Tasarruf"] },
+      { word: "PİL", forbidden: ["Şarj", "Enerji", "Kumanda", "Bitti", "Artı"] },
+      { word: "AYAKKABI", forbidden: ["Giymek", "Bağcık", "Taban", "Yürümek", "Numara"] },
+      { word: "TİYATRO", forbidden: ["Sahne", "Oyuncu", "Perde", "Alkış", "Oyun"] },
+      { word: "BALKON", forbidden: ["Ev", "Dışarı", "Çamaşır", "Manzara", "Korkuluk"] },
+      { word: "MASAL", forbidden: ["Uyku", "Çocuk", "Prens", "Ejderha", "Anlatmak"] },
+      { word: "SÖZLÜK", forbidden: ["Kelime", "Anlam", "Harf", "Dil", "Sayfa"] },
+      { word: "VİTAMİN", forbidden: ["Sağlık", "Portakal", "C", "Hap", "Bağışıklık"] },
+      { word: "KUTUP", forbidden: ["Buz", "Penguen", "Kuzey", "Güney", "Soğuk"] },
+      { word: "PUSULA", forbidden: ["Yön", "Kuzey", "İğne", "Harita", "Kaybolmak"] },
+      { word: "TERAZİ", forbidden: ["Tartmak", "Kilo", "Ağırlık", "Denge", "Gram"] },
+      { word: "MÜZE", forbidden: ["Tarih", "Eser", "Gezmek", "Sergi", "Bilet"] },
+      { word: "ŞİFRE", forbidden: ["Gizli", "Parola", "Kırmak", "Güvenlik", "Harf"] },
+      { word: "ÇİZGİ FİLM", forbidden: ["Animasyon", "Kare", "Karakter", "Çizmek", "Çocuk"] },
+      { word: "SENARYO", forbidden: ["Film", "Dizi", "Yazmak", "Sahne", "Diyalog"] },
+      { word: "REKLAM", forbidden: ["Tanıtım", "Televizyon", "Marka", "Ürün", "Süre"] },
+      { word: "PODCAST", forbidden: ["Ses", "Bölüm", "Dinlemek", "Mikrofon", "Yayın"] },
+      { word: "TURNUVA", forbidden: ["Yarışma", "Takım", "Şampiyon", "Eleme", "Kupa"] },
+      { word: "STRATEJİ", forbidden: ["Plan", "Hamle", "Oyun", "Zeka", "Takım"] },
+      { word: "VOLKAN", forbidden: ["Lav", "Dağ", "Patlamak", "Magma", "Kül"] },
+      { word: "GÖKKUŞAĞI", forbidden: ["Renk", "Yağmur", "Güneş", "Gökyüzü", "Yedi"] },
+      { word: "METEOR", forbidden: ["Uzay", "Düşmek", "Kayan Yıldız", "Atmosfer", "Taş"] },
+      { word: "DENEY", forbidden: ["Laboratuvar", "Bilim", "Sonuç", "Tüp", "Hipotez"] },
+      { word: "İCAT", forbidden: ["Yeni", "Bulmak", "Mucit", "Patent", "Geliştirmek"] },
+      { word: "PASAPORT", forbidden: ["Yurt Dışı", "Vize", "Kimlik", "Sınır", "Seyahat"] },
+      { word: "LİMAN", forbidden: ["Gemi", "Deniz", "İskele", "Tekne", "Kıyı"] },
+      { word: "ÇARŞI", forbidden: ["Dükkan", "Alışveriş", "Esnaf", "Kalabalık", "Pazar"] },
+      { word: "FIRIN", forbidden: ["Ekmek", "Sıcak", "Pişirmek", "Un", "Simit"] },
+      { word: "ZEYTİN", forbidden: ["Kahvaltı", "Siyah", "Yeşil", "Yağ", "Ağaç"] },
+      { word: "TARÇIN", forbidden: ["Baharat", "Kokulu", "Salep", "Kurabiye", "Kahverengi"] },
+      { word: "İSTİKRAR", forbidden: ["Süreklilik", "Düzen", "Değişmeyen", "Denge", "Uzun"] },
+      { word: "İLHAM", forbidden: ["Fikir", "Yaratıcılık", "Gelmek", "Sanat", "Esin"] },
+      { word: "ANKET", forbidden: ["Soru", "Katılımcı", "Oy", "Araştırma", "Sonuç"] },
+      { word: "ARŞİV", forbidden: ["Kayıt", "Eski", "Saklamak", "Dosya", "Geçmiş"] },
+      { word: "BATERİ", forbidden: ["Davul", "Baget", "Zil", "Ritim", "Trampet"] },
+      { word: "KEMAN", forbidden: ["Yay", "Tel", "Klasik", "Çene", "Orkestra"] },
+      { word: "FLÜT", forbidden: ["Üflemek", "Metal", "Nota", "Yan", "Nefes"] },
+      { word: "KORO", forbidden: ["Birlikte", "Şarkı", "Ses", "Topluluk", "Sahnede"] },
+      { word: "STÜDYO", forbidden: ["Kayıt", "Ses", "Kulaklık", "Oda", "Müzik"] },
+      { word: "EFEKT", forbidden: ["Yankı", "Filtre", "Ses", "Değiştirmek", "İşlem"] },
+      { word: "SOLO", forbidden: ["Tek Başına", "Gitar", "Öne Çıkmak", "Çalmak", "Sahne"] },
+      { word: "METRONOM", forbidden: ["Tık", "Tempo", "Hız", "Zaman", "Çalışmak"] },
+      { word: "KONSER", forbidden: ["Sahne", "Seyirci", "Bilet", "Şarkıcı", "Kalabalık"] },
+      { word: "AFIŞ", forbidden: ["Duvar", "Duyuru", "Poster", "Tasarım", "Etkinlik"] },
+      { word: "GALAKSİ", forbidden: ["Yıldız", "Uzay", "Samanyolu", "Gezegen", "Evren"] },
+      { word: "BULUT", forbidden: ["Gökyüzü", "Yağmur", "Beyaz", "Hava", "Uçmak"] },
+      { word: "DÜRBÜN", forbidden: ["Uzak", "Bakmak", "Mercek", "Görmek", "İki Göz"] },
+      { word: "SANDALYE", forbidden: ["Oturmak", "Masa", "Ayak", "Sırt", "Mobilya"] },
+      { word: "HALI", forbidden: ["Yer", "Desen", "Dokuma", "Salon", "Üstüne"] },
+      { word: "PERDE", forbidden: ["Cam", "Açmak", "Kapatmak", "Güneş", "Sahne"] },
+      { word: "KAVANOZ", forbidden: ["Cam", "Kapak", "Reçel", "Saklamak", "Turşu"] },
+      { word: "KAŞIK", forbidden: ["Çorba", "Yemek", "Metal", "Tatlı", "Karıştırmak"] },
+      { word: "ÇATAL", forbidden: ["Yemek", "Bıçak", "Diş", "Tabak", "Batırmak"] },
+      { word: "SÜRAHİ", forbidden: ["Su", "Dökmek", "Cam", "İçecek", "Bardak"] },
+      { word: "ŞÖMİNE", forbidden: ["Ateş", "Odun", "Kış", "Sıcak", "Baca"] },
+      { word: "KÖPEK", forbidden: ["Havlamak", "Sadık", "Pati", "Kedi", "Tasması"] },
+      { word: "KELEBEK", forbidden: ["Kanat", "Uçmak", "Renkli", "Tırtıl", "Çiçek"] },
+      { word: "ASLAN", forbidden: ["Orman", "Kral", "Yele", "Kükremek", "Hayvan"] },
+      { word: "BAYKUŞ", forbidden: ["Gece", "Göz", "Uçmak", "Orman", "Kuş"] },
+      { word: "YUNUS", forbidden: ["Deniz", "Zeki", "Yüzmek", "Balık", "Atlamak"] },
+      { word: "DEVE", forbidden: ["Çöl", "Hörgüç", "Kum", "Sıcak", "Yürümek"] },
+      { word: "SİNCAP", forbidden: ["Ceviz", "Ağaç", "Kuyruk", "Orman", "Hızlı"] },
+      { word: "KAKTÜS", forbidden: ["Diken", "Çöl", "Su", "Bitki", "Yeşil"] },
+      { word: "GÜNEBAKAN", forbidden: ["Sarı", "Çekirdek", "Çiçek", "Güneş", "Tarla"] },
+      { word: "BAMBU", forbidden: ["Panda", "Yeşil", "Uzun", "Bitki", "Sap"] },
+      { word: "ŞELALE", forbidden: ["Su", "Yüksek", "Akıntı", "Doğa", "Düşmek"] },
+      { word: "VADİ", forbidden: ["Dağ", "İki Tepe", "Nehir", "Doğa", "Çukur"] },
+      { word: "ÇIĞ", forbidden: ["Kar", "Dağ", "Düşmek", "Kış", "Beyaz"] },
+      { word: "DEPREM", forbidden: ["Sarsıntı", "Yer", "Fay", "Bina", "Salınmak"] },
+      { word: "LABİRENT", forbidden: ["Çıkış", "Yol", "Duvar", "Kaybolmak", "Bulmaca"] },
+      { word: "BULMACA", forbidden: ["Soru", "Kare", "Harf", "Çözmek", "Gazete"] },
+      { word: "SATRANÇ", forbidden: ["Şah", "Vezir", "Tahta", "Hamle", "Mat"] },
+      { word: "ZAR", forbidden: ["Altı", "Atmak", "Oyun", "Nokta", "Şans"] },
+      { word: "MADALYA", forbidden: ["Altın", "Gümüş", "Bronz", "Yarışma", "Boyun"] },
+      { word: "KUPA", forbidden: ["Şampiyon", "Kazanmak", "Final", "Ödül", "Kaldırmak"] },
+      { word: "ANTRENMAN", forbidden: ["Çalışmak", "Spor", "Hazırlık", "Ter", "Egzersiz"] },
+      { word: "HAKEM", forbidden: ["Düdük", "Kart", "Maç", "Kural", "Saha"] }
     ];
 
     const BASE_KEYS = [
@@ -1597,8 +1686,8 @@
       micReverse: false,
       micEffect: "normal",
       micBpm: 110,
-      isMicRecording: false,
-      micStopTimeout: null,
+      micPhase: "idle", // "idle" | "waiting_for_loop_start" | "recording"
+      micStream: null,
       mediaRecorder: null,
       micChunks: []
     };
@@ -1777,7 +1866,7 @@
     ) {
       const sp = cloneSynth(synthParams);
       const inst = INSTRUMENTS.find((i) => i.id === instrumentId) || INSTRUMENTS[0];
-      const now = Math.max(ctx.currentTime + 0.004, startTime);
+      const now = Math.max(ctx.currentTime + 0.002, startTime);
       const pitchFactor = (djEffect === "slowed" ? 0.84 : 1.0) * Math.pow(2, sp.pitchSemi / 12);
       const durScale = (djEffect === "slowed" ? 1.25 : 1.0) * sp.decayScale;
       const f = (freq || 261.63) * pitchFactor;
@@ -1786,7 +1875,7 @@
 
       const stageOut = ctx.createGain();
       stageOut.gain.setValueAtTime(0.0001, now);
-      stageOut.gain.linearRampToValueAtTime(0.95, now + 0.006);
+      stageOut.gain.linearRampToValueAtTime(0.95, now + 0.004);
 
       if (sp.drive > 2) {
         const shaper = ctx.createWaveShaper();
@@ -1805,7 +1894,7 @@
           osc.frequency.setValueAtTime(150 * pitchFactor, now);
           osc.frequency.exponentialRampToValueAtTime(36 * pitchFactor, now + 0.22 * durScale);
           gain.gain.setValueAtTime(0.0001, now);
-          gain.gain.linearRampToValueAtTime(0.82, now + 0.005);
+          gain.gain.linearRampToValueAtTime(0.82, now + 0.004);
           gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.29 * durScale);
           osc.connect(gain).connect(stageOut);
           osc.start(now);
@@ -1820,7 +1909,7 @@
           shell.frequency.setValueAtTime(205 * pitchFactor, now);
           shell.frequency.exponentialRampToValueAtTime(112 * pitchFactor, now + 0.08 * durScale);
           sGain.gain.setValueAtTime(0.0001, now);
-          sGain.gain.linearRampToValueAtTime(0.56, now + 0.004);
+          sGain.gain.linearRampToValueAtTime(0.56, now + 0.003);
           sGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.13 * durScale);
           shell.connect(sGain).connect(stageOut);
           shell.start(now);
@@ -1837,7 +1926,7 @@
           hp.frequency.value = 1150;
           const wGain = ctx.createGain();
           wGain.gain.setValueAtTime(0.0001, now);
-          wGain.gain.linearRampToValueAtTime(0.62, now + 0.004);
+          wGain.gain.linearRampToValueAtTime(0.62, now + 0.003);
           wGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2 * durScale);
           wires.connect(bp).connect(hp).connect(wGain).connect(stageOut);
           wires.start(now);
@@ -1854,7 +1943,7 @@
           if (inst.type === "pedal_hihat") hp.Q.value = 1.5;
           const gain = ctx.createGain();
           gain.gain.setValueAtTime(0.0001, now);
-          gain.gain.linearRampToValueAtTime(0.35, now + 0.004);
+          gain.gain.linearRampToValueAtTime(0.35, now + 0.003);
           gain.gain.exponentialRampToValueAtTime(0.0001, now + hDur);
           noise.connect(hp).connect(gain).connect(stageOut);
           noise.start(now);
@@ -1871,7 +1960,7 @@
           if (inst.type === "ride") filt.Q.value = 1.8;
           const gain = ctx.createGain();
           gain.gain.setValueAtTime(0.0001, now);
-          gain.gain.linearRampToValueAtTime(inst.type === "crash" ? 0.4 : 0.26, now + 0.006);
+          gain.gain.linearRampToValueAtTime(inst.type === "crash" ? 0.4 : 0.26, now + 0.004);
           gain.gain.exponentialRampToValueAtTime(0.0001, now + cDur);
           noise.connect(filt).connect(gain).connect(stageOut);
           noise.start(now);
@@ -1882,7 +1971,7 @@
             ping.type = "triangle";
             ping.frequency.setValueAtTime(1260 * pitchFactor, now);
             pGain.gain.setValueAtTime(0.0001, now);
-            pGain.gain.linearRampToValueAtTime(0.2, now + 0.005);
+            pGain.gain.linearRampToValueAtTime(0.2, now + 0.004);
             pGain.gain.exponentialRampToValueAtTime(0.0001, now + cDur * 0.65);
             ping.connect(pGain).connect(stageOut);
             ping.start(now);
@@ -1921,7 +2010,7 @@
           osc.frequency.setValueAtTime(c.startF * pitchFactor, now);
           osc.frequency.exponentialRampToValueAtTime(c.endF * pitchFactor, now + tDur);
           gain.gain.setValueAtTime(0.0001, now);
-          gain.gain.linearRampToValueAtTime(c.peak, now + 0.005);
+          gain.gain.linearRampToValueAtTime(c.peak, now + 0.004);
           gain.gain.exponentialRampToValueAtTime(0.0001, now + tDur);
           osc.connect(gain).connect(stageOut);
           osc.start(now);
@@ -1939,7 +2028,7 @@
           bp.Q.value = 1.6;
           const gain = ctx.createGain();
           gain.gain.setValueAtTime(0.0001, now);
-          gain.gain.linearRampToValueAtTime(0.28, now + 0.008);
+          gain.gain.linearRampToValueAtTime(0.28, now + 0.005);
           gain.gain.exponentialRampToValueAtTime(0.0001, now + sDur);
           noise.connect(bp).connect(gain).connect(stageOut);
           noise.start(now);
@@ -1975,7 +2064,7 @@
             bp.frequency.value = baseF * pitchFactor * 1.15;
             bp.Q.value = 5.0;
             gain.gain.setValueAtTime(0.0001, now);
-            gain.gain.linearRampToValueAtTime(0.22, now + 0.004);
+            gain.gain.linearRampToValueAtTime(0.22, now + 0.003);
             gain.gain.exponentialRampToValueAtTime(0.0001, now + cDur);
             osc.connect(bp).connect(gain).connect(stageOut);
             osc.start(now);
@@ -2010,7 +2099,7 @@
             const gain = ctx.createGain();
             const t0 = now + b.dt * durScale;
             gain.gain.setValueAtTime(0.0001, t0);
-            gain.gain.linearRampToValueAtTime(b.peak, t0 + 0.004);
+            gain.gain.linearRampToValueAtTime(b.peak, t0 + 0.003);
             gain.gain.exponentialRampToValueAtTime(0.0001, t0 + bDur);
             noise.connect(bp).connect(gain).connect(stageOut);
             noise.start(t0);
@@ -2038,14 +2127,14 @@
         src.playbackRate.setValueAtTime(Math.pow(2, semiDiff / 12), now);
         src.detune.setValueAtTime(detuneCents, now);
         master.gain.setValueAtTime(0.0001, now);
-        master.gain.linearRampToValueAtTime(0.45, now + 0.014);
+        master.gain.linearRampToValueAtTime(0.45, now + 0.008);
         if (!isHoldMode) {
-          const endT = now + Math.max(0.12, timedDuration * durScale);
-          master.gain.setValueAtTime(0.38, Math.max(now + 0.02, endT - 0.04));
+          const endT = now + Math.max(0.03, timedDuration * durScale);
+          master.gain.setValueAtTime(0.38, Math.max(now + 0.01, endT - 0.02));
           master.gain.exponentialRampToValueAtTime(0.0001, endT);
           src.connect(filter);
           src.start(now);
-          src.stop(endT + 0.04);
+          src.stop(endT + 0.02);
           return { release: () => {} };
         }
         src.connect(filter);
@@ -2057,14 +2146,14 @@
             try {
               master.gain.cancelScheduledValues(relT);
               master.gain.setValueAtTime(Math.max(0.0002, master.gain.value), relT);
-              master.gain.exponentialRampToValueAtTime(0.0001, relT + 0.12);
-              setTimeout(() => { try { src.stop(); } catch (_) {} }, 140);
+              master.gain.exponentialRampToValueAtTime(0.0001, relT + 0.06);
+              setTimeout(() => { try { src.stop(); } catch (_) {} }, 80);
             } catch (_) {}
           }
         };
       }
 
-      let attack = 0.014;
+      let attack = 0.008;
       let peak = 0.34;
       let partials = [
         { ratio: 1, wave: "triangle", gain: 0.78, cents: -detuneCents * 0.25 },
@@ -2072,27 +2161,27 @@
       ];
 
       if (inst.type === "brass") {
-        attack = 0.028; peak = 0.38;
+        attack = 0.018; peak = 0.38;
         partials = [
           { ratio: 1, wave: "sawtooth", gain: 0.72, cents: -6 - detuneCents * 0.3 },
           { ratio: 1, wave: "square", gain: 0.3, cents: 6 + detuneCents * 0.3 },
           { ratio: 2, wave: "sawtooth", gain: 0.38, cents: 0 }
         ];
       } else if (inst.type === "strings" || inst.type === "cello") {
-        attack = 0.075; peak = 0.34;
+        attack = 0.045; peak = 0.34;
         const ratioBase = inst.type === "cello" ? 0.5 : 1;
         partials = [
           { ratio: ratioBase, wave: "sawtooth", gain: 0.62, cents: -10 - detuneCents * 0.4 },
           { ratio: ratioBase, wave: "sawtooth", gain: 0.54, cents: 10 + detuneCents * 0.4 }
         ];
       } else if (inst.type === "flute" || inst.type === "clarinet" || inst.type === "sax") {
-        attack = 0.035; peak = 0.34;
+        attack = 0.02; peak = 0.34;
         partials = [
           { ratio: 1, wave: "sine", gain: 0.85, cents: 0 },
           { ratio: 2, wave: "triangle", gain: 0.26, cents: detuneCents * 0.2 }
         ];
       } else if (inst.type === "bass") {
-        attack = 0.01; peak = 0.42;
+        attack = 0.006; peak = 0.42;
         partials = [
           { ratio: 1, wave: "sine", gain: 0.85, cents: 0 },
           { ratio: 1, wave: "triangle", gain: 0.35, cents: detuneCents * 0.2 }
@@ -2115,10 +2204,10 @@
       });
 
       if (!isHoldMode) {
-        const endT = now + Math.max(0.12, timedDuration * durScale);
-        master.gain.setValueAtTime(Math.max(0.001, peak * 0.78), Math.max(now + attack + 0.01, endT - 0.04));
+        const endT = now + Math.max(0.03, timedDuration * durScale);
+        master.gain.setValueAtTime(Math.max(0.001, peak * 0.78), Math.max(now + attack + 0.005, endT - 0.02));
         master.gain.exponentialRampToValueAtTime(0.0001, endT);
-        oscs.forEach((o) => o.stop(endT + 0.04));
+        oscs.forEach((o) => o.stop(endT + 0.02));
         return { release: () => {} };
       }
 
@@ -2128,10 +2217,10 @@
           try {
             master.gain.cancelScheduledValues(relT);
             master.gain.setValueAtTime(Math.max(0.0002, master.gain.value), relT);
-            master.gain.exponentialRampToValueAtTime(0.0001, relT + 0.12);
+            master.gain.exponentialRampToValueAtTime(0.0001, relT + 0.06);
             setTimeout(() => {
               oscs.forEach((o) => { try { o.stop(); } catch (_) {} });
-            }, 140);
+            }, 80);
           } catch (_) {}
         }
       };
@@ -2243,13 +2332,13 @@
         offsetMs = (((estimatedServerNow() - anchor) % cycleMs) + cycleMs) % cycleMs;
       } else if (app.currentTakeNotes.length > 0) {
         const prev = app.currentTakeNotes[app.currentTakeNotes.length - 1];
-        const rawDelta = Math.max(20, nowPerf - (prev._rawPerf || nowPerf));
+        const rawDelta = Math.max(15, nowPerf - (prev._rawPerf || nowPerf));
         offsetMs = (prev.offsetMs + rawDelta) % cycleMs;
       }
 
       const entry = {
         offsetMs,
-        holdDurationMs: 280,
+        holdDurationMs: 120,
         _rawPerf: nowPerf,
         _pressPerf: nowPerf,
         slot: slot || "",
@@ -2273,7 +2362,7 @@
       if (!holdKey) return;
       const entry = app.pendingTakeByHoldKey.get(holdKey);
       if (!entry) return;
-      const heldMs = Math.max(90, Math.min(4800, performance.now() - (entry._pressPerf || performance.now())));
+      const heldMs = Math.max(25, Math.min(4800, performance.now() - (entry._pressPerf || performance.now())));
       entry.holdDurationMs = heldMs;
       app.pendingTakeByHoldKey.delete(holdKey);
     }
@@ -2512,7 +2601,7 @@
       const pool = avail.length ? avail : TABU_CARDS;
       const pick = pool[Math.floor(Math.random() * pool.length)];
       app.tabuHistory.push(pick.word);
-      if (app.tabuHistory.length > 35) app.tabuHistory.shift();
+      if (app.tabuHistory.length > 55) app.tabuHistory.shift();
       return pick;
     }
 
@@ -2571,7 +2660,7 @@
           renderRoomState();
         } else if (msg.type === "live_note") {
           getAudioCtx();
-          const durSec = Math.min(4.8, Math.max(0.1, (Number(msg.holdMs) || 360) / 1000));
+          const durSec = Math.min(4.8, Math.max(0.05, (Number(msg.holdMs) || 360) / 1000));
           playFreqSound(msg.freq, msg.instrumentId, durSec, true, msg.synthParams);
           flashPianoKey(msg.slot, true);
         }
@@ -2981,6 +3070,8 @@
         ? "⏹️ Önizlemeyi Durdur"
         : "👂 Atmadan Önce Loop'ta Dinle";
 
+      updateMicButtonUI();
+
       document.getElementById("djStatusText").textContent =
         `Aktif Efekt: ${DJ_LABELS[app.djEffect] || "Normal"}${isHost ? " (Sadece Kurucu)" : " (Kurucu Kontrolünde)"}`;
       document.querySelectorAll("#djButtonsWrap button").forEach((btn) => {
@@ -3053,7 +3144,7 @@
         app.currentTakeNotes.forEach((n) => {
           const rawPos = app.reverseTake ? Math.max(0, cycleMs - n.offsetMs) : n.offsetMs;
           const delay = rawPos >= clampedStart ? rawPos - clampedStart : (cycleMs - clampedStart) + rawPos;
-          const durSec = Math.min(4.8, Math.max(0.1, (Number(n.holdDurationMs) || 280) / 1000));
+          const durSec = Math.min(4.8, Math.max(0.05, (Number(n.holdDurationMs) || 120) / 1000));
           const tid = setTimeout(() => {
             if (!app.isPlaying) return;
             playFreqSound(n.freq, n.instrumentId, durSec, true, n.synthParams);
@@ -3073,7 +3164,7 @@
           const pos = layer.reverse ? Math.max(0, cycleMs - rawOffset) : rawOffset;
           const delay = pos >= clampedStart ? pos - clampedStart : (cycleMs - clampedStart) + pos;
           const noteSynth = n.synthParams ? cloneSynth(n.synthParams) : layerLockedSynth;
-          const durSec = Math.min(4.8, Math.max(0.1, ((Number(n.holdDurationMs) || 280) * scale) / 1000));
+          const durSec = Math.min(4.8, Math.max(0.05, ((Number(n.holdDurationMs) || 120) * scale) / 1000));
           const tid = setTimeout(() => {
             if (!app.isPlaying) return;
             const ctx = getAudioCtx();
@@ -3106,6 +3197,14 @@
       }
     }
 
+    function handleLoopCycleBoundary() {
+      if (app.micPhase === "waiting_for_loop_start") {
+        startActualMicCaptureNow();
+      } else if (app.micPhase === "recording") {
+        stopMicRecordingNow();
+      }
+    }
+
     function startLocalLoop(anchorServerMs, { includeUnconfirmedTake = false } = {}) {
       clearInterval(app.loopTimer);
       clearScheduledNoteTimers();
@@ -3135,6 +3234,7 @@
           if (!app.isPlaying) return;
           paintBeat(beatCounter);
           if (beatCounter === 0) {
+            handleLoopCycleBoundary();
             scheduleNotesFromOffset(0, getCycleDurationMs(), includeUnconfirmedTake);
           }
           beatCounter = (beatCounter + 1) % Math.max(1, app.beats);
@@ -3339,23 +3439,99 @@
       if (buf) playVocalBuffer(buf, opts);
     }
 
-    function stopMicRecordingNow() {
-      clearTimeout(app.micStopTimeout);
-      app.micStopTimeout = null;
-      app.isMicRecording = false;
+    function updateMicButtonUI() {
       const btn = document.getElementById("micRecBtn");
-      btn.textContent = "⏺️ Kaydet (1 Döngü)";
-      if (app.mediaRecorder && app.mediaRecorder.state !== "inactive") {
-        app.mediaRecorder.stop();
+      const st = document.getElementById("micStatus");
+      if (!btn || !st) return;
+
+      if (app.micPhase === "waiting_for_loop_start") {
+        btn.textContent = "⏳ Loop Başı Bekleniyor (İptal)";
+        st.textContent = "Kayıt hazır — loop'un bir sonraki başlangıcında otomatik açılacak ve döngü bitince kapanacak.";
+      } else if (app.micPhase === "recording") {
+        btn.textContent = "⏹️ Kaydı Bitir";
+        st.textContent = "Kayıt aktif — loop döngüsü bitince kayıt otomatik duracak.";
+      } else {
+        btn.textContent = "⏺️ Kaydet (1 Döngü)";
+        if (!app.micBuffer) {
+          st.textContent = "Kayda bastığında loop başını bekler, loop başlayınca kayıt açılır ve loop bitince kapanır.";
+        }
+      }
+    }
+
+    function startActualMicCaptureNow() {
+      if (app.micPhase !== "waiting_for_loop_start" || !app.micStream) return;
+      app.micChunks = [];
+      const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+        ? "audio/webm;codecs=opus"
+        : "";
+      const recorder = mimeType
+        ? new MediaRecorder(app.micStream, { mimeType })
+        : new MediaRecorder(app.micStream);
+
+      recorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) app.micChunks.push(e.data);
+      };
+
+      recorder.onstop = async () => {
+        if (app.micStream) {
+          app.micStream.getTracks().forEach((t) => t.stop());
+          app.micStream = null;
+        }
+        const st = document.getElementById("micStatus");
+        try {
+          const blob = new Blob(app.micChunks, { type: recorder.mimeType || "audio/webm" });
+          const arrBuf = await blob.arrayBuffer();
+          if (!arrBuf.byteLength) {
+            st.textContent = "Kayıt boş geldi, tekrar dene.";
+            return;
+          }
+          const ctx = getAudioCtx();
+          app.micBuffer = await ctx.decodeAudioData(arrBuf);
+          app.micBpm = app.bpm;
+          app.micReverse = false;
+          document.getElementById("micRevBtn").classList.remove("active");
+          document.getElementById("micPlayBtn").disabled = false;
+          document.getElementById("micRevBtn").disabled = false;
+          document.getElementById("micDelBtn").disabled = false;
+          st.textContent = `1 döngü kaydedildi (${app.micBuffer.duration.toFixed(1)} sn) — Loop'ta dinleyebilirsin.`;
+        } catch (_) {
+          st.textContent = "Ses verisi çözümlenemedi, tekrar kaydet.";
+        }
+      };
+
+      app.mediaRecorder = recorder;
+      app.micPhase = "recording";
+      recorder.start(100);
+      updateMicButtonUI();
+    }
+
+    function stopMicRecordingNow() {
+      if (app.micPhase === "waiting_for_loop_start") {
+        if (app.micStream) {
+          app.micStream.getTracks().forEach((t) => t.stop());
+          app.micStream = null;
+        }
+        app.mediaRecorder = null;
+        app.micChunks = [];
+        app.micPhase = "idle";
+        updateMicButtonUI();
+        return;
+      }
+
+      if (app.micPhase === "recording") {
+        app.micPhase = "idle";
+        updateMicButtonUI();
+        if (app.mediaRecorder && app.mediaRecorder.state !== "inactive") {
+          app.mediaRecorder.stop();
+        }
       }
     }
 
     async function toggleMic() {
       getAudioCtx();
-      const btn = document.getElementById("micRecBtn");
       const st = document.getElementById("micStatus");
 
-      if (app.isMicRecording) {
+      if (app.micPhase !== "idle") {
         stopMicRecordingNow();
         return;
       }
@@ -3364,62 +3540,22 @@
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: { echoCancellation: true, noiseSuppression: true, latency: 0.01 }
         });
-        app.micChunks = [];
-        const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-          ? "audio/webm;codecs=opus"
-          : "";
-        app.mediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
-        app.mediaRecorder.ondataavailable = (e) => {
-          if (e.data && e.data.size > 0) app.micChunks.push(e.data);
-        };
-        app.mediaRecorder.onstop = async () => {
-          stream.getTracks().forEach((t) => t.stop());
-          try {
-            const blob = new Blob(app.micChunks, { type: app.mediaRecorder.mimeType || "audio/webm" });
-            const arrBuf = await blob.arrayBuffer();
-            if (!arrBuf.byteLength) {
-              st.textContent = "Kayıt boş geldi, tekrar dene.";
-              return;
-            }
-            const ctx = getAudioCtx();
-            app.micBuffer = await ctx.decodeAudioData(arrBuf);
-            app.micBpm = app.bpm;
-            app.micReverse = false;
-            document.getElementById("micRevBtn").classList.remove("active");
-            document.getElementById("micPlayBtn").disabled = false;
-            document.getElementById("micRevBtn").disabled = false;
-            document.getElementById("micDelBtn").disabled = false;
-            st.textContent = `1 döngü kaydedildi (${app.micBuffer.duration.toFixed(1)} sn) — Loop'ta dinleyebilirsin.`;
-          } catch (_) {
-            st.textContent = "Ses verisi çözümlenemedi, tekrar kaydet.";
+        app.micStream = stream;
+        app.micPhase = "waiting_for_loop_start";
+        updateMicButtonUI();
+
+        if (!app.isPlaying) {
+          const anchor = estimatedServerNow();
+          app.activeCycleKey = `${anchor}_${app.bpm}_${app.beats}_${app.djEffect}`;
+          startLocalLoop(anchor, { includeUnconfirmedTake: app.previewTakeActive });
+          if (app.room && !app.room.loopPlaying && !app.previewTakeActive) {
+            sendWs({ type: "set_loop_playing", playing: true, anchorServerMs: anchor });
           }
-        };
-
-        const cycleMs = getCycleDurationMs();
-        const nowServer = estimatedServerNow();
-        let cycleStartServerMs = nowServer;
-        let msUntilCycleEnd = cycleMs;
-
-        if (app.room && !app.room.loopPlaying) {
-          cycleStartServerMs = nowServer;
-          msUntilCycleEnd = cycleMs;
-          sendWs({ type: "set_loop_playing", playing: true, anchorServerMs: cycleStartServerMs });
-        } else {
-          const anchor = Number(app.room?.loopAnchorServerMs) || nowServer;
-          const elapsed = (((nowServer - anchor) % cycleMs) + cycleMs) % cycleMs;
-          msUntilCycleEnd = Math.max(250, cycleMs - elapsed);
+          startActualMicCaptureNow();
         }
-
-        app.mediaRecorder.start(100);
-        app.isMicRecording = true;
-        btn.textContent = "⏹️ Kaydı Bitir";
-        st.textContent = `Loop başladı, tur bitince (${(msUntilCycleEnd / 1000).toFixed(1)} sn) kayıt otomatik duracak...`;
-
-        clearTimeout(app.micStopTimeout);
-        app.micStopTimeout = setTimeout(() => {
-          stopMicRecordingNow();
-        }, msUntilCycleEnd);
       } catch (_) {
+        app.micPhase = "idle";
+        updateMicButtonUI();
         st.textContent = "Mikrofon izni alınamadı.";
       }
     }
@@ -3713,8 +3849,7 @@
       ["restartGameBtn", "resultsBackLobbyBtn"].forEach((id) => {
         document.getElementById(id).onclick = () => {
           releaseAllHeldVoices();
-          clearTimeout(app.micStopTimeout);
-          app.isMicRecording = false;
+          stopMicRecordingNow();
           app.currentTakeNotes = [];
           app.pendingTakeByHoldKey.clear();
           app.micBuffer = null;
@@ -3829,9 +3964,7 @@
 
       document.getElementById("clearTakeBtn").onclick = () => {
         releaseAllHeldVoices();
-        clearTimeout(app.micStopTimeout);
-        app.isMicRecording = false;
-        document.getElementById("micRecBtn").textContent = "⏺️ Kaydet (1 Döngü)";
+        stopMicRecordingNow();
         app.currentTakeNotes = [];
         app.pendingTakeByHoldKey.clear();
         app.micBuffer = null;
@@ -3850,9 +3983,7 @@
       document.getElementById("saveTurnBtn").onclick = async () => {
         getAudioCtx();
         releaseAllHeldVoices();
-        clearTimeout(app.micStopTimeout);
-        app.isMicRecording = false;
-        document.getElementById("micRecBtn").textContent = "⏺️ Kaydet (1 Döngü)";
+        stopMicRecordingNow();
         app.previewTakeActive = false;
         stopLocalLoop();
 
@@ -3868,7 +3999,7 @@
         if (app.currentTakeNotes.length || vocalData) {
           const cleanNotes = app.currentTakeNotes.map(({ _rawPerf, _pressPerf, ...rest }) => ({
             ...rest,
-            holdDurationMs: Math.min(4800, Math.max(90, Number(rest.holdDurationMs) || 280)),
+            holdDurationMs: Math.min(4800, Math.max(25, Number(rest.holdDurationMs) || 120)),
             synthParams: cloneSynth(rest.synthParams || lockedLayerSynth)
           }));
           const uniqueInsts = [...new Set(cleanNotes.map((n) => n.instrumentName))];
