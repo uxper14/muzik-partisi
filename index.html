@@ -7,8 +7,9 @@
   <style>
     :root {
       --bg-1: #0b1021;
+      --bg-2: #121735;
       --card: rgba(23, 28, 56, 0.9);
-      --card-border: rgba(148, 163, 184, 0.2);
+      --card-border: rgba(148, 163, 184, 0.22);
       --text: #f8fafc;
       --muted: #94a3b8;
       --accent: #38bdf8;
@@ -57,9 +58,9 @@
     .app-shell {
       position: relative;
       z-index: 1;
-      max-width: 1120px;
+      max-width: 1140px;
       margin: 0 auto;
-      padding: 18px 16px 48px;
+      padding: 18px 16px 52px;
     }
 
     .hidden {
@@ -547,8 +548,8 @@
 
     .piano {
       position: relative;
-      height: 162px;
-      min-width: 680px;
+      height: 168px;
+      min-width: 720px;
       display: flex;
     }
 
@@ -560,12 +561,19 @@
       border-radius: 0 0 10px 10px;
       color: #0f172a;
       font-weight: 700;
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       display: flex;
-      align-items: flex-end;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 2px;
       padding-bottom: 8px;
       cursor: pointer;
+    }
+
+    .white-key small, .black-key small {
+      font-size: 0.62rem;
+      opacity: 0.65;
     }
 
     .white-key.pressed {
@@ -577,15 +585,17 @@
       position: absolute;
       top: 0;
       width: 30px;
-      height: 98px;
+      height: 102px;
       background: linear-gradient(to bottom, #1e293b, #020617);
       border: 1px solid #334155;
       border-radius: 0 0 8px 8px;
       color: #e2e8f0;
-      font-size: 0.68rem;
+      font-size: 0.66rem;
       display: flex;
-      align-items: flex-end;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 2px;
       padding-bottom: 6px;
       z-index: 2;
       cursor: pointer;
@@ -814,7 +824,7 @@
         <button id="rhythmResetBtn" class="btn btn-secondary">🔄 Sıfırla</button>
         <button id="rhythmFinishBtn" class="btn btn-success">✅ Bitirdim</button>
       </div>
-      <button id="rhythmTapBtn" class="big-tap-btn">🥁 RİTİM VURUŞU YAP</button>
+      <button id="rhythmTapBtn" class="big-tap-btn">🥁 RİTİM VURUŞU YAP (VEYA SPACE)</button>
       <p class="muted" id="rhythmTapInfo" style="margin-top:8px;">Henüz vuruş yapılmadı</p>
       <div id="rhythmWaitBox" class="hidden" style="margin-top:12px;">
         <p class="muted" id="rhythmWaitText"></p>
@@ -958,9 +968,11 @@
       <section class="card loop-bar" id="loopControlCard">
         <div class="controls-cluster">
           <button id="previewTakeLoopBtn" class="btn btn-primary">👂 Kaydımı Döngüde Dinle</button>
-          <button id="loopToggleBtn" class="btn btn-secondary">▶️ Ortak Döngüyü Başlat</button>
-          <button id="clearTakeBtn" class="btn btn-secondary">🗑️ Kaydı Sil</button>
-          <span class="muted" id="loopSyncBadge">Hazır</span>
+          <button id="loopToggleBtn" class="btn btn-secondary">⏹️ Ortak Döngüyü Durdur</button>
+          <button id="clearTakeBtn" class="btn btn-danger">🗑️ Kaydı Sil</button>
+          <button id="reverseToggleBtn" class="btn btn-secondary">🔁 Ters Çal: Kapalı</button>
+          <button id="micRecordBtn" class="btn btn-secondary">🎙️ Mikrofon Kaydet</button>
+          <span class="muted" id="loopSyncBadge">Ortak Döngü Aktif</span>
         </div>
 
         <div class="controls-cluster">
@@ -977,6 +989,8 @@
           </div>
         </div>
       </section>
+
+      <div id="studioPianoMount"></div>
 
       <!-- PİYANO & VURUŞ PEDLERİ -->
       <section class="card" id="pianoCard">
@@ -1032,7 +1046,7 @@
           <button type="button" class="perc-pad-btn" data-perc="cowbell">🐮 Cowbell</button>
         </div>
 
-        <p class="muted" id="takeStatus" style="margin-top:8px;">Tek tıklamada bile doğal kuyruğuyla yankılanır; döngü başına geçişte çatırtı yapmaz.</p>
+        <p class="muted" id="takeStatus" style="margin-top:8px;">Loop dönerken üzerine çalabilirsin; "At &amp; Herkes Dinlesin" dediğinde herkes anında duyar.</p>
       </section>
 
       <!-- DÖNGÜ KATMANLARI -->
@@ -1228,31 +1242,31 @@
     ];
 
     const BASE_KEYS = [
-      { slot: "C0", label: "Do", semi: 0, isBlack: false },
-      { slot: "Cs0", label: "Do♯", semi: 1, isBlack: true, afterWhite: 0 },
-      { slot: "D0", label: "Re", semi: 2, isBlack: false },
-      { slot: "Ds0", label: "Re♯", semi: 3, isBlack: true, afterWhite: 1 },
-      { slot: "E0", label: "Mi", semi: 4, isBlack: false },
-      { slot: "F0", label: "Fa", semi: 5, isBlack: false },
-      { slot: "Fs0", label: "Fa♯", semi: 6, isBlack: true, afterWhite: 3 },
-      { slot: "G0", label: "Sol", semi: 7, isBlack: false },
-      { slot: "Gs0", label: "Sol♯", semi: 8, isBlack: true, afterWhite: 4 },
-      { slot: "A0", label: "La", semi: 9, isBlack: false },
-      { slot: "As0", label: "La♯", semi: 10, isBlack: true, afterWhite: 5 },
-      { slot: "B0", label: "Si", semi: 11, isBlack: false },
-      { slot: "C1", label: "Do", semi: 12, isBlack: false },
-      { slot: "Cs1", label: "Do♯", semi: 13, isBlack: true, afterWhite: 7 },
-      { slot: "D1", label: "Re", semi: 14, isBlack: false },
-      { slot: "Ds1", label: "Re♯", semi: 15, isBlack: true, afterWhite: 8 },
-      { slot: "E1", label: "Mi", semi: 16, isBlack: false },
-      { slot: "F1", label: "Fa", semi: 17, isBlack: false },
-      { slot: "Fs1", label: "Fa♯", semi: 18, isBlack: true, afterWhite: 10 },
-      { slot: "G1", label: "Sol", semi: 19, isBlack: false },
-      { slot: "Gs1", label: "Sol♯", semi: 20, isBlack: true, afterWhite: 11 },
-      { slot: "A1", label: "La", semi: 21, isBlack: false },
-      { slot: "As1", label: "La♯", semi: 22, isBlack: true, afterWhite: 12 },
-      { slot: "B1", label: "Si", semi: 23, isBlack: false },
-      { slot: "C2", label: "Do", semi: 24, isBlack: false }
+      { slot: "C0", label: "Do", kb: "Z", semi: 0, isBlack: false },
+      { slot: "Cs0", label: "Do♯", kb: "S", semi: 1, isBlack: true, afterWhite: 0 },
+      { slot: "D0", label: "Re", kb: "X", semi: 2, isBlack: false },
+      { slot: "Ds0", label: "Re♯", kb: "D", semi: 3, isBlack: true, afterWhite: 1 },
+      { slot: "E0", label: "Mi", kb: "C", semi: 4, isBlack: false },
+      { slot: "F0", label: "Fa", kb: "V", semi: 5, isBlack: false },
+      { slot: "Fs0", label: "Fa♯", kb: "G", semi: 6, isBlack: true, afterWhite: 3 },
+      { slot: "G0", label: "Sol", kb: "B", semi: 7, isBlack: false },
+      { slot: "Gs0", label: "Sol♯", kb: "H", semi: 8, isBlack: true, afterWhite: 4 },
+      { slot: "A0", label: "La", kb: "N", semi: 9, isBlack: false },
+      { slot: "As0", label: "La♯", kb: "J", semi: 10, isBlack: true, afterWhite: 5 },
+      { slot: "B0", label: "Si", kb: "M", semi: 11, isBlack: false },
+      { slot: "C1", label: "Do", kb: "Q", semi: 12, isBlack: false },
+      { slot: "Cs1", label: "Do♯", kb: "2", semi: 13, isBlack: true, afterWhite: 7 },
+      { slot: "D1", label: "Re", kb: "W", semi: 14, isBlack: false },
+      { slot: "Ds1", label: "Re♯", kb: "3", semi: 15, isBlack: true, afterWhite: 8 },
+      { slot: "E1", label: "Mi", kb: "E", semi: 16, isBlack: false },
+      { slot: "F1", label: "Fa", kb: "R", semi: 17, isBlack: false },
+      { slot: "Fs1", label: "Fa♯", kb: "5", semi: 18, isBlack: true, afterWhite: 10 },
+      { slot: "G1", label: "Sol", kb: "T", semi: 19, isBlack: false },
+      { slot: "Gs1", label: "Sol♯", kb: "6", semi: 20, isBlack: true, afterWhite: 11 },
+      { slot: "A1", label: "La", kb: "Y", semi: 21, isBlack: false },
+      { slot: "As1", label: "La♯", kb: "7", semi: 22, isBlack: true, afterWhite: 12 },
+      { slot: "B1", label: "Si", kb: "U", semi: 23, isBlack: false },
+      { slot: "C2", label: "Do", kb: "I", semi: 24, isBlack: false }
     ];
 
     const DEFAULT_SYNTH = Object.freeze({
@@ -1314,6 +1328,7 @@
       ws: null,
       reconnectTimer: null,
       pingTimer: null,
+      uiTickTimer: null,
       pendingQueue: [],
       myId: localStorage.getItem("kg_player_id") || null,
       myAvatar: localStorage.getItem("kg_avatar") || "fox",
@@ -1325,6 +1340,7 @@
       octave: 4,
       chordModeEnabled: false,
       chordTypeId: "maj",
+      reverseEnabled: false,
       djEffect: "normal",
       synth: cloneSynth(DEFAULT_SYNTH),
       isPlaying: false,
@@ -1337,13 +1353,17 @@
       collabPath: null,
       lockedLayerVoiceId: null,
       currentTakeNotes: [],
+      currentAudioClip: null,
       takeAnchorPerf: null,
       pendingHolds: new Map(),
       sampleBuffers: new Map(),
       loadingSamples: new Set(),
       rhythmTaps: [],
       rhythmTimers: [],
-      myVote: null
+      melodyTimers: [],
+      myVote: null,
+      mediaRecorder: null,
+      micChunks: []
     };
 
     let audioCtx = null;
@@ -1599,6 +1619,33 @@
       n.start(now);
     }
 
+    function applyDjFilter(ctx, inputNode, destNode, djEffect, now) {
+      if (djEffect === "underwater") {
+        const lp = ctx.createBiquadFilter();
+        lp.type = "lowpass";
+        lp.frequency.setValueAtTime(520, now);
+        lp.Q.value = 3.2;
+        inputNode.connect(lp).connect(destNode);
+        return;
+      }
+      if (djEffect === "radio") {
+        const bp = ctx.createBiquadFilter();
+        bp.type = "bandpass";
+        bp.frequency.setValueAtTime(1450, now);
+        bp.Q.value = 2.4;
+        inputNode.connect(bp).connect(destNode);
+        return;
+      }
+      if (djEffect === "cave" && reverbNode) {
+        const wet = ctx.createGain();
+        wet.gain.setValueAtTime(0.75, now);
+        inputNode.connect(wet).connect(reverbNode);
+        inputNode.connect(destNode);
+        return;
+      }
+      inputNode.connect(destNode);
+    }
+
     function triggerSoundVoice(ctx, destination, freq, instrumentId, startTime, timedDuration = null, djEffect = "normal", synthParams = DEFAULT_SYNTH) {
       const sp = cloneSynth(synthParams);
       const inst = INSTRUMENTS.find((i) => i.id === instrumentId) || INSTRUMENTS[0];
@@ -1613,9 +1660,10 @@
       if (sp.drive > 2) {
         const shaper = ctx.createWaveShaper();
         shaper.curve = createDriveCurve(sp.drive);
-        stage.connect(shaper).connect(destination);
+        stage.connect(shaper);
+        applyDjFilter(ctx, shaper, destination, djEffect, now);
       } else {
-        stage.connect(destination);
+        applyDjFilter(ctx, stage, destination, djEffect, now);
       }
 
       if (sp.reverbMix > 2 && reverbNode) {
@@ -1732,6 +1780,11 @@
       app.rhythmTimers = [];
     }
 
+    function clearMelodyTimers() {
+      app.melodyTimers.forEach((id) => clearTimeout(id));
+      app.melodyTimers = [];
+    }
+
     function playRhythmPatternNow() {
       clearRhythmTimers();
       const ctx = getAudioCtx();
@@ -1753,6 +1806,22 @@
           }
         }, delayMs);
         app.rhythmTimers.push(tid);
+      });
+    }
+
+    function playMelodyPatternNow() {
+      clearMelodyTimers();
+      const ctx = getAudioCtx();
+      const stepMs = 420;
+      const notes = app.room?.challenge?.pattern || [60, 64, 67, 72, 67, 64];
+      const instId = app.room?.challenge?.instrumentId || "grand_piano";
+
+      notes.forEach((midi, idx) => {
+        const delayMs = idx * stepMs;
+        const startAudioTime = ctx.currentTime + delayMs / 1000;
+        triggerSoundVoice(ctx, ctx.destination, midiToFreq(midi), instId, startAudioTime, 0.34, app.djEffect, app.synth);
+        const tid = setTimeout(() => pulseBeat(0.8), delayMs);
+        app.melodyTimers.push(tid);
       });
     }
 
@@ -1797,7 +1866,18 @@
       const cycleMs = getCycleDurationMs();
       const nowServer = Date.now() + app.clockOffsetMs;
 
-      (layer.notes || []).forEach((n) => {
+      if (layer.audioClip) {
+        const audio = new Audio(layer.audioClip);
+        audio.volume = 0.85;
+        audio.play().catch(() => {});
+      }
+
+      const rawNotes = layer.notes || [];
+      const orderedNotes = layer.reverse
+        ? rawNotes.map((n) => ({ ...n, offsetMs: Math.max(0, cycleMs - Number(n.offsetMs || 0) - Number(n.durationMs || 200)) }))
+        : rawNotes;
+
+      orderedNotes.forEach((n) => {
         const offsetMs = Math.max(0, Math.min(cycleMs - 10, Number(n.offsetMs || 0)));
         const targetServerMs = cycleStartMs + offsetMs;
         if (targetServerMs < nowServer - 60) return;
@@ -1817,6 +1897,42 @@
       });
     }
 
+    function triggerAllActiveLayersForCycle(cycleStartMs) {
+      if (app.previewTakeActive) {
+        scheduleLayerForCycle(
+          {
+            instrumentId: app.instrumentId,
+            synth: app.synth,
+            reverse: app.reverseEnabled,
+            notes: app.currentTakeNotes,
+            audioClip: app.currentAudioClip
+          },
+          cycleStartMs
+        );
+        return;
+      }
+
+      if (app.room) {
+        (app.room.layers || []).forEach((lyr) => {
+          scheduleLayerForCycle(lyr, cycleStartMs);
+        });
+      }
+
+      // Kullanıcı kendi sırasında taslak kaydediyorsa loop dönerken kendi taslağını da duysun
+      if (app.currentTakeNotes.length > 0 || app.currentAudioClip) {
+        scheduleLayerForCycle(
+          {
+            instrumentId: app.instrumentId,
+            synth: app.synth,
+            reverse: app.reverseEnabled,
+            notes: app.currentTakeNotes,
+            audioClip: app.currentAudioClip
+          },
+          cycleStartMs
+        );
+      }
+    }
+
     function runLoopFrame() {
       if (!app.isPlaying) return;
       const cycleMs = getCycleDurationMs();
@@ -1831,17 +1947,7 @@
         app.currentCycleStartServerMs += cyclesPassed * cycleMs;
         smoothResetCycleBus();
         app.lastBeatIdx = -1;
-
-        if (app.previewTakeActive) {
-          scheduleLayerForCycle(
-            { instrumentId: app.instrumentId, synth: app.synth, notes: app.currentTakeNotes },
-            app.currentCycleStartServerMs
-          );
-        } else if (app.room) {
-          (app.room.layers || []).forEach((lyr) => {
-            scheduleLayerForCycle(lyr, app.currentCycleStartServerMs);
-          });
-        }
+        triggerAllActiveLayersForCycle(app.currentCycleStartServerMs);
       }
 
       const elapsedInCycle = Math.max(0, (nowServer - app.currentCycleStartServerMs) % cycleMs);
@@ -1862,20 +1968,15 @@
       getCycleMasterBus(ctx);
       app.isPlaying = true;
       app.previewTakeActive = previewOnly;
-      app.currentCycleStartServerMs = Date.now() + app.clockOffsetMs;
+      const cycleMs = getCycleDurationMs();
+      const serverAnchor = app.room?.cycleStartServerMs || (Date.now() + app.clockOffsetMs);
+      const nowServer = Date.now() + app.clockOffsetMs;
+      const elapsedSinceAnchor = Math.max(0, nowServer - serverAnchor);
+      const currentCycleIndex = Math.floor(elapsedSinceAnchor / cycleMs);
+      app.currentCycleStartServerMs = serverAnchor + currentCycleIndex * cycleMs;
       app.lastBeatIdx = -1;
 
-      if (previewOnly) {
-        scheduleLayerForCycle(
-          { instrumentId: app.instrumentId, synth: app.synth, notes: app.currentTakeNotes },
-          app.currentCycleStartServerMs
-        );
-      } else if (app.room) {
-        (app.room.layers || []).forEach((lyr) => {
-          scheduleLayerForCycle(lyr, app.currentCycleStartServerMs);
-        });
-      }
-
+      triggerAllActiveLayersForCycle(app.currentCycleStartServerMs);
       updateLoopButtons();
       app.loopRafId = requestAnimationFrame(runLoopFrame);
     }
@@ -1894,11 +1995,15 @@
     function updateLoopButtons() {
       const loopBtn = document.getElementById("loopToggleBtn");
       const prevBtn = document.getElementById("previewTakeLoopBtn");
+      const badge = document.getElementById("loopSyncBadge");
       if (loopBtn) {
-        loopBtn.textContent = app.isPlaying && !app.previewTakeActive ? "⏹️ Döngüyü Durdur" : "▶️ Ortak Döngüyü Başlat";
+        loopBtn.textContent = app.isPlaying && !app.previewTakeActive ? "⏹️ Ortak Döngüyü Durdur" : "▶️ Ortak Döngüyü Başlat";
       }
       if (prevBtn) {
         prevBtn.textContent = app.isPlaying && app.previewTakeActive ? "⏹️ Kaydı Durdur" : "👂 Kaydımı Döngüde Dinle";
+      }
+      if (badge) {
+        badge.textContent = app.isPlaying ? "Ortak Döngü Aktif" : "Duraklatıldı";
       }
     }
 
@@ -1989,10 +2094,10 @@
 
       const durMs = Math.max(140, Math.min(3000, performance.now() - h.startedAtPerf));
       const cycleMs = getCycleDurationMs();
-      if (!app.takeAnchorPerf) {
-        app.takeAnchorPerf = h.startedAtPerf;
-      }
-      const offsetMs = (((h.startedAtPerf - app.takeAnchorPerf) % cycleMs) + cycleMs) % cycleMs;
+      const nowServer = Date.now() + app.clockOffsetMs;
+      const cycleStart = app.currentCycleStartServerMs || nowServer;
+      const offsetMs = (((nowServer - cycleStart) % cycleMs) + cycleMs) % cycleMs;
+
       app.currentTakeNotes.push({
         freq: h.freq,
         instrumentId: h.instrumentId,
@@ -2000,21 +2105,23 @@
         durationMs: Math.round(durMs)
       });
       const st = document.getElementById("takeStatus");
-      if (st) st.textContent = `Kaydedilen vuruş/nota sayısı: ${app.currentTakeNotes.length}`;
+      if (st) st.textContent = `Taslak kayıtta ${app.currentTakeNotes.length} vuruş/nota var — loop dönerken üzerine eklemeye devam edebilirsin.`;
     }
 
-    function resetDraftTake() {
+    function clearDraftImmediate() {
       for (const h of app.pendingHolds.values()) {
         try { h.voice.release(); } catch (_) {}
       }
       app.pendingHolds.clear();
       app.currentTakeNotes = [];
+      app.currentAudioClip = null;
       app.takeAnchorPerf = null;
       app.collabPath = null;
       app.lockedLayerVoiceId = null;
       updateCollabPathUI();
+      smoothResetCycleBus();
       const st = document.getElementById("takeStatus");
-      if (st) st.textContent = "Tek tıklamada bile doğal kuyruğuyla yankılanır; döngü başına geçişte çatırtı yapmaz.";
+      if (st) st.textContent = "Kayıt silindi. Loop dönerken yeniden çalabilirsin.";
     }
 
     function setConnStatus(state, text) {
@@ -2119,7 +2226,7 @@
         document.getElementById(s)?.classList.toggle("hidden", s !== id);
       });
       const pianoCard = document.getElementById("pianoCard");
-      pianoCard.classList.toggle("hidden", id !== "studioGameView");
+      pianoCard.classList.toggle("hidden", id !== "studioGameView" && id !== "melodyGameView");
       document.getElementById("backLobbyBtn").classList.toggle("hidden", id === "entryView" || id === "lobbyView");
     }
 
@@ -2143,7 +2250,8 @@
       if (room.phase === "lobby") {
         stopLoop();
         clearRhythmTimers();
-        resetDraftTake();
+        clearMelodyTimers();
+        clearDraftImmediate();
         showOnlySection("lobbyView");
         renderLobby();
         return;
@@ -2152,11 +2260,21 @@
       if (room.phase === "challenge") {
         stopLoop();
         if (room.settings.mode === "rhythm") {
+          clearMelodyTimers();
           showOnlySection("rhythmGameView");
         } else {
           clearRhythmTimers();
           showOnlySection("melodyGameView");
           mountPianoInto("melodyPianoMount");
+          const guessSel = document.getElementById("melodyGuessSelect");
+          if (guessSel && guessSel.children.length === 0) {
+            (room.challenge?.melodyChoices || []).forEach((title) => {
+              const o = document.createElement("option");
+              o.value = title;
+              o.textContent = title;
+              guessSel.appendChild(o);
+            });
+          }
         }
         return;
       }
@@ -2164,6 +2282,7 @@
       if (room.phase === "tabu") {
         stopLoop();
         clearRhythmTimers();
+        clearMelodyTimers();
         showOnlySection("tabuGameView");
         renderTabu();
         return;
@@ -2172,19 +2291,26 @@
       if (room.phase === "results" || room.phase === "final") {
         stopLoop();
         clearRhythmTimers();
+        clearMelodyTimers();
         showOnlySection("resultsView");
         renderResults();
         return;
       }
 
       clearRhythmTimers();
+      clearMelodyTimers();
       showOnlySection("studioGameView");
       mountPianoInto("studioPianoMount");
       renderStudio();
 
-      // Yeni katman eklendiyse herkesin ortak döngüsünü güncel katmanlarla senkronize başlat
-      if (nextLayerCount > prevLayerCount && !app.isPlaying) {
+      // Stüdyoda loop hep dönsün ve yeni katman eklendiğinde tüm oyuncular anında duysun
+      if (!app.isPlaying) {
         startLoop({ previewOnly: false });
+      } else if (nextLayerCount > prevLayerCount && !app.previewTakeActive) {
+        const latestLayer = room.layers[room.layers.length - 1];
+        if (latestLayer && app.currentCycleStartServerMs) {
+          scheduleLayerForCycle(latestLayer, app.currentCycleStartServerMs);
+        }
       }
     }
 
@@ -2248,7 +2374,7 @@
       countEl.dataset.count = String(layers.length);
 
       if (layers.length === 0) {
-        layersList.innerHTML = `<p class="muted">Henüz katman eklenmedi. Çalıp "At &amp; Herkes Dinlesin"e bas.</p>`;
+        layersList.innerHTML = `<p class="muted">Henüz katman eklenmedi. Loop dönerken çalıp "At &amp; Herkes Dinlesin"e bas.</p>`;
       } else {
         layersList.innerHTML = "";
         layers.forEach((l, idx) => {
@@ -2262,7 +2388,7 @@
               <strong>${l.playerName}</strong>
               <span class="muted">•</span>
               <span>${getInstrumentName(l.instrumentId)}</span>
-              <span class="badge-pill">${(l.notes || []).length} vuruş</span>
+              <span class="badge-pill">${(l.notes || []).length} vuruş${l.audioClip ? " + Ses" : ""}</span>
             </div>
           `;
           if (isHost) {
@@ -2371,7 +2497,8 @@
         const el = document.createElement("button");
         el.type = "button";
         el.className = "white-key";
-        el.textContent = k.label;
+        el.dataset.kb = k.kb;
+        el.innerHTML = `<span>${k.label}</span><small>${k.kb}</small>`;
         const holdKey = `key_${k.slot}_${app.octave}`;
         el.onpointerdown = (e) => {
           e.preventDefault();
@@ -2395,7 +2522,8 @@
         const el = document.createElement("button");
         el.type = "button";
         el.className = "black-key";
-        el.textContent = k.label;
+        el.dataset.kb = k.kb;
+        el.innerHTML = `<span>${k.label}</span><small>${k.kb}</small>`;
         el.style.left = `calc(${(k.afterWhite + 1) * whiteWidthPct}% - 15px)`;
         const holdKey = `key_${k.slot}_${app.octave}`;
         el.onpointerdown = (e) => {
@@ -2482,6 +2610,45 @@
         e.target.textContent = `🎼 Akor Modu: ${app.chordModeEnabled ? "Açık" : "Kapalı"}`;
         const curChord = CHORD_MODES.find((c) => c.id === app.chordTypeId) || CHORD_MODES[0];
         document.getElementById("chordActiveHint").textContent = app.chordModeEnabled ? `Seçili akor: ${curChord.name}` : "Tek nota çalar.";
+      };
+
+      document.getElementById("reverseToggleBtn").onclick = (e) => {
+        app.reverseEnabled = !app.reverseEnabled;
+        e.target.classList.toggle("active", app.reverseEnabled);
+        e.target.textContent = `🔁 Ters Çal: ${app.reverseEnabled ? "Açık" : "Kapalı"}`;
+      };
+
+      document.getElementById("micRecordBtn").onclick = async (e) => {
+        if (app.mediaRecorder && app.mediaRecorder.state === "recording") {
+          app.mediaRecorder.stop();
+          e.target.textContent = "🎙️ Mikrofon Kaydet";
+          e.target.classList.remove("active");
+          return;
+        }
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const mr = new MediaRecorder(stream);
+          app.micChunks = [];
+          mr.ondataavailable = (ev) => {
+            if (ev.data.size > 0) app.micChunks.push(ev.data);
+          };
+          mr.onstop = () => {
+            stream.getTracks().forEach((t) => t.stop());
+            const blob = new Blob(app.micChunks, { type: "audio/webm" });
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              app.currentAudioClip = reader.result;
+              document.getElementById("takeStatus").textContent = "Mikrofon sesi taslağa eklendi!";
+            };
+            reader.readAsDataURL(blob);
+          };
+          mr.start();
+          app.mediaRecorder = mr;
+          e.target.textContent = "⏹️ Kaydı Bitir";
+          e.target.classList.add("active");
+        } catch (_) {
+          document.getElementById("takeStatus").textContent = "Mikrofon izni alınamadı.";
+        }
       };
 
       document.getElementById("octDownBtn").onclick = () => {
@@ -2613,29 +2780,30 @@
       };
 
       document.getElementById("previewTakeLoopBtn").onclick = () => {
-        if (app.isPlaying && app.previewTakeActive) stopLoop();
+        if (app.isPlaying && app.previewTakeActive) startLoop({ previewOnly: false });
         else startLoop({ previewOnly: true });
       };
 
+      // Kaydı Sil butonuna basınca doğrudan anında siler
       document.getElementById("clearTakeBtn").onclick = () => {
-        stopLoop();
-        resetDraftTake();
+        clearDraftImmediate();
       };
 
       document.getElementById("saveTurnBtn").onclick = () => {
-        stopLoop();
         sendWs({
           type: "submit_layer",
           instrumentId: app.collabPath === "piano" ? (app.lockedLayerVoiceId || app.instrumentId) : app.instrumentId,
           synth: cloneSynth(app.synth),
-          notes: app.currentTakeNotes
+          reverse: app.reverseEnabled,
+          notes: app.currentTakeNotes,
+          audioClip: app.currentAudioClip
         });
-        resetDraftTake();
+        clearDraftImmediate();
+        if (!app.isPlaying) startLoop({ previewOnly: false });
       };
 
       document.getElementById("skipTurnBtn").onclick = () => {
-        stopLoop();
-        resetDraftTake();
+        clearDraftImmediate();
         sendWs({ type: "skip_turn" });
       };
 
@@ -2673,11 +2841,23 @@
       };
       document.getElementById("rhythmFinishBtn").onclick = () => {
         clearRhythmTimers();
-        const acc = Math.min(100, Math.max(20, app.rhythmTaps.length * 14));
+        const targetCount = (app.room?.challenge?.pattern || []).length || 7;
+        const diff = Math.abs(app.rhythmTaps.length - targetCount);
+        const acc = Math.max(15, Math.min(100, 100 - diff * 14));
         sendWs({ type: "submit_challenge", accuracy: acc });
       };
+
+      document.getElementById("melodyListenBtn").onclick = () => playMelodyPatternNow();
+      document.getElementById("melodyResetBtn").onclick = () => {
+        clearMelodyTimers();
+        clearDraftImmediate();
+      };
       document.getElementById("melodyFinishBtn").onclick = () => {
-        const acc = Math.min(100, Math.max(25, app.currentTakeNotes.length * 16));
+        clearMelodyTimers();
+        const guess = document.getElementById("melodyGuessSelect")?.value;
+        const rightTitle = app.room?.challenge?.melodyTitle;
+        const bonus = guess && rightTitle && guess === rightTitle ? 30 : 0;
+        const acc = Math.min(100, Math.max(20, app.currentTakeNotes.length * 12 + bonus));
         sendWs({ type: "submit_challenge", accuracy: acc });
       };
 
@@ -2691,6 +2871,43 @@
         sendWs({ type: "tabu_action", action: "guess", text: txt });
         inp.value = "";
       };
+
+      window.addEventListener("keydown", (e) => {
+        if (["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement?.tagName)) return;
+        if (e.repeat) return;
+        const k = e.key.toUpperCase();
+        const keyBtn = document.querySelector(`#pianoBoard [data-kb="${k}"]`);
+        if (keyBtn) {
+          keyBtn.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+        }
+      });
+
+      window.addEventListener("keyup", (e) => {
+        const k = e.key.toUpperCase();
+        const keyBtn = document.querySelector(`#pianoBoard [data-kb="${k}"]`);
+        if (keyBtn) {
+          keyBtn.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
+        }
+      });
+
+      clearInterval(app.uiTickTimer);
+      app.uiTickTimer = setInterval(() => {
+        if (!app.room) return;
+        const timerBadge = document.getElementById("turnTimerText");
+        if (app.room.phase === "studio" && timerBadge) {
+          if (app.room.turnEndsAt) {
+            const rem = Math.max(0, Math.ceil((app.room.turnEndsAt - Date.now()) / 1000));
+            timerBadge.textContent = `⏱️ ${rem} sn`;
+          } else {
+            timerBadge.textContent = "Süresiz";
+          }
+        }
+        const voteBadge = document.getElementById("voteTimerBadge");
+        if (app.room.phase === "results" && voteBadge && app.room.voteEndsAt) {
+          const remV = Math.max(0, Math.ceil((app.room.voteEndsAt - Date.now()) / 1000));
+          voteBadge.textContent = `⏱️ ${remV} sn`;
+        }
+      }, 400);
     }
 
     initUiControls();
