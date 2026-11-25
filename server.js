@@ -361,7 +361,7 @@ wss.on("connection", (ws) => {
               type: "live_note",
               slot: msg.slot || "",
               freq: Number(msg.freq) || 261.63,
-              holdMs: Math.min(5000, Math.max(80, Number(msg.holdMs) || 380)),
+              holdMs: Math.min(5000, Math.max(380, Number(msg.holdMs) || 440)),
               instrumentId: String(msg.instrumentId || "grand_piano"),
               synthParams: msg.synthParams || null,
               serverNow: Date.now()
