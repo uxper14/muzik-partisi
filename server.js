@@ -1,12 +1,32 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
-const WebSocket = require("ws");
+const crypto = require("crypto");
+const { WebSocketServer } = require("ws");
 
-const PORT = Number(process.env.PORT) || 3000;
-const INDEX_FILE = path.join(__dirname, "index.html");
-
+const PORT = process.env.PORT || 3000;
 const rooms = new Map();
+const clients = new Map();
+
+const DEFAULT_MODES = ["collab", "theme", "rhythm", "melody", "tabu"];
+
+function createDefaultSettings(override = {}) {
+  const mode = DEFAULT_MODES.includes(override.mode) ? override.mode : "collab";
+  const bpm = Math.min(180, Math.max(60, Number(override.bpm) || 110));
+  const beats = [4, 8, 12, 16].includes(Number(override.beats)) ? Number(override.beats) : 8;
+  const totalRounds = Math.min(4, Math.max(1, Number(override.totalRounds) || 2));
+  const turnDuration = [0, 20, 30, 45, 60].includes(Number(override.turnDuration))
+    ? Number(override.turnDuration)
+    : 0;
+  return {
+    mode,
+    bpm,
+    beats,
+    totalRounds,
+    turnDuration,
+    secretMode: Boolean(override.secretMode)
+  };
+}
 
 function generateRoomCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -17,178 +37,235 @@ function generateRoomCode() {
   return rooms.has(code) ? generateRoomCode() : code;
 }
 
-const server = http.createServer((req, res) => {
-  const reqPath = (req.url || "/").split("?")[0];
-  if (reqPath === "/" || reqPath === "/index.html") {
-    fs.readFile(INDEX_FILE, "utf8", (err, html) => {
-      if (err) {
-        res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
-        res.end("Sunucu hatasi: index.html okunamadi.");
-        return;
-      }
-      res.writeHead(200, {
-        "Content-Type": "text/html; charset=utf-8",
-        "Cache-Control": "no-cache"
-      });
-      res.end(html);
-    });
-    return;
-  }
-
-  res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-  res.end("Sayfa bulunamadi.");
-});
-
-const wss = new WebSocket.Server({ server });
-
-function getUniquePlayers(players) {
-  const seen = new Set();
-  const out = [];
-  (players || []).forEach((p) => {
-    if (!p || !p.id || seen.has(p.id)) return;
-    seen.add(p.id);
-    out.push(p);
-  });
-  return out;
+function sanitizePlayer(raw, fallbackId) {
+  const name = String(raw?.name || "Oyuncu").trim().slice(0, 20) || "Oyuncu";
+  const avatar = String(raw?.avatar || "fox").trim().slice(0, 24) || "fox";
+  return {
+    id: fallbackId,
+    name,
+    avatar
+  };
 }
 
 function serializeRoomForClient(room, viewerId) {
-  const uniquePlayers = getUniquePlayers(room.players);
-  const isSecretActive = Boolean(room.settings?.secretMode) && room.started && !room.finished;
-  const visibleLayers = isSecretActive
-    ? room.layers.map((l, idx) => ({
-        ...l,
-        playerName: "Gizli Oyuncu",
-        avatar: "🕵️",
-        instrumentName: `Gizli Katman #${idx + 1}`
+  const hideLayers =
+    room.started &&
+    !room.finished &&
+    room.settings.secretMode &&
+    ["collab", "theme"].includes(room.settings.mode);
+
+  const visibleLayers = hideLayers
+    ? room.layers.map((l) => ({
+        id: l.id,
+        playerId: l.playerId,
+        playerName: l.playerName,
+        avatar: l.avatar,
+        instrumentName: "Gizli Katman",
+        notes: [],
+        hasVocal: false,
+        muted: l.muted,
+        reverse: l.reverse,
+        hiddenUntilEnd: true
       }))
     : room.layers;
+
+  const uniquePlayers = [];
+  const seen = new Set();
+  for (const p of room.players) {
+    if (!p || !p.id || seen.has(p.id)) continue;
+    seen.add(p.id);
+    uniquePlayers.push({ id: p.id, name: p.name, avatar: p.avatar });
+  }
 
   return {
     code: room.code,
     hostId: room.hostId,
+    players: uniquePlayers,
+    settings: room.settings,
     started: room.started,
     finished: room.finished,
-    settings: room.settings,
-    players: uniquePlayers,
-    turnIndex: room.turnIndex,
     currentRound: room.currentRound,
+    turnIndex: room.turnIndex,
     concept: room.concept,
-    djEffect: room.djEffect,
     loopPlaying: room.loopPlaying,
-    loopBpm: room.loopBpm,
     loopAnchorServerMs: room.loopAnchorServerMs,
+    loopBpm: room.loopBpm,
+    djEffect: room.djEffect,
     layers: visibleLayers,
-    performances: room.performances || [],
     challenge: room.challenge,
     submissions: room.submissions,
+    tabu: room.tabu,
     votes: room.votes,
-    myVotedFor: room.votes?.[viewerId] || null,
-    tabu: room.tabu
+    myVotedFor: room.votes[viewerId] || null,
+    serverNow: Date.now()
   };
 }
 
 function broadcastRoom(room) {
-  room.players = getUniquePlayers(room.players);
-  room.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(
+  for (const p of room.players) {
+    const meta = clients.get(p.id);
+    if (meta && meta.ws.readyState === 1) {
+      meta.ws.send(
         JSON.stringify({
           type: "room_state",
-          serverNow: Date.now(),
-          room: serializeRoomForClient(room, client.playerId)
+          room: serializeRoomForClient(room, p.id),
+          serverNow: Date.now()
         })
       );
     }
-  });
-}
-
-function broadcastEvent(room, data, excludeWs = null) {
-  const payload = JSON.stringify({ ...data, serverNow: Date.now() });
-  room.clients.forEach((client) => {
-    if (client !== excludeWs && client.readyState === WebSocket.OPEN) {
-      client.send(payload);
-    }
-  });
-}
-
-function advanceStudioTurn(room, nextConcept) {
-  if (nextConcept) room.concept = nextConcept;
-  const totalPlayers = Math.max(1, room.players.length);
-  const nextIndex = room.turnIndex + 1;
-
-  if (nextIndex >= totalPlayers) {
-    room.turnIndex = 0;
-    if (room.currentRound >= room.settings.totalRounds) {
-      room.finished = true;
-      room.loopPlaying = false;
-    } else {
-      room.currentRound += 1;
-    }
-  } else {
-    room.turnIndex = nextIndex;
   }
 }
 
-wss.on("connection", (ws) => {
-  ws.playerId = "p_" + Math.random().toString(36).slice(2, 9);
-  ws.roomCode = null;
+function advanceStudioTurn(room, nextConcept) {
+  if (!room.players.length) return;
+  if (nextConcept) room.concept = nextConcept;
 
-  ws.send(JSON.stringify({ type: "welcome", playerId: ws.playerId, serverNow: Date.now() }));
+  const nextIdx = room.turnIndex + 1;
+  if (nextIdx >= room.players.length) {
+    room.turnIndex = 0;
+    if (room.currentRound >= room.settings.totalRounds) {
+      room.finished = true;
+      room.loopPlaying = true;
+      room.loopAnchorServerMs = Date.now();
+      return;
+    }
+    room.currentRound += 1;
+  } else {
+    room.turnIndex = nextIdx;
+  }
+}
+
+function advanceTabuTurn(room, nextCard) {
+  if (!room.players.length) return;
+  room.turnIndex = (room.turnIndex + 1) % room.players.length;
+  room.tabu = {
+    card: nextCard || room.tabu?.card || null,
+    scores: room.tabu?.scores || {},
+    guesses: [],
+    turnToken: (room.tabu?.turnToken || 0) + 1
+  };
+}
+
+function resetToLobby(room) {
+  room.started = false;
+  room.finished = false;
+  room.currentRound = 1;
+  room.turnIndex = 0;
+  room.loopPlaying = false;
+  room.loopBpm = room.settings.bpm;
+  room.djEffect = "normal";
+  room.layers = [];
+  room.challenge = null;
+  room.submissions = {};
+  room.tabu = null;
+  room.votes = {};
+}
+
+function removePlayerFromRoom(playerId) {
+  const meta = clients.get(playerId);
+  if (!meta || !meta.roomCode) return;
+  const room = rooms.get(meta.roomCode);
+  meta.roomCode = null;
+  if (!room) return;
+
+  room.players = room.players.filter((p) => p.id !== playerId);
+  delete room.votes[playerId];
+  for (const [voterId, targetId] of Object.entries(room.votes)) {
+    if (targetId === playerId) delete room.votes[voterId];
+  }
+
+  if (!room.players.length) {
+    rooms.delete(room.code);
+    return;
+  }
+
+  if (room.hostId === playerId) {
+    room.hostId = room.players[0].id;
+  }
+  if (room.turnIndex >= room.players.length) {
+    room.turnIndex = 0;
+  }
+  broadcastRoom(room);
+}
+
+const server = http.createServer((req, res) => {
+  const reqPath = (req.url || "/").split("?")[0];
+  if (reqPath === "/" || reqPath === "/index.html") {
+    const filePath = path.join(__dirname, "index.html");
+    fs.readFile(filePath, "utf8", (err, data) => {
+      if (err) {
+        res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
+        res.end("index.html okunamadi.");
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+      res.end(data);
+    });
+    return;
+  }
+
+  if (reqPath === "/health") {
+    res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    res.end(JSON.stringify({ ok: true, time: Date.now() }));
+    return;
+  }
+
+  res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+  res.end("Bulunamadi");
+});
+
+const wss = new WebSocketServer({ server });
+
+wss.on("connection", (ws) => {
+  const playerId = "p_" + crypto.randomBytes(6).toString("hex");
+  clients.set(playerId, { ws, roomCode: null });
+
+  ws.send(
+    JSON.stringify({
+      type: "welcome",
+      playerId,
+      serverNow: Date.now()
+    })
+  );
 
   ws.on("message", (raw) => {
     let msg;
     try {
-      msg = JSON.parse(raw.toString());
+      msg = JSON.parse(String(raw));
     } catch (_) {
       return;
     }
 
+    const meta = clients.get(playerId);
+    if (!meta) return;
+
     if (msg.type === "create_room") {
+      removePlayerFromRoom(playerId);
       const code = generateRoomCode();
-      const startBpm = Number(msg.settings?.bpm) || 110;
+      const player = sanitizePlayer(msg.player, playerId);
+      const settings = createDefaultSettings(msg.settings);
       const room = {
         code,
-        hostId: ws.playerId,
+        hostId: playerId,
+        players: [player],
+        settings,
         started: false,
         finished: false,
-        settings: {
-          mode: msg.settings?.mode || "collab",
-          bpm: startBpm,
-          beats: Number(msg.settings?.beats) || 8,
-          totalRounds: Number(msg.settings?.totalRounds) || 2,
-          turnDuration: Number(msg.settings?.turnDuration) || 0,
-          secretMode: Boolean(msg.settings?.secretMode)
-        },
-        players: [
-          {
-            id: ws.playerId,
-            name: (msg.player?.name || "Oyuncu").slice(0, 18),
-            avatar: msg.player?.avatar || "🦊"
-          }
-        ],
-        turnIndex: 0,
         currentRound: 1,
-        concept: "Gergin Robot",
-        djEffect: "normal",
+        turnIndex: 0,
+        concept: "Güneşli Piknik",
         loopPlaying: false,
-        loopBpm: startBpm,
         loopAnchorServerMs: Date.now(),
+        loopBpm: settings.bpm,
+        djEffect: "normal",
         layers: [],
-        performances: [],
         challenge: null,
         submissions: {},
-        votes: {},
-        tabu: {
-          card: null,
-          scores: {},
-          guesses: [],
-          turnToken: 0
-        },
-        clients: new Set([ws])
+        tabu: null,
+        votes: {}
       };
       rooms.set(code, room);
-      ws.roomCode = code;
+      meta.roomCode = code;
       broadcastRoom(room);
       return;
     }
@@ -197,264 +274,276 @@ wss.on("connection", (ws) => {
       const code = String(msg.code || "").trim().toUpperCase();
       const room = rooms.get(code);
       if (!room) {
-        ws.send(JSON.stringify({ type: "error_msg", message: "Oda bulunamadı. Kodu kontrol et." }));
+        ws.send(JSON.stringify({ type: "error_msg", message: "Oda bulunamadı. Kodu kontrol et.", serverNow: Date.now() }));
         return;
       }
-      if (room.players.length >= 10) {
-        ws.send(JSON.stringify({ type: "error_msg", message: "Oda dolu (en fazla 10 oyuncu)." }));
-        return;
+      removePlayerFromRoom(playerId);
+      const player = sanitizePlayer(msg.player, playerId);
+      if (!room.players.some((p) => p.id === playerId)) {
+        room.players.push(player);
       }
-      ws.roomCode = code;
-      room.clients.add(ws);
-      const existing = room.players.find((p) => p.id === ws.playerId);
-      if (!existing) {
-        room.players.push({
-          id: ws.playerId,
-          name: (msg.player?.name || "Oyuncu").slice(0, 18),
-          avatar: msg.player?.avatar || "🐼"
-        });
+      meta.roomCode = code;
+      broadcastRoom(room);
+      return;
+    }
+
+    const room = meta.roomCode ? rooms.get(meta.roomCode) : null;
+    if (!room) return;
+    const isHost = room.hostId === playerId;
+    const senderPlayer = room.players.find((p) => p.id === playerId);
+
+    if (msg.type === "update_settings") {
+      if (!isHost || room.started) return;
+      room.settings = createDefaultSettings({ ...room.settings, ...(msg.settings || {}) });
+      room.loopBpm = room.settings.bpm;
+      broadcastRoom(room);
+      return;
+    }
+
+    if (msg.type === "start_game") {
+      if (!isHost) return;
+      const mode = room.settings.mode;
+      room.started = true;
+      room.finished = false;
+      room.currentRound = 1;
+      room.turnIndex = 0;
+      room.concept = String(msg.concept || "Güneşli Piknik").slice(0, 60);
+      room.layers = [];
+      room.submissions = {};
+      room.votes = {};
+      room.djEffect = "normal";
+      room.loopBpm = room.settings.bpm;
+
+      if (mode === "rhythm" || mode === "melody") {
+        room.loopPlaying = false;
+        room.challenge = msg.challenge || null;
+        room.tabu = null;
+      } else if (mode === "tabu") {
+        room.loopPlaying = false;
+        room.challenge = null;
+        const scores = {};
+        room.players.forEach((p) => { scores[p.id] = 0; });
+        room.tabu = {
+          card: msg.tabuCard || null,
+          scores,
+          guesses: [],
+          turnToken: 1
+        };
       } else {
-        existing.name = (msg.player?.name || existing.name || "Oyuncu").slice(0, 18);
-        existing.avatar = msg.player?.avatar || existing.avatar || "🐼";
-      }
-      if (room.tabu && typeof room.tabu.scores === "object" && room.tabu.scores[ws.playerId] === undefined) {
-        room.tabu.scores[ws.playerId] = 0;
+        room.challenge = null;
+        room.tabu = null;
+        room.loopPlaying = true;
+        room.loopAnchorServerMs = Date.now();
       }
       broadcastRoom(room);
       return;
     }
 
-    const room = ws.roomCode ? rooms.get(ws.roomCode) : null;
-    if (!room) return;
+    if (msg.type === "restart_game") {
+      resetToLobby(room);
+      broadcastRoom(room);
+      return;
+    }
 
-    if (msg.type === "update_settings" && ws.playerId === room.hostId) {
-      room.settings = { ...room.settings, ...msg.settings };
-      if (msg.settings?.bpm) {
-        room.loopBpm = Number(msg.settings.bpm) || room.loopBpm;
-      }
-      broadcastRoom(room);
-    } else if (msg.type === "start_game" && ws.playerId === room.hostId) {
-      room.started = true;
-      room.finished = false;
-      room.turnIndex = 0;
-      room.currentRound = 1;
-      room.djEffect = "normal";
-      room.loopPlaying = false;
-      room.loopBpm = Number(room.settings.bpm) || 110;
-      room.loopAnchorServerMs = Date.now();
-      room.layers = [];
-      room.performances = [];
-      room.submissions = {};
-      room.votes = {};
-      if (msg.concept) room.concept = msg.concept;
-      if (msg.challenge) room.challenge = msg.challenge;
-
-      const scores = {};
-      room.players.forEach((p) => { scores[p.id] = 0; });
-      room.tabu = {
-        card: msg.tabuCard || null,
-        scores,
-        guesses: [],
-        turnToken: Date.now()
-      };
-
-      broadcastRoom(room);
-    } else if (msg.type === "restart_game") {
-      room.started = false;
-      room.finished = false;
-      room.turnIndex = 0;
-      room.currentRound = 1;
-      room.djEffect = "normal";
-      room.loopPlaying = false;
-      room.loopBpm = Number(room.settings.bpm) || 110;
-      room.loopAnchorServerMs = Date.now();
-      room.layers = [];
-      room.performances = [];
-      room.submissions = {};
-      room.votes = {};
-      broadcastRoom(room);
-    } else if (msg.type === "set_loop_playing") {
-      const nextPlaying = Boolean(msg.playing);
-      room.loopPlaying = nextPlaying;
-      if (nextPlaying) {
-        room.loopAnchorServerMs = Date.now();
-      }
-      broadcastRoom(room);
-    } else if (msg.type === "set_loop_bpm") {
-      const nextBpm = Math.max(50, Math.min(200, Number(msg.bpm) || room.loopBpm || 110));
-      room.loopBpm = nextBpm;
-      if (room.loopPlaying) {
-        room.loopAnchorServerMs = Date.now();
-      }
-      broadcastRoom(room);
-    } else if (msg.type === "set_dj_effect" && ws.playerId === room.hostId) {
-      room.djEffect = String(msg.effect || "normal");
-      broadcastRoom(room);
-    } else if (msg.type === "cast_vote") {
-      const targetId = String(msg.targetPlayerId || "");
-      const validTargets = getUniquePlayers(room.players);
-      if (validTargets.some((p) => p.id === targetId)) {
-        room.votes[ws.playerId] = targetId;
-        broadcastRoom(room);
-      }
-    } else if (msg.type === "submit_challenge") {
-      const player = room.players.find((p) => p.id === ws.playerId);
-      if (player) {
-        room.submissions[ws.playerId] = {
-          playerId: ws.playerId,
-          name: player.name,
-          avatar: player.avatar,
-          accuracy: Math.max(0, Math.min(100, Math.round(Number(msg.accuracy) || 0))),
-          detail: String(msg.detail || "")
-        };
-      }
-      if (room.players.every((p) => Boolean(room.submissions[p.id]))) {
-        room.finished = true;
-        room.loopPlaying = false;
-      }
-      broadcastRoom(room);
-    } else if (msg.type === "force_finish_challenge" && ws.playerId === room.hostId) {
-      room.players.forEach((p) => {
-        if (!room.submissions[p.id]) {
-          room.submissions[p.id] = {
-            playerId: p.id,
-            name: p.name,
-            avatar: p.avatar,
-            accuracy: 0,
-            detail: "Süre doldu"
-          };
+    if (msg.type === "live_note") {
+      for (const p of room.players) {
+        if (p.id === playerId) continue;
+        const targetMeta = clients.get(p.id);
+        if (targetMeta && targetMeta.ws.readyState === 1) {
+          targetMeta.ws.send(
+            JSON.stringify({
+              type: "live_note",
+              slot: msg.slot || "",
+              freq: Number(msg.freq) || 261.63,
+              instrumentId: String(msg.instrumentId || "grand_piano"),
+              synthParams: msg.synthParams || null,
+              serverNow: Date.now()
+            })
+          );
         }
-      });
-      room.finished = true;
-      room.loopPlaying = false;
+      }
+      return;
+    }
+
+    if (msg.type === "set_loop_playing") {
+      const playing = Boolean(msg.playing);
+      room.loopPlaying = playing;
+      if (playing) {
+        room.loopAnchorServerMs = Date.now();
+      }
       broadcastRoom(room);
-    } else if (msg.type === "add_layer") {
-      if (msg.layer) {
-        room.layers.push(msg.layer);
+      return;
+    }
+
+    if (msg.type === "set_loop_bpm") {
+      const nextBpm = Math.min(200, Math.max(50, Number(msg.bpm) || 110));
+      room.loopBpm = nextBpm;
+      room.settings.bpm = Math.min(180, Math.max(60, nextBpm));
+      room.loopAnchorServerMs = Date.now();
+      broadcastRoom(room);
+      return;
+    }
+
+    if (msg.type === "set_dj_effect") {
+      if (!isHost) return;
+      const allowedDj = ["normal", "slowed", "underwater", "radio", "cave"];
+      if (!allowedDj.includes(msg.effect)) return;
+      room.djEffect = msg.effect;
+      room.loopAnchorServerMs = Date.now();
+      broadcastRoom(room);
+      return;
+    }
+
+    if (msg.type === "new_concept") {
+      room.concept = String(msg.concept || "Güneşli Piknik").slice(0, 60);
+      broadcastRoom(room);
+      return;
+    }
+
+    if (msg.type === "add_layer") {
+      if (msg.layer && typeof msg.layer === "object") {
+        room.layers.push({
+          ...msg.layer,
+          id: String(msg.layer.id || "l_" + Date.now()),
+          playerId,
+          playerName: senderPlayer?.name || msg.layer.playerName || "Oyuncu",
+          avatar: senderPlayer?.avatar || msg.layer.avatar || "fox",
+          muted: false
+        });
       }
       advanceStudioTurn(room, msg.nextConcept);
-      broadcastRoom(room);
-    } else if (msg.type === "submit_muzikinyo") {
-      if (msg.performance) {
-        room.performances.push(msg.performance);
+      if (!room.finished) {
+        room.loopPlaying = true;
+        room.loopAnchorServerMs = Date.now();
       }
+      broadcastRoom(room);
+      return;
+    }
+
+    if (msg.type === "skip_turn") {
       advanceStudioTurn(room, msg.nextConcept);
       broadcastRoom(room);
-    } else if (msg.type === "finish_muzikinyo_now" && ws.playerId === room.hostId) {
-      room.finished = true;
-      room.loopPlaying = false;
-      broadcastRoom(room);
-    } else if (msg.type === "skip_turn") {
-      advanceStudioTurn(room, msg.nextConcept);
-      broadcastRoom(room);
-    } else if (msg.type === "new_concept") {
-      room.concept = msg.concept || room.concept;
-      broadcastRoom(room);
-    } else if (msg.type === "toggle_mute") {
+      return;
+    }
+
+    if (msg.type === "toggle_mute") {
       const layer = room.layers.find((l) => l.id === msg.layerId);
       if (layer) layer.muted = !layer.muted;
       broadcastRoom(room);
-    } else if (msg.type === "toggle_reverse") {
+      return;
+    }
+
+    if (msg.type === "toggle_reverse") {
       const layer = room.layers.find((l) => l.id === msg.layerId);
       if (layer) layer.reverse = !layer.reverse;
       broadcastRoom(room);
-    } else if (msg.type === "delete_layer") {
+      return;
+    }
+
+    if (msg.type === "delete_layer") {
       room.layers = room.layers.filter((l) => l.id !== msg.layerId);
       broadcastRoom(room);
-    } else if (msg.type === "live_note") {
-      broadcastEvent(
-        room,
-        {
-          type: "live_note",
-          freq: msg.freq,
-          slot: msg.slot,
-          instrumentId: msg.instrumentId,
-          synthParams: msg.synthParams
-        },
-        ws
-      );
-    } else if (msg.type === "tabu_guess") {
-      const player = room.players.find((p) => p.id === ws.playerId);
-      const text = String(msg.text || "").trim().slice(0, 40);
-      if (!player || !text || !room.tabu?.card) return;
+      return;
+    }
 
-      const normGuess = text.toLocaleLowerCase("tr-TR");
-      const normTarget = String(room.tabu.card.word || "").toLocaleLowerCase("tr-TR");
-      const isCorrect = normGuess === normTarget;
-
-      room.tabu.guesses.push({
-        name: player.name,
-        avatar: player.avatar,
-        text,
-        correct: isCorrect
-      });
-      if (room.tabu.guesses.length > 18) room.tabu.guesses.shift();
-
-      if (isCorrect) {
-        const teller = room.players[room.turnIndex];
-        room.tabu.scores[ws.playerId] = (room.tabu.scores[ws.playerId] || 0) + 1;
-        if (teller) {
-          room.tabu.scores[teller.id] = (room.tabu.scores[teller.id] || 0) + 1;
-        }
-        if (msg.nextCard) room.tabu.card = msg.nextCard;
+    if (msg.type === "submit_challenge") {
+      if (!senderPlayer) return;
+      room.submissions[playerId] = {
+        playerId,
+        name: senderPlayer.name,
+        avatar: senderPlayer.avatar,
+        accuracy: Math.min(100, Math.max(0, Number(msg.accuracy) || 0)),
+        detail: String(msg.detail || "").slice(0, 140)
+      };
+      if (room.players.length > 0 && Object.keys(room.submissions).length >= room.players.length) {
+        room.finished = true;
       }
       broadcastRoom(room);
-    } else if (msg.type === "tabu_correct") {
-      const teller = room.players[room.turnIndex];
-      if (teller) {
-        room.tabu.scores[teller.id] = (room.tabu.scores[teller.id] || 0) + 1;
-      }
-      if (msg.nextCard) room.tabu.card = msg.nextCard;
+      return;
+    }
+
+    if (msg.type === "force_finish_challenge") {
+      if (!isHost) return;
+      room.finished = true;
+      broadcastRoom(room);
+      return;
+    }
+
+    if (msg.type === "tabu_correct") {
+      if (!room.tabu || !senderPlayer) return;
+      room.tabu.scores[playerId] = (room.tabu.scores[playerId] || 0) + 1;
       room.tabu.guesses.push({
-        name: "Sistem",
-        avatar: "✅",
-        text: "Doğru bilindi! (+1)",
+        avatar: senderPlayer.avatar,
+        name: senderPlayer.name,
+        text: `✅ "${room.tabu.card?.word || ""}" doğru bilindi! (+1 puan)`,
         correct: true
       });
+      room.tabu.card = msg.nextCard || room.tabu.card;
+      room.tabu.turnToken = (room.tabu.turnToken || 0) + 1;
       broadcastRoom(room);
-    } else if (msg.type === "tabu_pass") {
-      if (msg.nextCard) room.tabu.card = msg.nextCard;
+      return;
+    }
+
+    if (msg.type === "tabu_pass") {
+      if (!room.tabu) return;
+      room.tabu.card = msg.nextCard || room.tabu.card;
       room.tabu.guesses.push({
-        name: "Sistem",
-        avatar: "⏭️",
-        text: "Kart pas geçildi.",
+        avatar: senderPlayer?.avatar || "fox",
+        name: senderPlayer?.name || "Anlatıcı",
+        text: "⏭️ Pas geçildi, yeni kart çekildi.",
         correct: false
       });
       broadcastRoom(room);
-    } else if (msg.type === "tabu_next_turn") {
-      room.turnIndex = (room.turnIndex + 1) % Math.max(1, room.players.length);
-      if (msg.nextCard) room.tabu.card = msg.nextCard;
-      room.tabu.guesses = [];
-      room.tabu.turnToken = Date.now();
+      return;
+    }
+
+    if (msg.type === "tabu_next_turn") {
+      if (!room.tabu) return;
+      advanceTabuTurn(room, msg.nextCard);
+      broadcastRoom(room);
+      return;
+    }
+
+    if (msg.type === "tabu_guess") {
+      if (!room.tabu || !senderPlayer) return;
+      const text = String(msg.text || "").trim().slice(0, 100);
+      if (!text) return;
+      const targetWord = String(room.tabu.card?.word || "").trim().toLocaleUpperCase("tr-TR");
+      const guessUpper = text.toLocaleUpperCase("tr-TR");
+      const isCorrect = Boolean(targetWord) && guessUpper === targetWord;
+
+      room.tabu.guesses.push({
+        avatar: senderPlayer.avatar,
+        name: senderPlayer.name,
+        text: isCorrect ? `🎉 "${text}" — DOĞRU TAHMİN! (+1 puan)` : text,
+        correct: isCorrect
+      });
+
+      if (isCorrect) {
+        room.tabu.scores[playerId] = (room.tabu.scores[playerId] || 0) + 1;
+        room.tabu.card = msg.nextCard || room.tabu.card;
+        room.tabu.turnToken = (room.tabu.turnToken || 0) + 1;
+      }
+      broadcastRoom(room);
+      return;
+    }
+
+    if (msg.type === "cast_vote") {
+      const targetId = String(msg.targetPlayerId || "");
+      const validTarget = room.players.some((p) => p.id === targetId);
+      if (!validTarget) return;
+      // Her oyuncu yalnızca tek bir oy verebilir; yeniden basarsa oyu o kişiye taşınır
+      room.votes[playerId] = targetId;
       broadcastRoom(room);
     }
   });
 
   ws.on("close", () => {
-    const room = ws.roomCode ? rooms.get(ws.roomCode) : null;
-    if (!room) return;
-    room.clients.delete(ws);
-    room.players = room.players.filter((p) => p.id !== ws.playerId);
-    delete room.submissions[ws.playerId];
-    delete room.votes[ws.playerId];
-    if (room.players.length === 0) {
-      rooms.delete(room.code);
-      return;
-    }
-    if (room.hostId === ws.playerId) {
-      room.hostId = room.players[0].id;
-    }
-    room.turnIndex = room.turnIndex % room.players.length;
-    if (room.started && !room.finished && (room.settings.mode === "rhythm" || room.settings.mode === "melody")) {
-      if (room.players.every((p) => Boolean(room.submissions[p.id]))) {
-        room.finished = true;
-        room.loopPlaying = false;
-      }
-    }
-    broadcastRoom(room);
+    removePlayerFromRoom(playerId);
+    clients.delete(playerId);
   });
 });
 
 server.listen(PORT, () => {
-  console.log(`Kollay Gelsin! sunucusu aktif -> Port: ${PORT}`);
+  console.log(`Kollay Gelsin! sunucusu ${PORT} portunda çalışıyor.`);
 });
