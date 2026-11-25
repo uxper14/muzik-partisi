@@ -104,7 +104,7 @@ io.on("connection", socket => {
     broadcast(room);
   });
 
-  socket.on("start-game", callback => {
+  socket.on("start-game", (data, callback) => {
     const room = findRoom(socket);
 
     if (!room) return callback?.({
@@ -188,7 +188,7 @@ io.on("connection", socket => {
     broadcast(room);
   });
 
-  socket.on("next-round", callback => {
+  socket.on("next-round", (data, callback) => {
     const room = findRoom(socket);
 
     if (!room || room.hostId !== socket.id || !room.finished) {
