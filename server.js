@@ -31,6 +31,17 @@ const CHALLENGE_INSTRUMENTS = [
   "marimba"
 ];
 
+const RHYTHM_INSTRUMENTS = [
+  "marimba",
+  "steel_drums",
+  "xylophone",
+  "acoustic_grand_piano",
+  "electric_guitar_muted",
+  "pizzicato_strings",
+  "woodblock",
+  "clavinet"
+];
+
 function makeCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let code = "";
@@ -64,6 +75,23 @@ function generateChallenge() {
   const tempo = [0.45, 0.55, 0.65][Math.floor(Math.random() * 3)];
 
   return { instrument, tempo, sequence };
+}
+
+function generateRhythmChallenge() {
+  const patterns = [
+    [0, 350, 700, 1250, 1600],
+    [0, 300, 850, 1150, 1450, 1950],
+    [0, 500, 750, 1250, 1750],
+    [0, 280, 560, 1100, 1380, 1900],
+    [0, 420, 840, 1050, 1470, 1890],
+    [0, 250, 750, 1000, 1500, 1750]
+  ];
+  const pattern = patterns[Math.floor(Math.random() * patterns.length)];
+  const instrument = RHYTHM_INSTRUMENTS[Math.floor(Math.random() * RHYTHM_INSTRUMENTS.length)];
+  const notes = [60, 62, 64, 67, 69, 72];
+  const note = notes[Math.floor(Math.random() * notes.length)];
+
+  return { instrument, note, pattern };
 }
 
 function calculateSimilarity(target, submission) {
@@ -103,11 +131,53 @@ function calculateSimilarity(target, submission) {
   return Math.min(100, Math.round(melodyPart + instrumentBonus));
 }
 
+function calculateRhythmSimilarity(targetPattern, userTimes) {
+  if (!Array.isArray(targetPattern) || !Array.isArray(userTimes) || userTimes.length === 0) {
+    return 0;
+  }
+
+  const tNorm = targetPattern.map(t => Math.max(0, Number(t) - Number(targetPattern[0])));
+  const uNorm = userTimes
+    .slice(0, 16)
+    .map(t => Math.max(0, Number(t) - Number(userTimes[0])))
+    .sort((a, b) => a - b);
+
+  const countDiff = Math.abs(tNorm.length - uNorm.length);
+  if (tNorm.length === 1 && uNorm.length === 1) return 100;
+
+  // Vuruşlar arası aralıkları (interval) karşılaştır
+  const tIntervals = [];
+  for (let i = 1; i < tNorm.length; i++) tIntervals.push(tNorm[i] - tNorm[i - 1]);
+
+  const uIntervals = [];
+  for (let i = 1; i < uNorm.length; i++) uIntervals.push(uNorm[i] - uNorm[i - 1]);
+
+  if (tIntervals.length === 0 || uIntervals.length === 0) {
+    return Math.max(10, 100 - countDiff * 30);
+  }
+
+  const minLen = Math.min(tIntervals.length, uIntervals.length);
+  let intervalScoreSum = 0;
+
+  for (let i = 0; i < minLen; i++) {
+    const expected = Math.max(80, tIntervals[i]);
+    const actual = uIntervals[i];
+    const errorRatio = Math.abs(expected - actual) / expected;
+    const stepScore = Math.max(0, 100 - errorRatio * 135);
+    intervalScoreSum += stepScore;
+  }
+
+  const avgIntervalScore = intervalScoreSum / Math.max(tIntervals.length, uIntervals.length);
+  const countPenalty = countDiff * 14;
+  return Math.max(0, Math.min(100, Math.round(avgIntervalScore - countPenalty)));
+}
+
 function publicRoom(room) {
   return {
     code: room.code,
     mode: room.mode,
     solo: room.solo,
+    bpm: room.bpm,
     host: room.host,
     started: room.started,
     currentTurn: room.currentTurn,
@@ -127,6 +197,20 @@ function publicRoom(room) {
             score: s.score
           })),
           revealed: room.challenge.revealed
+        }
+      : null,
+    rhythmChallenge: room.rhythmChallenge
+      ? {
+          instrument: room.rhythmChallenge.instrument,
+          note: room.rhythmChallenge.note,
+          pattern: room.rhythmChallenge.pattern,
+          submissions: room.rhythmChallenge.submissions.map(s => ({
+            playerId: s.playerId,
+            playerName: s.playerName,
+            times: s.times,
+            score: s.score
+          })),
+          revealed: room.rhythmChallenge.revealed
         }
       : null
   };
@@ -170,27 +254,34 @@ function removePlayer(socket) {
 io.on("connection", socket => {
   socket.on("create-room", (data, callback) => {
     const name = String(data?.name || "Oyuncu").trim().slice(0, 18);
-    const allowedModes = ["party", "free", "mimic"];
-    const mode = allowedModes.includes(data?.mode) ? data.mode : "party";
+    const allowedModes = ["party", "free", "mimic", "rhythm"];
+    const mode = allowedModes.includes(data?.mode) ? data.mode : "free";
     const solo = Boolean(data?.solo);
+    const bpm = clamp(data?.bpm, 65, 160, 100);
     const code = makeCode();
 
     const room = {
       code,
       mode,
       solo,
+      bpm,
       host: socket.id,
       started: solo,
       currentTurn: 0,
       beat: "none",
       players: [{ id: socket.id, name }],
       actions: [],
-      challenge: null
+      challenge: null,
+      rhythmChallenge: null
     };
 
     if (solo && mode === "mimic") {
       const ch = generateChallenge();
       room.challenge = { ...ch, submissions: [], revealed: false };
+    }
+    if (solo && mode === "rhythm") {
+      const rch = generateRhythmChallenge();
+      room.rhythmChallenge = { ...rch, submissions: [], revealed: false };
     }
 
     rooms.set(code, room);
@@ -233,8 +324,14 @@ io.on("connection", socket => {
     if (room.mode === "mimic") {
       const ch = generateChallenge();
       room.challenge = { ...ch, submissions: [], revealed: false };
+      room.rhythmChallenge = null;
+    } else if (room.mode === "rhythm") {
+      const rch = generateRhythmChallenge();
+      room.rhythmChallenge = { ...rch, submissions: [], revealed: false };
+      room.challenge = null;
     } else {
       room.challenge = null;
+      room.rhythmChallenge = null;
     }
 
     sendRoom(room);
@@ -242,35 +339,37 @@ io.on("connection", socket => {
     io.to(room.code).emit("game-started");
   });
 
-  // Arka plan ritim (Beat) seçimi
   socket.on("set-beat", (data, callback) => {
     const room = getRoom(socket, data?.code);
     if (!room) return callback?.({ ok: false, message: "Oda bulunamadı." });
     if (room.host !== socket.id) return callback?.({ ok: false, message: "Ritmi yalnızca oda sahibi değiştirebilir." });
 
-    const allowedBeats = ["none", "pop", "lofi", "trap"];
+    const allowedBeats = ["none", "pop", "lofi", "trap", "house", "rock", "latin", "afro", "synth"];
     room.beat = allowedBeats.includes(data?.beat) ? data.beat : "none";
     sendRoom(room);
     io.to(room.code).emit("beat-changed", { beat: room.beat });
     callback?.({ ok: true });
   });
 
-  // Hem tekli/akor hem de ritimli kayıt (events) ekleme
   socket.on("add-sound", (data, callback) => {
     const room = getRoom(socket, data?.code);
     if (!room || !room.started) return callback?.({ ok: false, message: "Oyun başlamamış." });
-    if (room.mode === "mimic") return callback?.({ ok: false, message: "Bu modda melodi gönder." });
+    if (room.mode === "mimic" || room.mode === "rhythm") {
+      return callback?.({ ok: false, message: "Bu modda tahmin gönder." });
+    }
 
     const playerIndex = room.players.findIndex(p => p.id === socket.id);
     if (room.mode === "party" && playerIndex !== room.currentTurn) {
       return callback?.({ ok: false, message: "Henüz senin sıran değil." });
     }
 
-    // Ritimli kayıt geldiyse events dizisini doğrula
+    // 8 vuruşluk loop süresi (ms)
+    const loopDurationMs = Math.round((60 / room.bpm) * 8 * 1000);
+
     const rawEvents = Array.isArray(data?.events) ? data.events.slice(0, 64) : [];
     const events = rawEvents
       .map(ev => ({
-        time: clamp(ev?.time, 0, 8000, 0),
+        time: clamp(ev?.time, 0, Math.max(500, loopDurationMs - 60), 0),
         notes: Array.isArray(ev?.notes)
           ? ev.notes.slice(0, 12).map(n => Math.max(0, Math.min(127, Number(n) || 60)))
           : []
@@ -281,11 +380,14 @@ io.on("connection", socket => {
       ? data.notes.slice(0, 16).map(n => Math.max(0, Math.min(127, Number(n) || 60)))
       : [];
 
+    const beatIndex = clamp(data?.beatIndex, 0, 7, 0);
+    const singleTime = Math.round((60 / room.bpm) * beatIndex * 1000);
+
     if (events.length === 0 && notes.length === 0) {
       return callback?.({ ok: false, message: "Önce nota seç veya ritim kaydet." });
     }
 
-    const finalEvents = events.length > 0 ? events : [{ time: 0, notes }];
+    const finalEvents = events.length > 0 ? events : [{ time: singleTime, notes }];
 
     const action = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -295,6 +397,7 @@ io.on("connection", socket => {
       notes: finalEvents[0].notes,
       events: finalEvents,
       isRhythm: events.length > 1,
+      beatIndex,
       settings: {
         volume: clamp(data.settings?.volume, 0, 1, 0.7),
         pitch: clamp(data.settings?.pitch, -12, 12, 0),
@@ -407,6 +510,59 @@ io.on("connection", socket => {
     callback?.({ ok: true, room: publicRoom(room) });
   });
 
+  // Ritmi Taklit Et Modu Tahmin Gönderimi
+  socket.on("submit-rhythm", (data, callback) => {
+    const room = getRoom(socket, data?.code);
+    if (!room || !room.started || room.mode !== "rhythm" || !room.rhythmChallenge) {
+      return callback?.({ ok: false, message: "Aktif ritim yarışması bulunamadı." });
+    }
+    if (room.rhythmChallenge.revealed) {
+      return callback?.({ ok: false, message: "Bu tur sonuçlandı. Yeni tur başlat." });
+    }
+
+    const player = room.players.find(p => p.id === socket.id);
+    if (!player) return callback?.({ ok: false, message: "Oyuncu bulunamadı." });
+
+    const times = Array.isArray(data?.times)
+      ? data.times.slice(0, 16).map(t => clamp(t, 0, 10000, 0))
+      : [];
+
+    if (times.length === 0) {
+      return callback?.({ ok: false, message: "Önce ritim pedine basarak vuruşlarını kaydet!" });
+    }
+
+    const score = calculateRhythmSimilarity(room.rhythmChallenge.pattern, times);
+
+    const existingIdx = room.rhythmChallenge.submissions.findIndex(s => s.playerId === socket.id);
+    const entry = { playerId: socket.id, playerName: player.name, times, score };
+
+    if (existingIdx >= 0) room.rhythmChallenge.submissions[existingIdx] = entry;
+    else room.rhythmChallenge.submissions.push(entry);
+
+    if (room.solo || room.rhythmChallenge.submissions.length >= room.players.length) {
+      room.rhythmChallenge.revealed = true;
+      room.rhythmChallenge.submissions.sort((a, b) => b.score - a.score);
+    }
+
+    sendRoom(room);
+    callback?.({ ok: true, room: publicRoom(room) });
+  });
+
+  socket.on("reveal-rhythm", (data, callback) => {
+    const room = getRoom(socket, data?.code);
+    if (!room || room.mode !== "rhythm" || !room.rhythmChallenge) {
+      return callback?.({ ok: false, message: "Aktif yarışma bulunamadı." });
+    }
+    if (room.host !== socket.id) {
+      return callback?.({ ok: false, message: "Sonuçları yalnızca oda sahibi açıklayabilir." });
+    }
+
+    room.rhythmChallenge.revealed = true;
+    room.rhythmChallenge.submissions.sort((a, b) => b.score - a.score);
+    sendRoom(room);
+    callback?.({ ok: true, room: publicRoom(room) });
+  });
+
   socket.on("next-round", (data, callback) => {
     const room = getRoom(socket, data?.code);
     if (!room) return callback?.({ ok: false, message: "Oda bulunamadı." });
@@ -418,6 +574,9 @@ io.on("connection", socket => {
     if (room.mode === "mimic") {
       const ch = generateChallenge();
       room.challenge = { ...ch, submissions: [], revealed: false };
+    } else if (room.mode === "rhythm") {
+      const rch = generateRhythmChallenge();
+      room.rhythmChallenge = { ...rch, submissions: [], revealed: false };
     }
 
     sendRoom(room);
