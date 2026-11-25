@@ -1,17 +1,13 @@
 {
   "name": "kollay-gelsin",
   "version": "1.0.0",
-  "description": "Kollay Gelsin! - Çok oyunculu müzik ve ritim oyunu",
+  "description": "Kollay Gelsin! - Çok oyunculu canlı müzik ve looping oyunu",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "keywords": [
-    "music",
-    "game",
-    "multiplayer",
-    "piano",
-    "loop"
-  ],
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
   "license": "ISC"
 }
