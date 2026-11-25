@@ -133,7 +133,7 @@
     .app {
       position: relative;
       z-index: 1;
-      max-width: 1080px;
+      max-width: 1100px;
       margin: 0 auto;
       padding: 16px 14px 48px;
       display: flex;
@@ -384,6 +384,13 @@
     }
 
     /* BİTİŞ EKRANI */
+    .answer-reveal-box {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(46, 229, 157, 0.14);
+      border: 1px solid var(--success);
+      margin-top: 12px;
+    }
     .results-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
     .result-row {
       display: flex;
@@ -494,6 +501,43 @@
       width: 5px; height: 20%; border-radius: 3px;
       background: linear-gradient(to top, var(--accent), var(--accent-2));
       transition: height 0.08s ease;
+    }
+
+    .dj-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--accent-2);
+    }
+
+    .perc-pad-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+    .perc-pad-btn {
+      flex: 1;
+      min-width: 115px;
+      padding: 10px 12px;
+      border-radius: 11px;
+      border: 1px solid var(--border);
+      background: var(--panel-soft);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: transform 0.06s ease, background 0.1s ease;
+    }
+    .perc-pad-btn:active,
+    .perc-pad-btn.hit {
+      transform: scale(0.96);
+      background: var(--accent);
+      color: #fff;
     }
 
     .studio-row { display: grid; grid-template-columns: 2.1fr 1fr; gap: 14px; }
@@ -689,13 +733,24 @@
             <select id="lobbyBeats">
               <option value="3">3 Vuruş</option>
               <option value="4">4 Vuruş</option>
-              <option value="5">5 Vuruş</option>
+              <option value="5">5 Vuruş (Aksak)</option>
               <option value="6">6 Vuruş</option>
-              <option value="7">7 Vuruş</option>
+              <option value="7">7 Vuruş (Aksak)</option>
               <option value="8" selected>8 Vuruş</option>
-              <option value="9">9 Vuruş</option>
+              <option value="9">9 Vuruş (Aksak)</option>
               <option value="12">12 Vuruş</option>
               <option value="16">16 Vuruş</option>
+            </select>
+          </div>
+
+          <div class="field" id="fieldRhythmHits">
+            <label for="lobbyRhythmHits">Ritim Vuruş Sayısı (Aksak Dahil)</label>
+            <select id="lobbyRhythmHits">
+              <option value="5">5 Vuruş (Aksak)</option>
+              <option value="7" selected>7 Vuruş (Aksak)</option>
+              <option value="8">8 Vuruş</option>
+              <option value="9">9 Vuruş (Aksak)</option>
+              <option value="11">11 Vuruş (Zor Aksak)</option>
             </select>
           </div>
 
@@ -730,7 +785,7 @@
       <div class="section-head">
         <div>
           <span class="step-badge">🥁 RİTMİ TAKLİT ET</span>
-          <h2>Sesi Dinle ve Ritmi Yap</h2>
+          <h2>Aksak veya Düz Ritmi Dinle ve Yap</h2>
         </div>
         <div class="controls-cluster">
           <span class="muted" id="rhythmTimerLabel"></span>
@@ -741,7 +796,7 @@
 
       <div class="steps-bar">
         <div class="step-box"><strong>1. Dinle</strong>"Ritmi Dinle" ile ritmi duy.</div>
-        <div class="step-box"><strong>2. Taklit Et</strong>Aksak veya düz fark etmez, bastığın an kaydedilir.</div>
+        <div class="step-box"><strong>2. Taklit Et</strong>Aksak aralıkları zorla yuvarlamadan aynen kaydet.</div>
         <div class="step-box"><strong>3. Bitir</strong>"Bitir"e bas, herkes bitince yüzdeleri gör.</div>
       </div>
 
@@ -760,7 +815,7 @@
       </div>
     </section>
 
-    <!-- 3B. MELODİYİ TAKLİT ET (TEK SES SEÇİCİLİ SADE EKRAN) -->
+    <!-- 3B. MELODİYİ TAKLİT ET -->
     <section id="melodyGameView" class="card hidden">
       <div class="section-head">
         <div>
@@ -775,9 +830,9 @@
       </div>
 
       <div class="steps-bar">
-        <div class="step-box"><strong>1. Dinle</strong>"Melodiyi Dinle" ile sesi dinle.</div>
+        <div class="step-box"><strong>1. Dinle</strong>Tüm oktavlardan gelebilen melodiyi dinle.</div>
         <div class="step-box"><strong>2. Aleti Seç</strong>Hangi müzik aleti olduğunu seç.</div>
-        <div class="step-box"><strong>3. Çal &amp; Bitir</strong>Piyanoda çal ve "Bitir"e bas.</div>
+        <div class="step-box"><strong>3. Çal &amp; Bitir</strong>Oktav ayarlayıp piyanoda çal ve "Bitir"e bas.</div>
       </div>
 
       <div class="field" style="max-width: 340px;">
@@ -807,10 +862,12 @@
         </div>
         <div class="controls-cluster">
           <button id="resultsPlaySongBtn" class="btn btn-secondary hidden">▶️ Ortak Şarkıyı Dinle</button>
+          <button id="resultsDownloadWavBtn" class="btn btn-secondary hidden">💾 İndir (.WAV)</button>
           <button id="resultsBackLobbyBtn" class="btn btn-primary">🔄 Yeni Oyun İçin Lobiye Dön</button>
         </div>
       </div>
 
+      <div id="correctAnswerBox" class="answer-reveal-box hidden"></div>
       <div id="resultsList" class="results-list"></div>
     </section>
 
@@ -859,7 +916,7 @@
       </div>
     </section>
 
-    <!-- 3E. LOOP STATION STÜDYO MODLARI (HERKES BİR ŞEY EKLESİN, TEMALI BESTE, SERBEST SAHNE) -->
+    <!-- 3E. LOOP STATION STÜDYO MODLARI -->
     <main id="studioGameView" class="hidden" style="display: flex; flex-direction: column; gap: 14px;">
       <section class="card turn-bar">
         <div class="turn-who">
@@ -884,6 +941,21 @@
           <h3 id="conceptTitle">Gergin Robot</h3>
         </div>
         <button id="newConceptBtn" class="btn btn-secondary">🎲 Temayı Değiştir</button>
+      </section>
+
+      <!-- KURUCUYA ÖZEL CANLI DJ MASASI -->
+      <section class="card dj-bar" id="djControlPanel">
+        <div>
+          <span class="step-badge">🎧 DJ EFEKTLERİ</span>
+          <div class="muted" id="djStatusText">Aktif Efekt: Normal</div>
+        </div>
+        <div class="controls-cluster" id="djButtonsWrap">
+          <button type="button" class="btn btn-secondary active" data-dj="normal">✨ Normal</button>
+          <button type="button" class="btn btn-secondary" data-dj="slowed">🐢 Slowed</button>
+          <button type="button" class="btn btn-secondary" data-dj="underwater">🌊 Su Altı</button>
+          <button type="button" class="btn btn-secondary" data-dj="radio">📻 Telsiz / Radyo</button>
+          <button type="button" class="btn btn-secondary" data-dj="cave">🏔️ Mağara Yankısı</button>
+        </div>
       </section>
 
       <section class="card loop-bar">
@@ -955,7 +1027,7 @@
       </section>
     </main>
 
-    <!-- TEK PİYANO BİLEŞENİ (TEK MÜZİK ALETİ SEÇİCİ İLE) -->
+    <!-- TEK PİYANO & HANDSHAKE/SNARE PEDİ -->
     <section class="card hidden" id="pianoCard">
       <div class="section-head">
         <h3>🎹 Piyano</h3>
@@ -976,6 +1048,15 @@
       <div class="piano-scroll">
         <div class="piano" id="pianoBoard"></div>
       </div>
+
+      <!-- SIRA GELEN OYUNCUNUN KATMANINA EKLEYEBİLECEĞİ HANDSHAKE / SNARE / PERKÜSYON -->
+      <div id="studioPercWrap" class="perc-pad-row">
+        <button type="button" class="perc-pad-btn" data-perc="handshake">🤝 Handshake</button>
+        <button type="button" class="perc-pad-btn" data-perc="snare_drum">🥁 Snare</button>
+        <button type="button" class="perc-pad-btn" data-perc="kick_drum">💥 Kick</button>
+        <button type="button" class="perc-pad-btn" data-perc="hihat_closed">🔔 Hi-Hat</button>
+      </div>
+
       <p class="muted" id="takeStatus" style="margin-top: 8px;">Bastığın an ve ritim aralığı zorla değiştirilmeden kaydedilir.</p>
     </section>
   </div>
@@ -986,8 +1067,8 @@
     const GAME_MODES = [
       { id: "collab", title: "🤝 Herkes Bir Şey Eklesin", desc: "Loop station: sırayla devam eden müziğe kendi katmanını ekle." },
       { id: "theme", title: "🎭 Temalı Beste", desc: "Gelen temaya uygun müzik yap ve döngüye ekle." },
-      { id: "rhythm", title: "🥁 Ritmi Taklit Et", desc: "Sesi dinle, ritmi yap, herkes bitince doğruluğu gör." },
-      { id: "melody", title: "🎹 Melodiyi Taklit Et", desc: "Müzik aletini seç ve melodiyi çal, en sonda doğruluğu gör." },
+      { id: "rhythm", title: "🥁 Ritmi Taklit Et", desc: "Aksak veya düz ritmi dinle, yap, herkes bitince yüzdeleri gör." },
+      { id: "melody", title: "🎹 Melodiyi Taklit Et", desc: "Tüm oktavlardan melodiyi dinle, çal ve en sonda doğru cevabı gör." },
       { id: "free", title: "✨ Serbest Sahne", desc: "Süre sınırı olmadan özgürce çal ve döngü kur." },
       { id: "tabu", title: "🗣️ Tabu", desc: "Klasik Tabu: yasaklı kelimeleri kullanmadan anlat, tahmin et." }
     ];
@@ -1013,15 +1094,23 @@
       { id: "bass_guitar", name: "Bas Gitar", type: "bass" },
       { id: "synth_lead", name: "Synth Lead", type: "synth" },
       { id: "music_box", name: "Müzik Kutusu", type: "musicbox" },
+      { id: "handshake", name: "Handshake (El Çarpma)", type: "handshake" },
+      { id: "snare_drum", name: "Snare (Trampet)", type: "snare" },
       { id: "kick_drum", name: "Kick Davul", type: "kick" },
-      { id: "snare_drum", name: "Trampet", type: "snare" },
-      { id: "hihat_closed", name: "Hi-Hat Zil", type: "hihat" },
-      { id: "clap_perc", name: "Alkış / Perküsyon", type: "clap" }
+      { id: "hihat_closed", name: "Hi-Hat Zil", type: "hihat" }
     ];
 
     const MELODIC_INSTRUMENTS = INSTRUMENTS.filter(
-      (i) => !["kick", "snare", "hihat", "clap"].includes(i.type)
+      (i) => !["kick", "snare", "hihat", "handshake"].includes(i.type)
     );
+
+    const DJ_LABELS = {
+      normal: "Normal",
+      slowed: "Slowed (Yavaşlatılmış)",
+      underwater: "Su Altı",
+      radio: "Telsiz / Radyo",
+      cave: "Mağara Yankısı"
+    };
 
     const CONCEPTS = [
       "Gergin Robot", "Yağmurda Koşmak", "Fırtına Geliyor", "Güneşli Piknik", "Karlı Gece",
@@ -1104,6 +1193,7 @@
       bpm: 110,
       beats: 8,
       octave: 4,
+      djEffect: "normal",
       isPlaying: false,
       currentBeat: 0,
       cycleStartPerf: 0,
@@ -1112,10 +1202,11 @@
       turnTimer: null,
       challengeTimer: null,
       tabuTimer: null,
+      activeTabuToken: null,
       remainingSec: 0,
       instrumentId: "grand_piano",
       reverseTake: false,
-      currentTakeNotes: [], // { offsetMs, slot, freq, label, instrumentId, instrumentName }
+      currentTakeNotes: [],
       conceptHistory: [],
       tabuHistory: [],
       rhythmTaps: [],
@@ -1139,7 +1230,7 @@
       return audioCtx;
     }
 
-    function createNoiseBuffer(ctx, duration = 0.3) {
+    function createNoiseBuffer(ctx, duration = 0.35) {
       const len = Math.floor(ctx.sampleRate * duration);
       const buf = ctx.createBuffer(1, len, ctx.sampleRate);
       const data = buf.getChannelData(0);
@@ -1163,83 +1254,144 @@
       });
     }
 
-    function playFreqSound(freq, instrumentId, duration = 0.45) {
-      const ctx = getAudioCtx();
+    function createImpulseReverb(ctx, seconds = 1.4, decay = 2.1) {
+      const rate = ctx.sampleRate;
+      const length = Math.floor(rate * seconds);
+      const impulse = ctx.createBuffer(2, length, rate);
+      for (let ch = 0; ch < 2; ch++) {
+        const data = impulse.getChannelData(ch);
+        for (let i = 0; i < length; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+        }
+      }
+      const conv = ctx.createConvolver();
+      conv.buffer = impulse;
+      return conv;
+    }
+
+    // Aktif DJ efektine göre ses çıkış zinciri (canlı + offline render ortak)
+    function routeThroughDjBus(ctx, destination, djEffect) {
+      if (djEffect === "underwater") {
+        const lp = ctx.createBiquadFilter();
+        lp.type = "lowpass";
+        lp.frequency.value = 390;
+        lp.Q.value = 1.8;
+        lp.connect(destination);
+        return lp;
+      }
+      if (djEffect === "radio") {
+        const bp = ctx.createBiquadFilter();
+        bp.type = "bandpass";
+        bp.frequency.value = 1550;
+        bp.Q.value = 2.6;
+        bp.connect(destination);
+        return bp;
+      }
+      if (djEffect === "cave") {
+        const sum = ctx.createGain();
+        const rev = createImpulseReverb(ctx, 1.5, 2.0);
+        const wet = ctx.createGain();
+        wet.gain.value = 0.55;
+        sum.connect(destination);
+        sum.connect(rev);
+        rev.connect(wet).connect(destination);
+        return sum;
+      }
+      if (djEffect === "slowed") {
+        const sum = ctx.createGain();
+        const lp = ctx.createBiquadFilter();
+        lp.type = "lowpass";
+        lp.frequency.value = 2800;
+        const rev = createImpulseReverb(ctx, 1.2, 2.5);
+        const wet = ctx.createGain();
+        wet.gain.value = 0.32;
+        sum.connect(lp).connect(destination);
+        lp.connect(rev);
+        rev.connect(wet).connect(destination);
+        return sum;
+      }
+      return destination;
+    }
+
+    // Gerçekçi ve ayırt edilebilir enstrüman sentezi (canlı ve offline WAV render ortak)
+    function synthesizeNoteAt(ctx, destination, freq, instrumentId, startTime, duration = 0.5, djEffect = "normal") {
       const inst = INSTRUMENTS.find((i) => i.id === instrumentId) || INSTRUMENTS[0];
-      const now = ctx.currentTime;
-      const f = freq || 261.63;
+      const now = startTime;
+      const pitchFactor = djEffect === "slowed" ? 0.84 : 1.0;
+      const durScale = djEffect === "slowed" ? 1.25 : 1.0;
+      const f = (freq || 261.63) * pitchFactor;
 
       if (inst.type === "kick") {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = "sine";
-        osc.frequency.setValueAtTime(140, now);
-        osc.frequency.exponentialRampToValueAtTime(42, now + 0.18);
-        gain.gain.setValueAtTime(0.55, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-        osc.connect(gain).connect(ctx.destination);
+        osc.frequency.setValueAtTime(145 * pitchFactor, now);
+        osc.frequency.exponentialRampToValueAtTime(42 * pitchFactor, now + 0.18 * durScale);
+        gain.gain.setValueAtTime(0.62, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24 * durScale);
+        osc.connect(gain).connect(destination);
         osc.start(now);
-        osc.stop(now + 0.24);
-        pulseLights(0.9);
+        osc.stop(now + 0.26 * durScale);
         return;
       }
 
       if (inst.type === "snare") {
         const noise = ctx.createBufferSource();
-        noise.buffer = createNoiseBuffer(ctx, 0.22);
-        const filter = ctx.createBiquadFilter();
-        filter.type = "highpass";
-        filter.frequency.value = 900;
+        noise.buffer = createNoiseBuffer(ctx, 0.25 * durScale);
+        const hp = ctx.createBiquadFilter();
+        hp.type = "highpass";
+        hp.frequency.value = 850;
         const nGain = ctx.createGain();
-        nGain.gain.setValueAtTime(0.32, now);
-        nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
-        noise.connect(filter).connect(nGain).connect(ctx.destination);
+        nGain.gain.setValueAtTime(0.38, now);
+        nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.2 * durScale);
+        noise.connect(hp).connect(nGain).connect(destination);
         noise.start(now);
 
         const body = ctx.createOscillator();
         const bGain = ctx.createGain();
         body.type = "triangle";
-        body.frequency.setValueAtTime(195, now);
-        body.frequency.exponentialRampToValueAtTime(95, now + 0.1);
-        bGain.gain.setValueAtTime(0.28, now);
-        bGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-        body.connect(bGain).connect(ctx.destination);
+        body.frequency.setValueAtTime(200 * pitchFactor, now);
+        body.frequency.exponentialRampToValueAtTime(92 * pitchFactor, now + 0.11 * durScale);
+        bGain.gain.setValueAtTime(0.32, now);
+        bGain.gain.exponentialRampToValueAtTime(0.001, now + 0.14 * durScale);
+        body.connect(bGain).connect(destination);
         body.start(now);
-        body.stop(now + 0.14);
-        pulseLights(0.85);
+        body.stop(now + 0.16 * durScale);
         return;
       }
 
       if (inst.type === "hihat") {
         const noise = ctx.createBufferSource();
-        noise.buffer = createNoiseBuffer(ctx, 0.09);
+        noise.buffer = createNoiseBuffer(ctx, 0.09 * durScale);
         const filter = ctx.createBiquadFilter();
         filter.type = "highpass";
-        filter.frequency.value = 6500;
+        filter.frequency.value = 6800;
         const gain = ctx.createGain();
-        gain.gain.setValueAtTime(0.24, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
-        noise.connect(filter).connect(gain).connect(ctx.destination);
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.075 * durScale);
+        noise.connect(filter).connect(gain).connect(destination);
         noise.start(now);
-        pulseLights(0.6);
         return;
       }
 
-      if (inst.type === "clap") {
-        [0, 0.018, 0.036].forEach((offset) => {
+      if (inst.type === "handshake") {
+        // Gerçekçi 4 katmanlı el çarpma (clap / handshake) vuruşu
+        [0, 0.012, 0.025, 0.042].forEach((offset, idx) => {
+          const isTail = idx === 3;
+          const nDur = (isTail ? 0.19 : 0.045) * durScale;
           const noise = ctx.createBufferSource();
-          noise.buffer = createNoiseBuffer(ctx, 0.11);
+          noise.buffer = createNoiseBuffer(ctx, nDur);
           const bp = ctx.createBiquadFilter();
           bp.type = "bandpass";
-          bp.frequency.value = 1350;
-          bp.Q.value = 1.6;
+          bp.frequency.value = 1280 * pitchFactor;
+          bp.Q.value = 1.9;
           const gain = ctx.createGain();
-          gain.gain.setValueAtTime(0.26, now + offset);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.09);
-          noise.connect(bp).connect(gain).connect(ctx.destination);
-          noise.start(now + offset);
+          const t0 = now + offset * durScale;
+          gain.gain.setValueAtTime(isTail ? 0.34 : 0.28, t0);
+          gain.gain.exponentialRampToValueAtTime(0.001, t0 + nDur);
+          noise.connect(bp).connect(gain).connect(destination);
+          noise.start(t0);
         });
-        pulseLights(0.8);
         return;
       }
 
@@ -1248,148 +1400,168 @@
       filter.type = "lowpass";
 
       let attack = 0.012;
-      let decay = duration;
-      let peak = 0.24;
+      let decay = duration * durScale;
+      let peak = 0.26;
       let partials = [{ ratio: 1, wave: "triangle", gain: 1 }];
+      let addBreathNoise = false;
 
       switch (inst.type) {
         case "piano":
-          attack = 0.008; decay = 0.65; filter.frequency.value = f * 6;
+          attack = 0.006; decay = 0.85 * durScale; filter.frequency.value = Math.min(8000, f * 6.5);
           partials = [
-            { ratio: 1, wave: "triangle", gain: 0.75 },
-            { ratio: 2, wave: "sine", gain: 0.32 },
-            { ratio: 3, wave: "sine", gain: 0.12 }
+            { ratio: 1, wave: "triangle", gain: 0.72 },
+            { ratio: 2, wave: "sine", gain: 0.36 },
+            { ratio: 3, wave: "sine", gain: 0.18 },
+            { ratio: 4, wave: "sine", gain: 0.08 }
           ];
           break;
         case "upright":
-          attack = 0.007; decay = 0.52; filter.frequency.value = f * 5;
+          attack = 0.006; decay = 0.65 * durScale; filter.frequency.value = Math.min(6500, f * 5.2);
           partials = [
-            { ratio: 1, wave: "triangle", gain: 0.8 },
-            { ratio: 2, wave: "triangle", gain: 0.28 }
+            { ratio: 1, wave: "triangle", gain: 0.78 },
+            { ratio: 1.002, wave: "sine", gain: 0.25 },
+            { ratio: 2, wave: "triangle", gain: 0.3 }
           ];
           break;
         case "epiano":
-          attack = 0.015; decay = 0.75; filter.frequency.value = f * 4.5;
+          attack = 0.012; decay = 0.9 * durScale; filter.frequency.value = Math.min(5500, f * 4.5);
           partials = [
             { ratio: 1, wave: "sine", gain: 0.85 },
-            { ratio: 2, wave: "sine", gain: 0.25 }
+            { ratio: 2, wave: "sine", gain: 0.28 },
+            { ratio: 7, wave: "sine", gain: 0.06 }
           ];
           break;
         case "eguitar":
-          attack = 0.006; decay = 0.55; filter.frequency.value = f * 6.5;
+          attack = 0.005; decay = 0.68 * durScale; filter.frequency.value = Math.min(6000, f * 6.2);
           partials = [
-            { ratio: 1, wave: "sawtooth", gain: 0.7 },
-            { ratio: 2, wave: "square", gain: 0.3 }
+            { ratio: 1, wave: "sawtooth", gain: 0.62 },
+            { ratio: 2, wave: "square", gain: 0.32 }
           ];
           break;
         case "guitar":
-          attack = 0.006; decay = 0.58; filter.frequency.value = f * 5.5;
+          attack = 0.005; decay = 0.72 * durScale; filter.frequency.value = Math.min(5000, f * 5.4);
           partials = [
-            { ratio: 1, wave: "sawtooth", gain: 0.55 },
-            { ratio: 2, wave: "triangle", gain: 0.45 }
+            { ratio: 1, wave: "triangle", gain: 0.72 },
+            { ratio: 2, wave: "sawtooth", gain: 0.28 },
+            { ratio: 3, wave: "sine", gain: 0.14 }
           ];
           break;
         case "harp":
-          attack = 0.008; decay = 0.85; filter.frequency.value = f * 7;
+          attack = 0.006; decay = 1.05 * durScale; filter.frequency.value = Math.min(6500, f * 6.8);
           partials = [
-            { ratio: 1, wave: "sine", gain: 0.8 },
-            { ratio: 2, wave: "triangle", gain: 0.25 }
+            { ratio: 1, wave: "sine", gain: 0.82 },
+            { ratio: 2, wave: "triangle", gain: 0.26 }
           ];
           break;
         case "strings":
-          attack = 0.09; decay = 0.78; filter.frequency.value = f * 4.2;
+          attack = 0.11; decay = 0.92 * durScale; filter.frequency.value = Math.min(4800, f * 4.4);
           partials = [
-            { ratio: 1, wave: "sawtooth", gain: 0.6 },
-            { ratio: 1.003, wave: "sawtooth", gain: 0.45 }
-          ];
-          break;
-        case "cello":
-          attack = 0.08; decay = 0.82; filter.frequency.value = f * 3.2;
-          partials = [
-            { ratio: 0.5, wave: "sawtooth", gain: 0.7 },
-            { ratio: 1, wave: "triangle", gain: 0.45 }
-          ];
-          break;
-        case "flute":
-          attack = 0.055; decay = 0.55; filter.frequency.value = f * 3.5;
-          partials = [
-            { ratio: 1, wave: "sine", gain: 0.9 },
-            { ratio: 2, wave: "sine", gain: 0.14 }
-          ];
-          break;
-        case "clarinet":
-          attack = 0.04; decay = 0.55; filter.frequency.value = f * 3.8;
-          partials = [
-            { ratio: 1, wave: "square", gain: 0.5 },
-            { ratio: 3, wave: "sine", gain: 0.2 }
-          ];
-          break;
-        case "brass":
-          attack = 0.045; decay = 0.55; filter.frequency.value = f * 5;
-          partials = [
-            { ratio: 1, wave: "sawtooth", gain: 0.7 },
-            { ratio: 2, wave: "sawtooth", gain: 0.3 }
-          ];
-          break;
-        case "sax":
-          attack = 0.035; decay = 0.58; filter.frequency.value = f * 4.4;
-          partials = [
-            { ratio: 1, wave: "sawtooth", gain: 0.65 },
-            { ratio: 2, wave: "triangle", gain: 0.35 }
-          ];
-          break;
-        case "marimba":
-          attack = 0.004; decay = 0.24; filter.frequency.value = f * 4;
-          partials = [
-            { ratio: 1, wave: "sine", gain: 0.9 },
-            { ratio: 4, wave: "sine", gain: 0.18 }
-          ];
-          break;
-        case "kalimba":
-          attack = 0.005; decay = 0.32; filter.frequency.value = f * 5;
-          partials = [
-            { ratio: 1, wave: "triangle", gain: 0.85 },
-            { ratio: 2.75, wave: "sine", gain: 0.15 }
-          ];
-          break;
-        case "vibraphone":
-          attack = 0.01; decay = 0.85; filter.frequency.value = f * 5;
-          partials = [
-            { ratio: 1, wave: "sine", gain: 0.85 },
+            { ratio: 1, wave: "sawtooth", gain: 0.52 },
+            { ratio: 1.0035, wave: "sawtooth", gain: 0.45 },
             { ratio: 2, wave: "sine", gain: 0.2 }
           ];
           break;
+        case "cello":
+          attack = 0.095; decay = 0.95 * durScale; filter.frequency.value = Math.min(3600, f * 3.4);
+          partials = [
+            { ratio: 0.5, wave: "sawtooth", gain: 0.65 },
+            { ratio: 1, wave: "triangle", gain: 0.48 },
+            { ratio: 1.5, wave: "sine", gain: 0.18 }
+          ];
+          break;
+        case "flute":
+          attack = 0.06; decay = 0.65 * durScale; filter.frequency.value = Math.min(4200, f * 3.2);
+          addBreathNoise = true;
+          partials = [
+            { ratio: 1, wave: "sine", gain: 0.92 },
+            { ratio: 2, wave: "sine", gain: 0.18 }
+          ];
+          break;
+        case "clarinet":
+          // Klarnet karakteri: baskın tek harmonikler (1, 3, 5, 7) + sıcak ahşap gövde filtresi
+          attack = 0.042; decay = 0.72 * durScale; peak = 0.28;
+          filter.type = "bandpass";
+          filter.frequency.value = Math.min(3400, f * 2.6);
+          filter.Q.value = 1.25;
+          addBreathNoise = true;
+          partials = [
+            { ratio: 1, wave: "sine", gain: 0.88 },
+            { ratio: 3, wave: "sine", gain: 0.46 },
+            { ratio: 5, wave: "sine", gain: 0.26 },
+            { ratio: 7, wave: "sine", gain: 0.12 },
+            { ratio: 2, wave: "sine", gain: 0.04 }
+          ];
+          break;
+        case "brass":
+          attack = 0.045; decay = 0.65 * durScale; filter.frequency.value = Math.min(5400, f * 5.2);
+          partials = [
+            { ratio: 1, wave: "sawtooth", gain: 0.68 },
+            { ratio: 2, wave: "sawtooth", gain: 0.34 },
+            { ratio: 3, wave: "triangle", gain: 0.18 }
+          ];
+          break;
+        case "sax":
+          attack = 0.036; decay = 0.68 * durScale; filter.frequency.value = Math.min(4600, f * 4.2);
+          addBreathNoise = true;
+          partials = [
+            { ratio: 1, wave: "sawtooth", gain: 0.62 },
+            { ratio: 2, wave: "square", gain: 0.24 },
+            { ratio: 3, wave: "sine", gain: 0.2 }
+          ];
+          break;
+        case "marimba":
+          attack = 0.003; decay = 0.26 * durScale; filter.frequency.value = Math.min(4500, f * 4.2);
+          partials = [
+            { ratio: 1, wave: "sine", gain: 0.92 },
+            { ratio: 4, wave: "sine", gain: 0.22 }
+          ];
+          break;
+        case "kalimba":
+          attack = 0.004; decay = 0.38 * durScale; filter.frequency.value = Math.min(5200, f * 5.0);
+          partials = [
+            { ratio: 1, wave: "triangle", gain: 0.86 },
+            { ratio: 2.75, wave: "sine", gain: 0.18 }
+          ];
+          break;
+        case "vibraphone":
+          attack = 0.008; decay = 0.95 * durScale; filter.frequency.value = Math.min(5500, f * 5.0);
+          partials = [
+            { ratio: 1, wave: "sine", gain: 0.88 },
+            { ratio: 2, wave: "sine", gain: 0.22 }
+          ];
+          break;
         case "organ":
-          attack = 0.02; decay = 0.72; filter.frequency.value = f * 6;
+          attack = 0.018; decay = 0.82 * durScale; filter.frequency.value = Math.min(6200, f * 6.0);
           partials = [
             { ratio: 0.5, wave: "sine", gain: 0.45 },
-            { ratio: 1, wave: "sine", gain: 0.65 },
-            { ratio: 2, wave: "sine", gain: 0.4 }
+            { ratio: 1, wave: "sine", gain: 0.68 },
+            { ratio: 2, wave: "sine", gain: 0.42 },
+            { ratio: 3, wave: "sine", gain: 0.22 }
           ];
           break;
         case "accordion":
-          attack = 0.03; decay = 0.62; filter.frequency.value = f * 5.2;
+          attack = 0.028; decay = 0.68 * durScale; filter.frequency.value = Math.min(5200, f * 5.0);
           partials = [
-            { ratio: 1, wave: "sawtooth", gain: 0.5 },
-            { ratio: 1.004, wave: "sawtooth", gain: 0.5 }
+            { ratio: 1, wave: "sawtooth", gain: 0.48 },
+            { ratio: 1.0045, wave: "sawtooth", gain: 0.48 }
           ];
           break;
         case "bass":
-          attack = 0.01; decay = 0.55; filter.frequency.value = f * 3.5;
+          attack = 0.008; decay = 0.62 * durScale; filter.frequency.value = Math.min(2800, f * 3.4);
           partials = [
-            { ratio: 0.5, wave: "triangle", gain: 0.85 },
-            { ratio: 1, wave: "sine", gain: 0.5 }
+            { ratio: 0.5, wave: "triangle", gain: 0.88 },
+            { ratio: 1, wave: "sine", gain: 0.52 }
           ];
           break;
         case "musicbox":
-          attack = 0.003; decay = 0.65; filter.frequency.value = f * 9;
+          attack = 0.002; decay = 0.72 * durScale; filter.frequency.value = Math.min(8500, f * 9.0);
           partials = [
-            { ratio: 2, wave: "sine", gain: 0.85 },
-            { ratio: 4, wave: "sine", gain: 0.25 }
+            { ratio: 2, wave: "sine", gain: 0.86 },
+            { ratio: 4, wave: "sine", gain: 0.26 }
           ];
           break;
         default:
-          attack = 0.015; decay = 0.45; filter.frequency.value = f * 5.5;
+          attack = 0.014; decay = 0.52 * durScale; filter.frequency.value = Math.min(5600, f * 5.5);
           partials = [
             { ratio: 1, wave: "sawtooth", gain: 0.55 },
             { ratio: 2, wave: "triangle", gain: 0.35 }
@@ -1400,7 +1572,7 @@
       master.gain.linearRampToValueAtTime(peak, now + attack);
       master.gain.exponentialRampToValueAtTime(0.0001, now + decay);
 
-      filter.connect(master).connect(ctx.destination);
+      filter.connect(master).connect(destination);
 
       partials.forEach((p) => {
         const osc = ctx.createOscillator();
@@ -1410,10 +1582,30 @@
         g.gain.value = p.gain;
         osc.connect(g).connect(filter);
         osc.start(now);
-        osc.stop(now + decay + 0.03);
+        osc.stop(now + decay + 0.04);
       });
 
-      pulseLights(0.75);
+      if (addBreathNoise) {
+        const breath = ctx.createBufferSource();
+        breath.buffer = createNoiseBuffer(ctx, decay * 0.65);
+        const bBp = ctx.createBiquadFilter();
+        bBp.type = "bandpass";
+        bBp.frequency.value = Math.min(4000, f * 2.2);
+        bBp.Q.value = 3.0;
+        const bGain = ctx.createGain();
+        bGain.gain.setValueAtTime(0.028, now);
+        bGain.gain.exponentialRampToValueAtTime(0.0001, now + decay * 0.65);
+        breath.connect(bBp).connect(bGain).connect(destination);
+        breath.start(now);
+      }
+    }
+
+    function playFreqSound(freq, instrumentId, duration = 0.45, useDjEffect = true) {
+      const ctx = getAudioCtx();
+      const dj = useDjEffect ? app.djEffect : "normal";
+      const out = routeThroughDjBus(ctx, ctx.destination, dj);
+      synthesizeNoteAt(ctx, out, freq, instrumentId, ctx.currentTime, duration, dj);
+      pulseLights(0.78);
     }
 
     function flashPianoKey(slot) {
@@ -1454,26 +1646,12 @@
     }
 
     function getCycleDurationMs() {
-      return app.beats * (60 / app.bpm) * 1000;
+      const baseMs = app.beats * (60 / app.bpm) * 1000;
+      return app.djEffect === "slowed" ? baseMs * 1.2 : baseMs;
     }
 
-    // Zorla yuvarlama yok: basıldığı milisaniye zamanı aynen kaydedilir
-    function onPianoKeyPlay(keyObj) {
-      const mode = app.room?.settings?.mode;
-      if (mode === "melody") {
-        const guessId = document.getElementById("melodyGuessSelect").value || "grand_piano";
-        playFreqSound(keyObj.freq, guessId, 0.42);
-        flashPianoKey(keyObj.slot);
-        app.melodyPlayed.push({ slot: keyObj.slot, freq: keyObj.freq, label: keyObj.label, t: performance.now() });
-        document.getElementById("takeStatus").textContent = `${app.melodyPlayed.length} nota çalındı.`;
-        return;
-      }
-
-      playFreqSound(keyObj.freq, app.instrumentId, 0.42);
-      flashPianoKey(keyObj.slot);
-      sendWs({ type: "live_note", slot: keyObj.slot, freq: keyObj.freq, instrumentId: app.instrumentId });
-
-      const inst = INSTRUMENTS.find((i) => i.id === app.instrumentId) || INSTRUMENTS[0];
+    function recordStudioNote({ slot, freq, label, instrumentId }) {
+      const inst = INSTRUMENTS.find((i) => i.id === instrumentId) || INSTRUMENTS[0];
       const cycleMs = getCycleDurationMs();
       let offsetMs = 0;
 
@@ -1488,25 +1666,63 @@
       app.currentTakeNotes.push({
         offsetMs,
         _rawPerf: performance.now(),
-        slot: keyObj.slot,
-        freq: keyObj.freq,
-        label: keyObj.label,
+        slot: slot || "",
+        freq: freq || 261.63,
+        label: label || inst.name,
         instrumentId: inst.id,
         instrumentName: inst.name
       });
 
       document.getElementById("takeStatus").textContent =
-        `${app.currentTakeNotes.length} nota kaydedildi — Döngüde dinleyip memnunsan "Katmanı Ekle"ye bas.`;
+        `${app.currentTakeNotes.length} vuruş/nota kaydedildi — Döngüde dinleyip memnunsan "Katmanı Ekle"ye bas.`;
     }
 
+    function onPianoKeyPlay(keyObj) {
+      const mode = app.room?.settings?.mode;
+      if (mode === "melody") {
+        const guessId = document.getElementById("melodyGuessSelect").value || "grand_piano";
+        playFreqSound(keyObj.freq, guessId, 0.45, false);
+        flashPianoKey(keyObj.slot);
+        app.melodyPlayed.push({
+          slot: keyObj.slot,
+          octave: app.octave,
+          freq: keyObj.freq,
+          label: `${keyObj.label}${app.octave}`,
+          t: performance.now()
+        });
+        document.getElementById("takeStatus").textContent = `${app.melodyPlayed.length} nota çalındı (Oktav ${app.octave}).`;
+        return;
+      }
+
+      playFreqSound(keyObj.freq, app.instrumentId, 0.45, true);
+      flashPianoKey(keyObj.slot);
+      sendWs({ type: "live_note", slot: keyObj.slot, freq: keyObj.freq, instrumentId: app.instrumentId });
+      recordStudioNote({
+        slot: keyObj.slot,
+        freq: keyObj.freq,
+        label: keyObj.label,
+        instrumentId: app.instrumentId
+      });
+    }
+
+    // Ritmi Taklit Et (aksak desenler) & Melodiyi Taklit Et (1-7 tüm oktavlar)
     function buildChallengeForMode(mode) {
       if (mode === "rhythm") {
-        const soundInst = INSTRUMENTS[Math.floor(Math.random() * INSTRUMENTS.length)];
-        const count = 4 + Math.floor(Math.random() * 2);
+        const soundPool = ["handshake", "snare_drum", "kick_drum", "marimba", "kalimba"];
+        const chosenId = soundPool[Math.floor(Math.random() * soundPool.length)];
+        const soundInst = INSTRUMENTS.find((i) => i.id === chosenId) || INSTRUMENTS[0];
+        const totalHits = Number(app.room?.settings?.rhythmHits) || 7;
+        const aksakPatterns = [
+          [260, 260, 460, 260, 460],       // 2+2+3 (7/8 aksak)
+          [250, 450, 250, 250, 450],       // 2+3+2+2 (9/8 aksak)
+          [440, 240, 240, 440, 240],       // 3+2+2+3 aksak
+          [260, 260, 260, 480],            // 2+2+2+3 (9/8)
+          [460, 250, 460, 250]             // 3+2+3+2 aksak
+        ];
+        const basePat = aksakPatterns[Math.floor(Math.random() * aksakPatterns.length)];
         const intervals = [];
-        const choices = [310, 460, 650, 820];
-        for (let i = 0; i < count - 1; i++) {
-          intervals.push(choices[Math.floor(Math.random() * choices.length)]);
+        for (let i = 0; i < totalHits - 1; i++) {
+          intervals.push(basePat[i % basePat.length]);
         }
         return {
           mode: "rhythm",
@@ -1518,14 +1734,22 @@
       }
 
       const inst = MELODIC_INSTRUMENTS[Math.floor(Math.random() * MELODIC_INSTRUMENTS.length)];
-      const keys = getPianoKeysForOctave(4).slice(0, 13);
       const count = 4;
       const notes = [];
       let delay = 0;
       for (let i = 0; i < count; i++) {
-        const k = keys[Math.floor(Math.random() * keys.length)];
-        notes.push({ slot: k.slot, freq: k.freq, label: k.label, delayMs: delay });
-        delay += [400, 520, 680][Math.floor(Math.random() * 3)];
+        // Tüm oktavlardan (1 ile 7 arası) rastgele oktav ve tuş seçimi
+        const oct = 1 + Math.floor(Math.random() * 7);
+        const octKeys = getPianoKeysForOctave(oct).slice(0, 12);
+        const k = octKeys[Math.floor(Math.random() * octKeys.length)];
+        notes.push({
+          slot: k.slot,
+          octave: oct,
+          freq: k.freq,
+          label: `${k.label} (Oktav ${oct})`,
+          delayMs: delay
+        });
+        delay += [380, 520, 680][Math.floor(Math.random() * 3)];
       }
       return {
         mode: "melody",
@@ -1540,15 +1764,15 @@
       if (!ch) return;
       if (ch.mode === "rhythm") {
         let elapsed = 0;
-        playFreqSound(ch.freq || 261.63, ch.instrumentId, 0.25);
+        playFreqSound(ch.freq || 261.63, ch.instrumentId, 0.28, false);
         (ch.intervals || []).forEach((dt) => {
           elapsed += dt;
-          setTimeout(() => playFreqSound(ch.freq || 261.63, ch.instrumentId, 0.25), elapsed);
+          setTimeout(() => playFreqSound(ch.freq || 261.63, ch.instrumentId, 0.28, false), elapsed);
         });
       } else if (ch.mode === "melody") {
         (ch.notes || []).forEach((n) => {
           setTimeout(() => {
-            playFreqSound(n.freq, ch.instrumentId, 0.42);
+            playFreqSound(n.freq, ch.instrumentId, 0.48, false);
           }, n.delayMs);
         });
       }
@@ -1565,13 +1789,13 @@
       }
 
       const countDiff = Math.abs(userIntervals.length - targetIntervals.length);
-      const countScore = Math.max(0, 100 - countDiff * 25);
+      const countScore = Math.max(0, 100 - countDiff * 20);
 
       const pairs = Math.min(userIntervals.length, targetIntervals.length);
       let timingSum = 0;
       for (let i = 0; i < pairs; i++) {
         const err = Math.abs(userIntervals[i] - targetIntervals[i]);
-        const ratio = Math.max(0, 1 - err / Math.max(260, targetIntervals[i]));
+        const ratio = Math.max(0, 1 - err / Math.max(250, targetIntervals[i]));
         timingSum += ratio * 100;
       }
       const timingScore = pairs ? timingSum / pairs : 0;
@@ -1590,7 +1814,12 @@
 
       let noteHits = 0;
       targetNotes.forEach((tn, idx) => {
-        if (played[idx] && played[idx].slot === tn.slot) noteHits++;
+        if (played[idx]) {
+          const sameNote = played[idx].slot.replace(/[012]$/, "") === tn.slot.replace(/[012]$/, "");
+          const sameOct = played[idx].octave === tn.octave;
+          if (sameNote && sameOct) noteHits += 1;
+          else if (sameNote) noteHits += 0.5;
+        }
       });
       const pitchScore = (noteHits / targetNotes.length) * 40;
 
@@ -1632,6 +1861,7 @@
       document.getElementById("fieldRounds").classList.toggle("hidden", !isStudio);
       document.getElementById("fieldBpm").classList.toggle("hidden", !isStudio);
       document.getElementById("fieldBeats").classList.toggle("hidden", !isStudio);
+      document.getElementById("fieldRhythmHits").classList.toggle("hidden", mode !== "rhythm");
       document.getElementById("fieldTimer").classList.toggle("hidden", mode === "free");
     }
 
@@ -1661,7 +1891,7 @@
           app.room = msg.room;
           renderRoomState();
         } else if (msg.type === "live_note") {
-          playFreqSound(msg.freq, msg.instrumentId, 0.35);
+          playFreqSound(msg.freq, msg.instrumentId, 0.35, true);
           flashPianoKey(msg.slot);
         }
       };
@@ -1702,8 +1932,10 @@
       }, 1000);
     }
 
-    function startTabuTimer() {
+    // Tabu: Süre bitince otomatik sıradaki anlatıcıya ve yeni karta geçer
+    function startTabuTimer(turnToken, amITeller) {
       clearInterval(app.tabuTimer);
+      app.activeTabuToken = turnToken;
       const sec = Number(app.room?.settings?.turnDuration) || 0;
       const lbl = document.getElementById("tabuTimerText");
       if (!sec) {
@@ -1716,7 +1948,12 @@
         app.remainingSec--;
         if (app.remainingSec <= 0) {
           clearInterval(app.tabuTimer);
-          lbl.textContent = "⏱️ Süre Doldu!";
+          app.tabuTimer = null;
+          lbl.textContent = "⏱️ Süre doldu, sıra geçiyor...";
+          const isHost = app.room?.hostId === app.myId;
+          if (amITeller || isHost) {
+            sendWs({ type: "tabu_next_turn", nextCard: nextTabuCard() });
+          }
         } else {
           lbl.textContent = `⏱️ ${app.remainingSec} sn`;
         }
@@ -1734,12 +1971,14 @@
       const mode = room.settings.mode;
       app.bpm = Number(room.settings.bpm) || 110;
       app.beats = Number(room.settings.beats) || 8;
+      app.djEffect = room.djEffect || "normal";
 
       if (!room.started) {
         stopLoopPlayback();
         clearInterval(app.turnTimer);
         clearInterval(app.challengeTimer);
         clearInterval(app.tabuTimer);
+        app.activeTabuToken = null;
         hideAllGameViews();
 
         document.getElementById("restartGameBtn").classList.add("hidden");
@@ -1752,6 +1991,7 @@
         document.getElementById("lobbyBpm").value = room.settings.bpm;
         document.getElementById("lobbyBpmVal").textContent = room.settings.bpm;
         document.getElementById("lobbyBeats").value = room.settings.beats;
+        document.getElementById("lobbyRhythmHits").value = room.settings.rhythmHits || 7;
         document.getElementById("lobbyTimer").value = room.settings.turnDuration;
 
         document.querySelectorAll(".mode-card").forEach((card) => {
@@ -1761,7 +2001,7 @@
 
         updateLobbyModeFields(mode);
 
-        ["lobbyRounds", "lobbyBpm", "lobbyBeats", "lobbyTimer"].forEach((id) => {
+        ["lobbyRounds", "lobbyBpm", "lobbyBeats", "lobbyRhythmHits", "lobbyTimer"].forEach((id) => {
           document.getElementById(id).disabled = !isHost;
         });
         document.getElementById("startGameBtn").classList.toggle("hidden", !isHost);
@@ -1792,16 +2032,27 @@
         document.getElementById("resultsView").classList.remove("hidden");
         document.getElementById("resultsBackLobbyBtn").classList.toggle("hidden", !isHost);
         const list = document.getElementById("resultsList");
+        const answerBox = document.getElementById("correctAnswerBox");
         list.innerHTML = "";
+        answerBox.classList.add("hidden");
 
         if (mode === "rhythm" || mode === "melody") {
           document.getElementById("resultsTitle").textContent = "Doğruluk Sonuçları";
           document.getElementById("resultsPlaySongBtn").classList.add("hidden");
+          document.getElementById("resultsDownloadWavBtn").classList.add("hidden");
           const ch = room.challenge;
-          document.getElementById("resultsSubtitle").textContent =
-            mode === "melody" && ch
-              ? `Çalan müzik aleti: ${ch.instrumentName}`
-              : "Herkes tamamladı! İşte doğruluk oranları:";
+
+          if (mode === "melody" && ch) {
+            document.getElementById("resultsSubtitle").textContent = "Herkes tamamladı! Doğru cevap aşağıda:";
+            const noteSeq = (ch.notes || []).map((n) => n.label).join(" → ");
+            answerBox.classList.remove("hidden");
+            answerBox.innerHTML = `
+              <strong>✅ Doğru Cevap:</strong> ${ch.instrumentName}<br />
+              <span class="muted">Çalan Notalar &amp; Oktavlar: ${noteSeq}</span>
+            `;
+          } else {
+            document.getElementById("resultsSubtitle").textContent = "Herkes tamamladı! İşte doğruluk oranları:";
+          }
 
           const subs = Object.values(room.submissions || {}).sort((a, b) => b.accuracy - a.accuracy);
           subs.forEach((s, idx) => {
@@ -1822,6 +2073,7 @@
           document.getElementById("resultsSubtitle").textContent =
             `${room.settings.totalRounds} tur bitti ve toplam ${room.layers.length} katman eklendi.`;
           document.getElementById("resultsPlaySongBtn").classList.remove("hidden");
+          document.getElementById("resultsDownloadWavBtn").classList.remove("hidden");
 
           room.layers.forEach((l, idx) => {
             const row = document.createElement("div");
@@ -1829,7 +2081,7 @@
             row.innerHTML = `
               <div>
                 <strong>${idx + 1}. ${l.avatar} ${l.playerName}</strong>
-                <div class="muted">${l.instrumentName} • ${l.notes.length} nota${l.hasVocal ? " + Mikrofon" : ""}</div>
+                <div class="muted">${l.instrumentName} • ${l.notes.length} vuruş/nota${l.hasVocal ? " + Mikrofon" : ""}</div>
               </div>
               <span class="muted">Katman #${idx + 1}</span>
             `;
@@ -1857,12 +2109,13 @@
         return;
       }
 
-      // MELODİYİ TAKLİT ET (TEK SES SEÇİCİLİ)
+      // MELODİYİ TAKLİT ET
       if (mode === "melody") {
         document.getElementById("melodyGameView").classList.remove("hidden");
         const pianoCard = document.getElementById("pianoCard");
         pianoCard.classList.remove("hidden");
         document.getElementById("studioInstWrap").classList.add("hidden");
+        document.getElementById("studioPercWrap").classList.add("hidden");
         document.getElementById("melodyPianoMount").appendChild(pianoCard);
 
         const submitted = Boolean(room.submissions?.[app.myId]);
@@ -1926,7 +2179,10 @@
         });
         gList.scrollTop = gList.scrollHeight;
 
-        if (!app.tabuTimer) startTabuTimer();
+        const token = room.tabu?.turnToken || 0;
+        if (app.activeTabuToken !== token) {
+          startTabuTimer(token, amITeller);
+        }
         return;
       }
 
@@ -1935,12 +2191,21 @@
       const pianoCard = document.getElementById("pianoCard");
       pianoCard.classList.remove("hidden");
       document.getElementById("studioInstWrap").classList.remove("hidden");
+      document.getElementById("studioPercWrap").classList.remove("hidden");
       document.getElementById("studioPianoMount").appendChild(pianoCard);
 
       document.getElementById("themeBanner").classList.toggle("hidden", mode !== "theme");
       document.getElementById("conceptTitle").textContent = room.concept;
       document.getElementById("liveBpmSlider").value = app.bpm;
       document.getElementById("liveBpmText").textContent = app.bpm;
+
+      // Kurucuya özel DJ efekt durumu
+      document.getElementById("djStatusText").textContent =
+        `Aktif Efekt: ${DJ_LABELS[app.djEffect] || "Normal"}${isHost ? " (Oda Kurucusu Kontrolü)" : ""}`;
+      document.querySelectorAll("#djButtonsWrap button").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.dj === app.djEffect);
+        btn.disabled = !isHost;
+      });
 
       document.getElementById("studioRoundBadge").textContent =
         `TUR ${room.currentRound || 1} / ${room.settings.totalRounds || 2}`;
@@ -1997,7 +2262,6 @@
       app.scheduledTimers = [];
     }
 
-    // Tam basılan zamanlamayla (offsetMs) aksak/serbest döngü çalımı
     function scheduleCycleAudio() {
       clearScheduledNoteTimers();
       const cycleMs = getCycleDurationMs();
@@ -2007,8 +2271,8 @@
         const delay = app.reverseTake ? Math.max(0, cycleMs - n.offsetMs) : n.offsetMs;
         const tid = setTimeout(() => {
           if (!app.isPlaying) return;
-          playFreqSound(n.freq, n.instrumentId, 0.35);
-          flashPianoKey(n.slot);
+          playFreqSound(n.freq, n.instrumentId, 0.38, true);
+          if (n.slot) flashPianoKey(n.slot);
         }, delay);
         app.scheduledTimers.push(tid);
       });
@@ -2022,7 +2286,7 @@
           const delay = layer.reverse ? Math.max(0, cycleMs - clamped) : clamped;
           const tid = setTimeout(() => {
             if (!app.isPlaying) return;
-            playFreqSound(n.freq, n.instrumentId, 0.35);
+            playFreqSound(n.freq, n.instrumentId, 0.38, true);
           }, delay);
           app.scheduledTimers.push(tid);
         });
@@ -2032,7 +2296,8 @@
             reverse: layer.reverse,
             effect: layer.vocalEffect || "normal",
             sourceBpm: layer.sourceBpm || app.bpm,
-            targetBpm: app.bpm
+            targetBpm: app.bpm,
+            djEffect: app.djEffect
           });
         }
       });
@@ -2042,7 +2307,8 @@
           reverse: app.micReverse,
           effect: app.micEffect,
           sourceBpm: app.micBpm,
-          targetBpm: app.bpm
+          targetBpm: app.bpm,
+          djEffect: app.djEffect
         });
       }
     }
@@ -2053,6 +2319,8 @@
       app.isPlaying = true;
       app.currentBeat = 0;
       getAudioCtx();
+
+      const stepMs = getCycleDurationMs() / Math.max(1, app.beats);
 
       const stepBeat = () => {
         const dots = document.querySelectorAll(".beat-dot");
@@ -2066,7 +2334,7 @@
       };
 
       stepBeat();
-      app.loopTimer = setInterval(stepBeat, (60 / app.bpm) * 1000);
+      app.loopTimer = setInterval(stepBeat, stepMs);
     }
 
     function stopLoopPlayback() {
@@ -2093,7 +2361,7 @@
         const row = document.createElement("div");
         row.className = "layer-row" + (layer.muted ? " muted" : "");
         const vocalTag = layer.hasVocal ? ` • 🎙️ ${layer.vocalEffect || "Vokal"}` : "";
-        row.innerHTML = `<div><span>${layer.avatar}</span> <strong>${layer.playerName}</strong> <span class="muted">— ${layer.notes.length} nota (${layer.instrumentName})${vocalTag}</span></div>`;
+        row.innerHTML = `<div><span>${layer.avatar}</span> <strong>${layer.playerName}</strong> <span class="muted">— ${layer.notes.length} vuruş/nota (${layer.instrumentName})${vocalTag}</span></div>`;
 
         const btns = document.createElement("div");
         btns.className = "controls-cluster";
@@ -2119,24 +2387,19 @@
       });
     }
 
-    function createImpulseReverb(ctx, seconds = 1.2, decay = 2.2) {
-      const rate = ctx.sampleRate;
-      const length = Math.floor(rate * seconds);
-      const impulse = ctx.createBuffer(2, length, rate);
-      for (let ch = 0; ch < 2; ch++) {
-        const data = impulse.getChannelData(ch);
-        for (let i = 0; i < length; i++) {
-          data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
-        }
-      }
-      const conv = ctx.createConvolver();
-      conv.buffer = impulse;
-      return conv;
-    }
-
-    function playVocalBuffer(buffer, { reverse = false, effect = "normal", sourceBpm = 110, targetBpm = 110 }) {
+    function playVocalBuffer(buffer, {
+      reverse = false,
+      effect = "normal",
+      sourceBpm = 110,
+      targetBpm = 110,
+      djEffect = "normal",
+      targetCtx = null,
+      targetDest = null,
+      startTime = 0
+    }) {
       if (!buffer) return;
-      const ctx = getAudioCtx();
+      const ctx = targetCtx || getAudioCtx();
+      const baseDest = targetDest || routeThroughDjBus(ctx, ctx.destination, djEffect);
 
       let buf = buffer;
       if (reverse) {
@@ -2150,6 +2413,7 @@
       }
 
       const tempoRatio = Math.min(1.6, Math.max(0.7, targetBpm / Math.max(50, sourceBpm)));
+      const djSpeed = djEffect === "slowed" ? 0.84 : 1.0;
       const pitchMap = {
         normal: 1.0,
         chipmunk: 1.42,
@@ -2168,10 +2432,11 @@
 
       const src = ctx.createBufferSource();
       src.buffer = buf;
-      src.playbackRate.value = Math.min(2.2, Math.max(0.45, tempoRatio * (pitchMap[effect] || 1)));
+      src.playbackRate.value = Math.min(2.2, Math.max(0.45, tempoRatio * djSpeed * (pitchMap[effect] || 1)));
 
       const outGain = ctx.createGain();
       outGain.gain.value = 0.9;
+      const t0 = startTime || ctx.currentTime;
 
       if (effect === "robot") {
         const mod = ctx.createOscillator();
@@ -2180,8 +2445,8 @@
         mod.frequency.value = 52;
         modGain.gain.value = 0.55;
         mod.connect(modGain.gain);
-        src.connect(modGain).connect(outGain).connect(ctx.destination);
-        mod.start();
+        src.connect(modGain).connect(outGain).connect(baseDest);
+        mod.start(t0);
         src.onended = () => { try { mod.stop(); } catch (_) {} };
       } else if (effect === "alien") {
         const lfo = ctx.createOscillator();
@@ -2190,18 +2455,18 @@
         lfo.frequency.value = 9;
         lfoGain.gain.value = 260;
         lfo.connect(lfoGain).connect(src.detune);
-        src.connect(outGain).connect(ctx.destination);
-        lfo.start();
+        src.connect(outGain).connect(baseDest);
+        lfo.start(t0);
         src.onended = () => { try { lfo.stop(); } catch (_) {} };
       } else if (effect === "radio" || effect === "telephone") {
         const bp = ctx.createBiquadFilter();
         bp.type = "bandpass";
         bp.frequency.value = effect === "radio" ? 1550 : 1200;
         bp.Q.value = effect === "radio" ? 2.4 : 3.2;
-        src.connect(bp).connect(outGain).connect(ctx.destination);
+        src.connect(bp).connect(outGain).connect(baseDest);
       } else if (effect === "cave") {
         const rev = createImpulseReverb(ctx, 1.5, 2.0);
-        src.connect(rev).connect(outGain).connect(ctx.destination);
+        src.connect(rev).connect(outGain).connect(baseDest);
         src.connect(outGain);
       } else if (effect === "chorus") {
         const det1 = ctx.createBufferSource();
@@ -2210,17 +2475,17 @@
         det2.buffer = buf;
         det1.playbackRate.value = src.playbackRate.value * 1.03;
         det2.playbackRate.value = src.playbackRate.value * 0.97;
-        src.connect(outGain).connect(ctx.destination);
+        src.connect(outGain).connect(baseDest);
         det1.connect(outGain);
         det2.connect(outGain);
-        det1.start();
-        det2.start();
+        det1.start(t0);
+        det2.start(t0);
         src.onended = () => { try { det1.stop(); det2.stop(); } catch (_) {} };
       } else if (effect === "underwater") {
         const lp = ctx.createBiquadFilter();
         lp.type = "lowpass";
         lp.frequency.value = 420;
-        src.connect(lp).connect(outGain).connect(ctx.destination);
+        src.connect(lp).connect(outGain).connect(baseDest);
       } else if (effect === "demon") {
         const ring = ctx.createOscillator();
         const ringGain = ctx.createGain();
@@ -2228,14 +2493,14 @@
         ring.frequency.value = 34;
         ringGain.gain.value = 0.45;
         ring.connect(ringGain.gain);
-        src.connect(ringGain).connect(outGain).connect(ctx.destination);
-        ring.start();
+        src.connect(ringGain).connect(outGain).connect(baseDest);
+        ring.start(t0);
         src.onended = () => { try { ring.stop(); } catch (_) {} };
       } else {
-        src.connect(outGain).connect(ctx.destination);
+        src.connect(outGain).connect(baseDest);
       }
 
-      src.start();
+      src.start(t0);
     }
 
     async function bufferToBase64(buffer) {
@@ -2251,9 +2516,8 @@
       return { b64: btoa(bin), sampleRate: buffer.sampleRate };
     }
 
-    function decodeAndPlayVocal(vocalData, opts) {
-      if (!vocalData?.b64) return;
-      const ctx = getAudioCtx();
+    function decodeVocalToBuffer(ctx, vocalData) {
+      if (!vocalData?.b64) return null;
       const bin = atob(vocalData.b64);
       const bytes = new Uint8Array(bin.length);
       for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
@@ -2261,7 +2525,13 @@
       const buf = ctx.createBuffer(1, i16.length, vocalData.sampleRate || ctx.sampleRate);
       const out = buf.getChannelData(0);
       for (let i = 0; i < i16.length; i++) out[i] = i16[i] / 0x8000;
-      playVocalBuffer(buf, opts);
+      return buf;
+    }
+
+    function decodeAndPlayVocal(vocalData, opts) {
+      const ctx = getAudioCtx();
+      const buf = decodeVocalToBuffer(ctx, vocalData);
+      if (buf) playVocalBuffer(buf, opts);
     }
 
     async function toggleMic() {
@@ -2301,27 +2571,66 @@
       }
     }
 
-    function downloadWav() {
-      const notes = [
-        ...app.currentTakeNotes,
-        ...(app.room?.layers || []).filter((l) => !l.muted).flatMap((l) => l.notes || [])
-      ];
-      if (!notes.length) {
-        alert("İndirilecek nota bulunamadı.");
+    // Loop'ta duyulan müziğin (enstrümanlar, reverse, mikrofon, DJ efekti) birebir aynısını WAV olarak indirir
+    async function downloadWav() {
+      const layers = (app.room?.layers || []).filter((l) => !l.muted);
+      const hasAnything = app.currentTakeNotes.length > 0 || Boolean(app.micBuffer) || layers.length > 0;
+      if (!hasAnything) {
+        alert("İndirilecek ses veya nota bulunamadı.");
         return;
       }
-      const sr = 22050;
-      const cycleSec = Math.max(1, app.beats * (60 / app.bpm));
-      const len = Math.floor(sr * cycleSec);
-      const pcm = new Float32Array(len);
-      notes.forEach((n) => {
-        const start = Math.floor(((n.offsetMs || 0) / 1000) * sr) % len;
-        const dur = Math.min(len - start, Math.floor(0.32 * sr));
-        for (let i = 0; i < dur; i++) {
-          const t = i / sr;
-          pcm[start + i] = Math.max(-1, Math.min(1, pcm[start + i] + Math.sin(2 * Math.PI * (n.freq || 261.63) * t) * Math.exp(-t * 8) * 0.35));
+
+      const sr = 44100;
+      const cycleMs = getCycleDurationMs();
+      const totalSec = Math.max(1, cycleMs / 1000);
+      const offline = new OfflineAudioContext(1, Math.ceil(sr * totalSec), sr);
+      const djBus = routeThroughDjBus(offline, offline.destination, app.djEffect);
+
+      app.currentTakeNotes.forEach((n) => {
+        const delayMs = app.reverseTake ? Math.max(0, cycleMs - n.offsetMs) : n.offsetMs;
+        synthesizeNoteAt(offline, djBus, n.freq, n.instrumentId, delayMs / 1000, 0.45, app.djEffect);
+      });
+
+      layers.forEach((layer) => {
+        const scale = layer.sourceBpm ? layer.sourceBpm / app.bpm : 1;
+        (layer.notes || []).forEach((n) => {
+          const clamped = ((n.offsetMs || 0) * scale) % cycleMs;
+          const delayMs = layer.reverse ? Math.max(0, cycleMs - clamped) : clamped;
+          synthesizeNoteAt(offline, djBus, n.freq, n.instrumentId, delayMs / 1000, 0.45, app.djEffect);
+        });
+
+        if (layer.vocalData) {
+          const vBuf = decodeVocalToBuffer(offline, layer.vocalData);
+          if (vBuf) {
+            playVocalBuffer(vBuf, {
+              reverse: layer.reverse,
+              effect: layer.vocalEffect || "normal",
+              sourceBpm: layer.sourceBpm || app.bpm,
+              targetBpm: app.bpm,
+              djEffect: app.djEffect,
+              targetCtx: offline,
+              targetDest: djBus,
+              startTime: 0.01
+            });
+          }
         }
       });
+
+      if (app.micBuffer) {
+        playVocalBuffer(app.micBuffer, {
+          reverse: app.micReverse,
+          effect: app.micEffect,
+          sourceBpm: app.micBpm,
+          targetBpm: app.bpm,
+          djEffect: app.djEffect,
+          targetCtx: offline,
+          targetDest: djBus,
+          startTime: 0.01
+        });
+      }
+
+      const rendered = await offline.startRendering();
+      const pcm = rendered.getChannelData(0);
       const buf = new ArrayBuffer(44 + pcm.length * 2);
       const v = new DataView(buf);
       const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
@@ -2371,6 +2680,7 @@
               totalRounds: Number(document.getElementById("lobbyRounds").value) || 2,
               bpm: Number(document.getElementById("lobbyBpm").value) || 110,
               beats: Number(document.getElementById("lobbyBeats").value) || 8,
+              rhythmHits: Number(document.getElementById("lobbyRhythmHits").value) || 7,
               turnDuration: m.id === "free" ? 0 : Number(document.getElementById("lobbyTimer").value) || 0
             }
           });
@@ -2395,6 +2705,25 @@
       });
 
       buildPianoBoard();
+
+      // Handshake / Snare / Perküsyon pedleri
+      document.querySelectorAll(".perc-pad-btn").forEach((btn) => {
+        btn.onpointerdown = () => {
+          const percId = btn.dataset.perc;
+          btn.classList.add("hit");
+          setTimeout(() => btn.classList.remove("hit"), 110);
+          playFreqSound(261.63, percId, 0.3, true);
+          sendWs({ type: "live_note", slot: "", freq: 261.63, instrumentId: percId });
+          recordStudioNote({ slot: "", freq: 261.63, label: btn.textContent.trim(), instrumentId: percId });
+        };
+      });
+
+      // Kurucuya özel DJ butonları
+      document.querySelectorAll("#djButtonsWrap button").forEach((btn) => {
+        btn.onclick = () => {
+          sendWs({ type: "set_dj_effect", effect: btn.dataset.dj });
+        };
+      });
 
       document.getElementById("octDownBtn").onclick = () => {
         if (app.octave > 1) {
@@ -2421,7 +2750,7 @@
         sendWs({
           type: "create_room",
           player: { name, avatar: app.myAvatar },
-          settings: { mode: "collab", totalRounds: 2, bpm: 110, beats: 8, turnDuration: 0 }
+          settings: { mode: "collab", totalRounds: 2, bpm: 110, beats: 8, rhythmHits: 7, turnDuration: 0 }
         });
       };
 
@@ -2436,7 +2765,7 @@
         });
       };
 
-      ["lobbyRounds", "lobbyBpm", "lobbyBeats", "lobbyTimer"].forEach((id) => {
+      ["lobbyRounds", "lobbyBpm", "lobbyBeats", "lobbyRhythmHits", "lobbyTimer"].forEach((id) => {
         document.getElementById(id).oninput = () => {
           const bpm = Number(document.getElementById("lobbyBpm").value) || 110;
           document.getElementById("lobbyBpmVal").textContent = bpm;
@@ -2446,6 +2775,7 @@
               totalRounds: Number(document.getElementById("lobbyRounds").value) || 2,
               bpm,
               beats: Number(document.getElementById("lobbyBeats").value) || 8,
+              rhythmHits: Number(document.getElementById("lobbyRhythmHits").value) || 7,
               turnDuration: Number(document.getElementById("lobbyTimer").value) || 0
             }
           });
@@ -2457,10 +2787,12 @@
         app.rhythmTaps = [];
         app.melodyPlayed = [];
         app.currentTakeNotes = [];
+        app.micBuffer = null;
         clearInterval(app.challengeTimer);
         clearInterval(app.tabuTimer);
         app.challengeTimer = null;
         app.tabuTimer = null;
+        app.activeTabuToken = null;
 
         const challenge = mode === "rhythm" || mode === "melody" ? buildChallengeForMode(mode) : null;
         const tabuCard = mode === "tabu" ? nextTabuCard() : null;
@@ -2476,12 +2808,14 @@
       ["restartGameBtn", "resultsBackLobbyBtn"].forEach((id) => {
         document.getElementById(id).onclick = () => {
           app.currentTakeNotes = [];
+          app.micBuffer = null;
           app.rhythmTaps = [];
           app.melodyPlayed = [];
           clearInterval(app.challengeTimer);
           clearInterval(app.tabuTimer);
           app.challengeTimer = null;
           app.tabuTimer = null;
+          app.activeTabuToken = null;
           sendWs({ type: "restart_game" });
         };
       });
@@ -2498,7 +2832,7 @@
         rhythmTapBtn.classList.add("hit");
         setTimeout(() => rhythmTapBtn.classList.remove("hit"), 110);
         const ch = app.room?.challenge;
-        playFreqSound(ch?.freq || 261.63, ch?.instrumentId || "kick_drum", 0.25);
+        playFreqSound(ch?.freq || 261.63, ch?.instrumentId || "handshake", 0.28, false);
         app.rhythmTaps.push(performance.now());
         document.getElementById("rhythmTapInfo").textContent = `${app.rhythmTaps.length} vuruş yapıldı`;
       };
@@ -2525,10 +2859,11 @@
         clearInterval(app.challengeTimer);
         const guessSelEl = document.getElementById("melodyGuessSelect");
         const guessName = guessSelEl.options[guessSelEl.selectedIndex]?.textContent || "";
+        const playedStr = app.melodyPlayed.map((p) => p.label).join(", ");
         sendWs({
           type: "submit_challenge",
           accuracy: calculateMelodyAccuracy(),
-          detail: `Tahmin: ${guessName} • ${app.melodyPlayed.length} nota`
+          detail: `Tahmin: ${guessName}${playedStr ? " • Notalar: " + playedStr : ""}`
         });
       };
 
@@ -2578,9 +2913,21 @@
         }
       };
 
+      // Mevcut Kaydı Sil: hem kaydı hem loop'taki planlı seslerini anında siler
       document.getElementById("clearTakeBtn").onclick = () => {
         app.currentTakeNotes = [];
-        document.getElementById("takeStatus").textContent = "Mevcut kayıt temizlendi.";
+        app.micBuffer = null;
+        app.reverseTake = false;
+        app.micReverse = false;
+        document.getElementById("reverseTakeBtn").classList.remove("active");
+        document.getElementById("micPlayBtn").disabled = true;
+        document.getElementById("micRevBtn").disabled = true;
+        document.getElementById("micDelBtn").disabled = true;
+        clearScheduledNoteTimers();
+        if (app.isPlaying) {
+          startLoopPlayback();
+        }
+        document.getElementById("takeStatus").textContent = "Mevcut kayıt loop'tan ve bellekten tamamen silindi.";
       };
 
       document.getElementById("saveTurnBtn").onclick = async () => {
@@ -2590,6 +2937,9 @@
 
         if (app.currentTakeNotes.length || vocalData) {
           const cleanNotes = app.currentTakeNotes.map(({ _rawPerf, ...rest }) => rest);
+          const uniqueInsts = [...new Set(cleanNotes.map((n) => n.instrumentName))];
+          const layerInstSummary = uniqueInsts.length > 1 ? uniqueInsts.join(" + ") : (uniqueInsts[0] || inst.name);
+
           sendWs({
             type: "add_layer",
             nextConcept: nextRandomConcept(),
@@ -2597,7 +2947,7 @@
               id: "l_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
               playerName: me.name,
               avatar: me.avatar,
-              instrumentName: inst.name,
+              instrumentName: layerInstSummary,
               notes: cleanNotes,
               vocalData,
               hasVocal: Boolean(vocalData),
@@ -2661,7 +3011,8 @@
           reverse: app.micReverse,
           effect: app.micEffect,
           sourceBpm: app.micBpm,
-          targetBpm: app.bpm
+          targetBpm: app.bpm,
+          djEffect: app.djEffect
         });
       document.getElementById("micRevBtn").onclick = (e) => {
         app.micReverse = !app.micReverse;
@@ -2673,9 +3024,11 @@
         document.getElementById("micRevBtn").disabled = true;
         document.getElementById("micDelBtn").disabled = true;
         document.getElementById("micStatus").textContent = "Ses kaydı silindi.";
+        if (app.isPlaying) startLoopPlayback();
       };
 
       document.getElementById("downloadWavBtn").onclick = downloadWav;
+      document.getElementById("resultsDownloadWavBtn").onclick = downloadWav;
 
       connectSocket();
     })();
