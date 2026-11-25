@@ -810,7 +810,7 @@
       <div class="card">
         <h3>Nasıl Çalışır?</h3>
         <p class="muted">
-          • <strong>Herkes Bir Şey Eklesin &amp; Temalı Beste:</strong> Serbest ve aksak ritimlerle çal, tuşa basılı tutarak notayı uzat, göndermeden önce loop'ta dinle veya sil, onaylayınca herkes duysun ve sıra geçsin.<br /><br />
+          • <strong>Herkes Bir Şey Eklesin &amp; Temalı Beste:</strong> Loop dönerken içinde sıkışmadan özgür ve aksak ritimlerle çal, tuşa basılı tutarak notayı uzat, göndermeden önce loop'ta dinle veya sil, onaylayınca herkes duysun ve sıra geçsin.<br /><br />
           • <strong>Ritmi &amp; Melodiyi Taklit Et:</strong> Duyduğun ritmi veya tek oktav melodiyi birebir çal ve doğruluk oranını gör.<br /><br />
           • <strong>Tabu:</strong> Yasaklı kelimelere takılmadan anlat, süre bitince anlatıcı sırası otomatik geçsin.
         </p>
@@ -1205,7 +1205,7 @@
         <button type="button" class="perc-pad-btn" data-perc="cowbell">🐮 Cowbell</button>
       </div>
 
-      <p class="muted" id="takeStatus" style="margin-top: 8px;">Aksak ritim çalabilir, tuşa basılı tutarak notayı uzatabilir ve göndermeden önce loop'ta dinleyebilirsin.</p>
+      <p class="muted" id="takeStatus" style="margin-top: 8px;">Loop dönerken içinde sıkışmadan özgür çalabilir, tuşa basılı tutarak notayı uzatabilir ve göndermeden önce loop'ta dinleyebilirsin.</p>
     </section>
   </div>
 
@@ -1500,6 +1500,12 @@
       { slot: "C2", label: "Do", semi: 24, isBlack: false }
     ];
 
+    function normalizeBeats(raw) {
+      const num = Number(raw);
+      if (Number.isInteger(num) && num >= 1 && num <= 16) return num;
+      return 8;
+    }
+
     function midiToFreq(midi) {
       return 440 * Math.pow(2, (midi - 69) / 12);
     }
@@ -1554,6 +1560,7 @@
 
     const app = {
       ws: null,
+      pendingWsQueue: [],
       myId: null,
       myAvatar: AVATARS[0].id,
       room: null,
@@ -2033,8 +2040,8 @@
         master.gain.setValueAtTime(0.0001, now);
         master.gain.linearRampToValueAtTime(0.45, now + 0.014);
         if (!isHoldMode) {
-          const endT = now + Math.max(0.16, timedDuration * durScale);
-          master.gain.setValueAtTime(0.35, Math.max(now + 0.02, endT - 0.05));
+          const endT = now + Math.max(0.12, timedDuration * durScale);
+          master.gain.setValueAtTime(0.38, Math.max(now + 0.02, endT - 0.04));
           master.gain.exponentialRampToValueAtTime(0.0001, endT);
           src.connect(filter);
           src.start(now);
@@ -2050,8 +2057,8 @@
             try {
               master.gain.cancelScheduledValues(relT);
               master.gain.setValueAtTime(Math.max(0.0002, master.gain.value), relT);
-              master.gain.exponentialRampToValueAtTime(0.0001, relT + 0.14);
-              setTimeout(() => { try { src.stop(); } catch (_) {} }, 160);
+              master.gain.exponentialRampToValueAtTime(0.0001, relT + 0.12);
+              setTimeout(() => { try { src.stop(); } catch (_) {} }, 140);
             } catch (_) {}
           }
         };
@@ -2108,10 +2115,10 @@
       });
 
       if (!isHoldMode) {
-        const endT = now + Math.max(0.16, timedDuration * durScale);
-        master.gain.setValueAtTime(Math.max(0.001, peak * 0.72), Math.max(now + attack + 0.01, endT - 0.06));
+        const endT = now + Math.max(0.12, timedDuration * durScale);
+        master.gain.setValueAtTime(Math.max(0.001, peak * 0.78), Math.max(now + attack + 0.01, endT - 0.04));
         master.gain.exponentialRampToValueAtTime(0.0001, endT);
-        oscs.forEach((o) => o.stop(endT + 0.05));
+        oscs.forEach((o) => o.stop(endT + 0.04));
         return { release: () => {} };
       }
 
@@ -2121,10 +2128,10 @@
           try {
             master.gain.cancelScheduledValues(relT);
             master.gain.setValueAtTime(Math.max(0.0002, master.gain.value), relT);
-            master.gain.exponentialRampToValueAtTime(0.0001, relT + 0.14);
+            master.gain.exponentialRampToValueAtTime(0.0001, relT + 0.12);
             setTimeout(() => {
               oscs.forEach((o) => { try { o.stop(); } catch (_) {} });
-            }, 160);
+            }, 140);
           } catch (_) {}
         }
       };
@@ -2228,6 +2235,7 @@
       const inst = INSTRUMENTS.find((i) => i.id === instrumentId) || INSTRUMENTS[0];
       const cycleMs = getCycleDurationMs();
       const lockedSynth = cloneSynth(synthParams);
+      const nowPerf = performance.now();
       let offsetMs = 0;
 
       if (app.isPlaying) {
@@ -2235,15 +2243,15 @@
         offsetMs = (((estimatedServerNow() - anchor) % cycleMs) + cycleMs) % cycleMs;
       } else if (app.currentTakeNotes.length > 0) {
         const prev = app.currentTakeNotes[app.currentTakeNotes.length - 1];
-        const dt = Math.min(cycleMs - 40, performance.now() - prev._rawPerf);
-        offsetMs = (prev.offsetMs + Math.max(40, dt)) % cycleMs;
+        const rawDelta = Math.max(20, nowPerf - (prev._rawPerf || nowPerf));
+        offsetMs = (prev.offsetMs + rawDelta) % cycleMs;
       }
 
       const entry = {
         offsetMs,
-        holdDurationMs: 360,
-        _rawPerf: performance.now(),
-        _pressPerf: performance.now(),
+        holdDurationMs: 280,
+        _rawPerf: nowPerf,
+        _pressPerf: nowPerf,
         slot: slot || "",
         freq: freq || 261.63,
         label: label || inst.name,
@@ -2258,14 +2266,14 @@
       }
 
       document.getElementById("takeStatus").textContent =
-        `${app.currentTakeNotes.length} nota/vuruş kaydedildi — "Atmadan Önce Loop'ta Dinle" ile kontrol edebilirsin.`;
+        `${app.currentTakeNotes.length} nota/vuruş kaydedildi (sıkıştırılmadan tam zamanı ve basılı tutma süresiyle) — "Atmadan Önce Loop'ta Dinle" ile kontrol edebilirsin.`;
     }
 
     function finalizeStudioTakeNote(holdKey) {
       if (!holdKey) return;
       const entry = app.pendingTakeByHoldKey.get(holdKey);
       if (!entry) return;
-      const heldMs = Math.max(120, Math.min(3500, performance.now() - (entry._pressPerf || performance.now())));
+      const heldMs = Math.max(90, Math.min(4800, performance.now() - (entry._pressPerf || performance.now())));
       entry.holdDurationMs = heldMs;
       app.pendingTakeByHoldKey.delete(holdKey);
     }
@@ -2298,7 +2306,7 @@
             type: "live_note",
             slot: keyObj.slot,
             freq: cn.freq,
-            holdMs: 420,
+            holdMs: 360,
             instrumentId: app.instrumentId,
             synthParams: lockedSynth
           });
@@ -2320,7 +2328,7 @@
         type: "live_note",
         slot: keyObj.slot,
         freq: keyObj.freq,
-        holdMs: 420,
+        holdMs: 360,
         instrumentId: app.instrumentId,
         synthParams: lockedSynth
       });
@@ -2526,10 +2534,24 @@
       document.getElementById("pianoCard").classList.add("hidden");
     }
 
+    function flushPendingWs() {
+      if (!app.ws || app.ws.readyState !== WebSocket.OPEN) return;
+      while (app.pendingWsQueue.length) {
+        const item = app.pendingWsQueue.shift();
+        app.ws.send(JSON.stringify(item));
+      }
+    }
+
     function connectSocket() {
       const proto = location.protocol === "https:" ? "wss:" : "ws:";
       const ws = new WebSocket(`${proto}//${location.host}`);
       app.ws = ws;
+
+      ws.onopen = () => {
+        const errEl = document.getElementById("entryError");
+        if (errEl) errEl.classList.add("hidden");
+        flushPendingWs();
+      };
 
       ws.onmessage = (ev) => {
         const msg = JSON.parse(ev.data);
@@ -2543,24 +2565,31 @@
           errEl.textContent = msg.message;
           errEl.classList.remove("hidden");
         } else if (msg.type === "room_state") {
+          const errEl = document.getElementById("entryError");
+          if (errEl) errEl.classList.add("hidden");
           app.room = msg.room;
           renderRoomState();
         } else if (msg.type === "live_note") {
           getAudioCtx();
-          const durSec = Math.min(3.5, Math.max(0.14, (Number(msg.holdMs) || 380) / 1000));
+          const durSec = Math.min(4.8, Math.max(0.1, (Number(msg.holdMs) || 360) / 1000));
           playFreqSound(msg.freq, msg.instrumentId, durSec, true, msg.synthParams);
           flashPianoKey(msg.slot, true);
         }
       };
 
       ws.onclose = () => {
-        setTimeout(connectSocket, 2000);
+        setTimeout(connectSocket, 1200);
       };
     }
 
     function sendWs(payload) {
       if (app.ws && app.ws.readyState === WebSocket.OPEN) {
         app.ws.send(JSON.stringify(payload));
+      } else {
+        app.pendingWsQueue.push(payload);
+        if (!app.ws || app.ws.readyState === WebSocket.CLOSED) {
+          connectSocket();
+        }
       }
     }
 
@@ -3024,7 +3053,7 @@
         app.currentTakeNotes.forEach((n) => {
           const rawPos = app.reverseTake ? Math.max(0, cycleMs - n.offsetMs) : n.offsetMs;
           const delay = rawPos >= clampedStart ? rawPos - clampedStart : (cycleMs - clampedStart) + rawPos;
-          const durSec = Math.min(3.5, Math.max(0.14, (Number(n.holdDurationMs) || 360) / 1000));
+          const durSec = Math.min(4.8, Math.max(0.1, (Number(n.holdDurationMs) || 280) / 1000));
           const tid = setTimeout(() => {
             if (!app.isPlaying) return;
             playFreqSound(n.freq, n.instrumentId, durSec, true, n.synthParams);
@@ -3044,7 +3073,7 @@
           const pos = layer.reverse ? Math.max(0, cycleMs - rawOffset) : rawOffset;
           const delay = pos >= clampedStart ? pos - clampedStart : (cycleMs - clampedStart) + pos;
           const noteSynth = n.synthParams ? cloneSynth(n.synthParams) : layerLockedSynth;
-          const durSec = Math.min(3.5, Math.max(0.14, ((Number(n.holdDurationMs) || 380) * scale) / 1000));
+          const durSec = Math.min(4.8, Math.max(0.1, ((Number(n.holdDurationMs) || 280) * scale) / 1000));
           const tid = setTimeout(() => {
             if (!app.isPlaying) return;
             const ctx = getAudioCtx();
@@ -3839,7 +3868,7 @@
         if (app.currentTakeNotes.length || vocalData) {
           const cleanNotes = app.currentTakeNotes.map(({ _rawPerf, _pressPerf, ...rest }) => ({
             ...rest,
-            holdDurationMs: Math.min(3500, Math.max(120, Number(rest.holdDurationMs) || 360)),
+            holdDurationMs: Math.min(4800, Math.max(90, Number(rest.holdDurationMs) || 280)),
             synthParams: cloneSynth(rest.synthParams || lockedLayerSynth)
           }));
           const uniqueInsts = [...new Set(cleanNotes.map((n) => n.instrumentName))];
