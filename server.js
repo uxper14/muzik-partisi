@@ -268,12 +268,11 @@ io.on("connection", socket => {
     room.turn = 0;
     room.finished = false;
 
-    if (room.mode === "challenge") {
-      makeChallenge(room);
-      io.to(code).emit("challenge-start", {
-        timeLimit: room.challenge.timeLimit,
-        endsAt: room.challenge.endsAt
-      });
+io.to(code).emit("challenge-start", {
+  timeLimit: room.challenge.timeLimit,
+  endsAt: room.challenge.endsAt,
+  melody: room.challenge.melody
+});
     }
 
     if (typeof callback === "function") {
