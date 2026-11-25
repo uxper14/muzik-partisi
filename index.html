@@ -234,9 +234,10 @@
     }
 
     .btn-secondary.active {
-      background: rgba(56, 189, 248, 0.24);
+      background: rgba(56, 189, 248, 0.28);
       border-color: var(--accent);
       color: #e0f2fe;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.28);
     }
 
     .btn-sm {
@@ -266,7 +267,6 @@
       flex-wrap: wrap;
     }
 
-    /* ESKİ MENÜ YAPISI */
     .entry-box {
       display: flex;
       flex-direction: column;
@@ -712,7 +712,7 @@
       </div>
     </header>
 
-    <!-- ESKİ MENÜ + ODA AÇMA / KATILMA -->
+    <!-- GİRİŞ & ODA -->
     <section id="entryView" class="card">
       <div class="entry-box">
         <div>
@@ -951,7 +951,7 @@
       <section class="card" id="djPanelCard">
         <div class="section-head">
           <div>
-            <h3>🎛️ Kurucu DJ Paneli</h3>
+            <h3>🎛️ DJ Paneli</h3>
             <span class="muted" id="djStatusText">Aktif Efekt: Normal</span>
           </div>
           <div id="djButtonsWrap" class="controls-cluster">
@@ -1354,7 +1354,6 @@
       lockedLayerVoiceId: null,
       currentTakeNotes: [],
       currentAudioClip: null,
-      takeAnchorPerf: null,
       pendingHolds: new Map(),
       sampleBuffers: new Map(),
       loadingSamples: new Set(),
@@ -1623,23 +1622,34 @@
       if (djEffect === "underwater") {
         const lp = ctx.createBiquadFilter();
         lp.type = "lowpass";
-        lp.frequency.setValueAtTime(520, now);
-        lp.Q.value = 3.2;
+        lp.frequency.setValueAtTime(480, now);
+        lp.Q.value = 4.2;
         inputNode.connect(lp).connect(destNode);
         return;
       }
       if (djEffect === "radio") {
         const bp = ctx.createBiquadFilter();
         bp.type = "bandpass";
-        bp.frequency.setValueAtTime(1450, now);
-        bp.Q.value = 2.4;
+        bp.frequency.setValueAtTime(1400, now);
+        bp.Q.value = 2.8;
         inputNode.connect(bp).connect(destNode);
         return;
       }
-      if (djEffect === "cave" && reverbNode) {
+      if (djEffect === "cave") {
+        const delay = ctx.createDelay(1.0);
+        delay.delayTime.setValueAtTime(0.14, now);
+        const fb = ctx.createGain();
+        fb.gain.setValueAtTime(0.42, now);
         const wet = ctx.createGain();
-        wet.gain.setValueAtTime(0.75, now);
-        inputNode.connect(wet).connect(reverbNode);
+        wet.gain.setValueAtTime(0.55, now);
+        delay.connect(fb).connect(delay);
+        delay.connect(wet).connect(destNode);
+        inputNode.connect(delay);
+        if (reverbNode) {
+          const rev = ctx.createGain();
+          rev.gain.setValueAtTime(0.65, now);
+          inputNode.connect(rev).connect(reverbNode);
+        }
         inputNode.connect(destNode);
         return;
       }
@@ -1647,23 +1657,24 @@
     }
 
     function triggerSoundVoice(ctx, destination, freq, instrumentId, startTime, timedDuration = null, djEffect = "normal", synthParams = DEFAULT_SYNTH) {
+      const activeDj = djEffect || app.djEffect || "normal";
       const sp = cloneSynth(synthParams);
       const inst = INSTRUMENTS.find((i) => i.id === instrumentId) || INSTRUMENTS[0];
       const now = Math.max(ctx.currentTime + 0.002, startTime);
-      const pitchFactor = (djEffect === "slowed" ? 0.85 : 1.0) * Math.pow(2, sp.pitchSemi / 12);
-      const durScale = (djEffect === "slowed" ? 1.2 : 1.0) * sp.decayScale;
+      const pitchFactor = (activeDj === "slowed" ? 0.82 : 1.0) * Math.pow(2, sp.pitchSemi / 12);
+      const durScale = (activeDj === "slowed" ? 1.25 : 1.0) * sp.decayScale;
       const f = (freq || 261.63) * pitchFactor;
 
       const stage = ctx.createGain();
-      stage.gain.setValueAtTime(0.92, now);
+      stage.gain.setValueAtTime(0.95, now);
 
       if (sp.drive > 2) {
         const shaper = ctx.createWaveShaper();
         shaper.curve = createDriveCurve(sp.drive);
         stage.connect(shaper);
-        applyDjFilter(ctx, shaper, destination, djEffect, now);
+        applyDjFilter(ctx, shaper, destination, activeDj, now);
       } else {
-        applyDjFilter(ctx, stage, destination, djEffect, now);
+        applyDjFilter(ctx, stage, destination, activeDj, now);
       }
 
       if (sp.reverbMix > 2 && reverbNode) {
@@ -1918,7 +1929,6 @@
         });
       }
 
-      // Kullanıcı kendi sırasında taslak kaydediyorsa loop dönerken kendi taslağını da duysun
       if (app.currentTakeNotes.length > 0 || app.currentAudioClip) {
         scheduleLayerForCycle(
           {
@@ -2082,6 +2092,14 @@
         voice,
         startedAtPerf: performance.now()
       });
+
+      sendWs({
+        type: "live_note",
+        freq,
+        instrumentId,
+        durationMs: 260,
+        synth: cloneSynth(app.synth)
+      });
     }
 
     function endHoldNote(holdKey) {
@@ -2115,7 +2133,6 @@
       app.pendingHolds.clear();
       app.currentTakeNotes = [];
       app.currentAudioClip = null;
-      app.takeAnchorPerf = null;
       app.collabPath = null;
       app.lockedLayerVoiceId = null;
       updateCollabPathUI();
@@ -2184,6 +2201,23 @@
           return;
         }
 
+        if (msg.type === "live_note" && msg.note) {
+          const ctx = getAudioCtx();
+          const dest = getCycleMasterBus(ctx);
+          triggerSoundVoice(
+            ctx,
+            dest,
+            msg.note.freq,
+            msg.note.instrumentId,
+            ctx.currentTime,
+            Math.max(0.12, Number(msg.note.durationMs || 260) / 1000),
+            app.djEffect,
+            msg.note.synth || app.synth
+          );
+          pulseBeat(0.75);
+          return;
+        }
+
         if (msg.type === "error_msg") {
           const errEl = document.getElementById("entryError");
           errEl.textContent = msg.message || "Bağlantı hatası";
@@ -2230,6 +2264,21 @@
       document.getElementById("backLobbyBtn").classList.toggle("hidden", id === "entryView" || id === "lobbyView");
     }
 
+    function syncDjButtonsUI() {
+      document.querySelectorAll("#djButtonsWrap button").forEach((b) => {
+        b.classList.toggle("active", b.dataset.dj === app.djEffect);
+      });
+      const labels = {
+        normal: "Normal",
+        slowed: "🐢 Slowed",
+        underwater: "🌊 Su Altı",
+        radio: "📻 Telsiz",
+        cave: "🏔️ Mağara"
+      };
+      const el = document.getElementById("djStatusText");
+      if (el) el.textContent = `Aktif Efekt: ${labels[app.djEffect] || app.djEffect}`;
+    }
+
     function renderFromRoomState() {
       const room = app.room;
       if (!room) return;
@@ -2245,7 +2294,7 @@
       document.getElementById("liveBpmText").textContent = app.bpm;
       document.getElementById("liveBeatCountVal").textContent = app.beats;
       renderBeatDots(app.lastBeatIdx);
-      document.getElementById("djStatusText").textContent = `Aktif Efekt: ${app.djEffect}`;
+      syncDjButtonsUI();
 
       if (room.phase === "lobby") {
         stopLoop();
@@ -2303,7 +2352,6 @@
       mountPianoInto("studioPianoMount");
       renderStudio();
 
-      // Stüdyoda loop hep dönsün ve yeni katman eklendiğinde tüm oyuncular anında duysun
       if (!app.isPlaying) {
         startLoop({ previewOnly: false });
       } else if (nextLayerCount > prevLayerCount && !app.previewTakeActive) {
@@ -2784,7 +2832,6 @@
         else startLoop({ previewOnly: true });
       };
 
-      // Kaydı Sil butonuna basınca doğrudan anında siler
       document.getElementById("clearTakeBtn").onclick = () => {
         clearDraftImmediate();
       };
@@ -2814,9 +2861,11 @@
 
       document.querySelectorAll("#djButtonsWrap button").forEach((b) => {
         b.onclick = () => {
-          document.querySelectorAll("#djButtonsWrap button").forEach((x) => x.classList.remove("active"));
-          b.classList.add("active");
-          sendWs({ type: "set_dj", djEffect: b.dataset.dj });
+          app.djEffect = b.dataset.dj || "normal";
+          syncDjButtonsUI();
+          const ctx = getAudioCtx();
+          triggerSoundVoice(ctx, ctx.destination, 261.63, "handshake", ctx.currentTime, 0.16, app.djEffect, app.synth);
+          sendWs({ type: "set_dj", djEffect: app.djEffect });
         };
       });
 
