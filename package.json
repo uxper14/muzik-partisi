@@ -1,7 +1,7 @@
 {
   "name": "kollay-gelsin",
   "version": "1.0.0",
-  "description": "Kollay Gelsin! - Çok oyunculu müzik, ritim, DJ ve tabu oyunu",
+  "description": "Kollay Gelsin! - Çok oyunculu müzik, synth loop station, ritim ve tabu oyunu",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
