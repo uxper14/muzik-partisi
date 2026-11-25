@@ -39,133 +39,45 @@ body {
   min-height: 100vh;
 }
 
-main {
-  width: min(1140px, 94%);
-  margin: 28px auto 70px;
-}
-
-.hero {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
+main { width: min(1140px, 94%); margin: 28px auto 70px; }
+.hero { text-align: center; margin-bottom: 24px; }
 .badge-top {
-  display: inline-block;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: rgba(139, 92, 246, 0.16);
-  border: 1px solid rgba(139, 92, 246, 0.35);
-  color: #c4b5fd;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.4px;
-  margin-bottom: 10px;
+  display: inline-block; padding: 6px 14px; border-radius: 999px;
+  background: rgba(139, 92, 246, 0.16); border: 1px solid rgba(139, 92, 246, 0.35);
+  color: #c4b5fd; font-size: 12px; font-weight: 700; letter-spacing: 0.4px; margin-bottom: 10px;
 }
-
 h1 {
-  font-size: clamp(30px, 5vw, 48px);
-  font-weight: 800;
-  margin: 0 0 8px;
+  font-size: clamp(30px, 5vw, 48px); font-weight: 800; margin: 0 0 8px;
   background: linear-gradient(135deg, #ffffff 30%, #c4b5fd 75%, #6ee7b7 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
-
-.subtitle {
-  color: var(--muted);
-  font-size: 15px;
-  margin: 0;
-}
-
+.subtitle { color: var(--muted); font-size: 15px; margin: 0; }
 .panel {
-  background: var(--panel);
-  backdrop-filter: blur(14px);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 22px;
-  margin: 18px 0;
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+  background: var(--panel); backdrop-filter: blur(14px); border: 1px solid var(--border);
+  border-radius: 20px; padding: 22px; margin: 18px 0; box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
 }
-
 h2 { margin: 0 0 14px; font-size: 20px; font-weight: 700; }
 h3 { margin: 0 0 10px; font-size: 15px; font-weight: 700; color: #e2e8f0; }
-
-label {
-  display: block;
-  color: var(--muted);
-  font-size: 12.5px;
-  font-weight: 600;
-  margin: 12px 0 6px;
-}
+label { display: block; color: var(--muted); font-size: 12.5px; font-weight: 600; margin: 12px 0 6px; }
 
 input, select {
-  width: 100%;
-  background: #0f131f;
-  color: var(--text);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
-  padding: 12px 14px;
-  font-size: 14.5px;
-  font-family: inherit;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%; background: #0f131f; color: var(--text); border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px; padding: 12px 14px; font-size: 14.5px; font-family: inherit;
 }
-
-input:focus, select:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
+input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
 
 button {
-  border: 0;
-  border-radius: 12px;
-  padding: 12px 16px;
-  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-  color: white;
-  font-weight: 700;
-  font-family: inherit;
-  cursor: pointer;
-  font-size: 14px;
-  transition: transform 0.12s, filter 0.18s, box-shadow 0.18s;
-  box-shadow: 0 6px 18px rgba(109, 40, 217, 0.28);
+  border: 0; border-radius: 12px; padding: 12px 16px;
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white;
+  font-weight: 700; font-family: inherit; cursor: pointer; font-size: 14px;
+  transition: transform 0.12s, filter 0.18s; box-shadow: 0 6px 18px rgba(109, 40, 217, 0.28);
 }
-
-button:hover:not(:disabled) {
-  filter: brightness(1.12);
-  transform: translateY(-1px);
-}
-
-button:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-button.secondary {
-  background: #283046;
-  box-shadow: none;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-button.green {
-  background: linear-gradient(135deg, #10b981, #059669);
-  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.25);
-}
-
-button.amber {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.25);
-}
-
-button.red {
-  background: linear-gradient(135deg, #ef4444, #b91c1c);
-  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.25);
-}
-
+button:hover:not(:disabled) { filter: brightness(1.12); transform: translateY(-1px); }
+button:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+button.secondary { background: #283046; box-shadow: none; border: 1px solid rgba(255, 255, 255, 0.08); }
+button.green { background: linear-gradient(135deg, #10b981, #059669); }
+button.amber { background: linear-gradient(135deg, #f59e0b, #d97706); }
+button.red { background: linear-gradient(135deg, #ef4444, #b91c1c); }
 button.small { padding: 8px 12px; font-size: 13px; }
 
 .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
@@ -174,250 +86,87 @@ button.small { padding: 8px 12px; font-size: 13px; }
 .muted { color: var(--muted); font-size: 13px; }
 
 .status {
-  padding: 13px 16px;
-  background: rgba(15, 19, 31, 0.9);
-  border: 1px solid rgba(139, 92, 246, 0.25);
-  border-radius: 13px;
-  color: #e2dcff;
-  margin: 12px 0;
-  font-size: 14px;
+  padding: 13px 16px; background: rgba(15, 19, 31, 0.9);
+  border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 13px;
+  color: #e2dcff; margin: 12px 0; font-size: 14px;
 }
-
-#message {
-  position: sticky;
-  top: 10px;
-  z-index: 20;
-  backdrop-filter: blur(12px);
-}
+#message { position: sticky; top: 10px; z-index: 20; backdrop-filter: blur(12px); }
 
 .player-list { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 10px; }
 .player {
-  background: #23293d;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 9px 14px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 600;
+  background: #23293d; border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 9px 14px; border-radius: 12px; font-size: 13px; font-weight: 600;
 }
-.player.active {
-  outline: 2px solid var(--accent2);
-  background: rgba(16, 185, 129, 0.16);
-}
+.player.active { outline: 2px solid var(--accent2); background: rgba(16, 185, 129, 0.16); }
 
-.mode-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-}
-
+.mode-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
 .mode-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: transform 0.18s, border-color 0.18s, background 0.18s;
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  padding: 18px; display: flex; flex-direction: column; justify-content: space-between;
 }
+.mode-icon { font-size: 26px; margin-bottom: 10px; }
+.mode-card strong { display: block; font-size: 16px; margin-bottom: 6px; }
+.mode-card p { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0 0 14px; }
+.mode-buttons { display: flex; flex-direction: column; gap: 8px; }
 
-.mode-card:hover {
-  transform: translateY(-2px);
-  background: var(--card-hover);
-  border-color: rgba(139, 92, 246, 0.45);
-}
-
-.mode-icon {
-  font-size: 26px;
-  margin-bottom: 10px;
-}
-
-.mode-card strong {
-  display: block;
-  font-size: 16px;
-  margin-bottom: 6px;
-}
-
-.mode-card p {
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.5;
-  margin: 0 0 14px;
-}
-
-.mode-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.settings-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.control {
-  background: var(--card);
-  border: 1px solid var(--border);
-  padding: 12px 14px;
-  border-radius: 13px;
-}
-
+.settings-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.control { background: var(--card); border: 1px solid var(--border); padding: 12px 14px; border-radius: 13px; }
 .control label { margin: 0 0 8px; color: #e4e7f5; }
 .control input[type=range] { padding: 0; accent-color: var(--accent); border: none; background: transparent; box-shadow: none; }
 .value { color: #34d399; float: right; font-weight: 700; }
 
-/* Piyano */
 .keyboard-wrap {
-  background: #0d1019;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 14px;
-  overflow-x: auto;
+  background: #0d1019; border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px; padding: 14px; overflow-x: auto;
 }
-
-.keyboard {
-  position: relative;
-  height: 195px;
-  min-width: 620px;
-  user-select: none;
-  touch-action: manipulation;
-}
-
+.keyboard { position: relative; height: 195px; min-width: 620px; user-select: none; touch-action: manipulation; }
 .key {
-  position: absolute;
-  top: 0;
-  border-radius: 0 0 8px 8px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  padding-bottom: 10px;
-  font-size: 10px;
-  font-weight: 700;
-  box-shadow: none;
+  position: absolute; top: 0; border-radius: 0 0 8px 8px; cursor: pointer;
+  display: flex; justify-content: center; align-items: flex-end;
+  padding-bottom: 10px; font-size: 10px; font-weight: 700; box-shadow: none;
 }
-
 .key:hover:not(:disabled) { transform: none; }
-
 .key.white {
-  height: 190px;
-  background: linear-gradient(180deg, #ffffff 0%, #e4e6ef 100%);
-  color: #1e2230;
-  border: 1px solid #9ca3af;
-  z-index: 1;
+  height: 190px; background: linear-gradient(180deg, #ffffff 0%, #e4e6ef 100%);
+  color: #1e2230; border: 1px solid #9ca3af; z-index: 1;
 }
-
 .key.black {
-  height: 116px;
-  background: linear-gradient(180deg, #3b4054 0%, #0b0d14 100%);
-  color: #f8fafc;
-  border: 1px solid #000;
-  z-index: 2;
-  padding-bottom: 8px;
-  font-size: 9px;
-  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.65);
+  height: 116px; background: linear-gradient(180deg, #3b4054 0%, #0b0d14 100%);
+  color: #f8fafc; border: 1px solid #000; z-index: 2; padding-bottom: 8px; font-size: 9px;
 }
-
-.key.selected {
-  background: linear-gradient(180deg, #a78bfa 0%, #6d28d9 100%);
-  color: white;
-}
-
-.key.white.selected {
-  background: linear-gradient(180deg, #ddd6fe 0%, #8b5cf6 100%);
-  color: #140f24;
-}
+.key.selected { background: linear-gradient(180deg, #a78bfa 0%, #6d28d9 100%); color: white; }
+.key.white.selected { background: linear-gradient(180deg, #ddd6fe 0%, #8b5cf6 100%); color: #140f24; }
 
 .note-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; min-height: 32px; }
 .note-chip {
-  background: rgba(139, 92, 246, 0.22);
-  border: 1px solid rgba(139, 92, 246, 0.5);
-  border-radius: 20px;
-  padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 600;
+  background: rgba(139, 92, 246, 0.22); border: 1px solid rgba(139, 92, 246, 0.5);
+  border-radius: 20px; padding: 6px 12px; font-size: 12px; font-weight: 600;
 }
 
-/* Ardışık Adım Kutuları (Melodiyi Taklit Et Modu) */
-.seq-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 12px;
-}
-
+.seq-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
 .seq-step {
-  background: var(--card);
-  border: 2px solid var(--border);
-  border-radius: 14px;
-  padding: 12px;
-  cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  background: var(--card); border: 2px solid var(--border); border-radius: 14px;
+  padding: 12px; cursor: pointer;
 }
+.seq-step.active-step { border-color: var(--accent3); background: rgba(245, 158, 11, 0.12); }
+.seq-step-title { font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+.seq-step.active-step .seq-step-title { color: #fbbf24; }
+.seq-step-notes { font-size: 13px; font-weight: 700; color: var(--text); min-height: 20px; }
 
-.seq-step.active-step {
-  border-color: var(--accent3);
-  background: rgba(245, 158, 11, 0.12);
-}
-
-.seq-step-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
-
-.seq-step.active-step .seq-step-title {
-  color: #fbbf24;
-}
-
-.seq-step-notes {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
-  min-height: 20px;
-}
-
-/* Ortak Müzik Listesi */
 .actions { display: flex; flex-direction: column; gap: 9px; }
 .action {
-  background: var(--card);
-  border-left: 4px solid var(--accent);
-  border-radius: 11px;
-  padding: 12px 14px;
-  font-size: 13.5px;
-  transition: background 0.15s, transform 0.15s;
+  background: var(--card); border-left: 4px solid var(--accent);
+  border-radius: 11px; padding: 12px 14px; font-size: 13.5px;
 }
-.action.playing-now {
-  background: rgba(16, 185, 129, 0.2);
-  border-left-color: var(--accent2);
-  transform: translateX(4px);
-}
+.action.playing-now { background: rgba(16, 185, 129, 0.2); border-left-color: var(--accent2); }
 .action small { color: var(--muted); display: block; margin-top: 4px; }
 
-/* Skor Kartları */
 .score-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 14px;
-  margin-top: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; gap: 12px;
 }
-.score-card.winner {
-  border-color: #fbbf24;
-  background: rgba(245, 158, 11, 0.12);
-}
-.score-badge {
-  font-size: 20px;
-  font-weight: 800;
-  color: #34d399;
-}
+.score-card.winner { border-color: #fbbf24; background: rgba(245, 158, 11, 0.12); }
+.score-badge { font-size: 20px; font-weight: 800; color: #34d399; }
 
 hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0; }
 
@@ -425,7 +174,6 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
   .mode-grid { grid-template-columns: 1fr; }
   .seq-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-
 @media (max-width: 650px) {
   main { width: 96%; margin-top: 14px; }
   .panel { padding: 15px; }
@@ -446,13 +194,11 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
 
   <div id="message" class="status">Hoş geldin! Adını yazıp tek başına veya arkadaşlarınla bir mod seç.</div>
 
-  <!-- ANA MENÜ -->
   <section id="home">
     <div class="panel">
       <h2>👤 Oyuncu Profili</h2>
       <label>Sahne adın</label>
       <input id="playerName" maxlength="18" placeholder="Örn. Maestro">
-
       <hr>
       <h2>🎮 Oyun Modu Seç</h2>
       <div class="mode-grid">
@@ -501,7 +247,6 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
     </div>
   </section>
 
-  <!-- OYUN ALANI (SADECE SEÇİLİ MODA AİT PANELLERİ GÖSTERİR) -->
   <section id="game" class="hidden">
     <div class="panel">
       <div class="row">
@@ -525,25 +270,22 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
       </div>
     </div>
 
-    <!-- SADECE "MELODİYİ TAKLİT ET" MODUNDA GÖRÜNEN PANEL -->
     <div id="mimicPanel" class="panel hidden">
       <h2>🎯 Hedef Melodi Yarışması</h2>
-      <p class="muted">Hedef melodiyi dikkatlice dinle, doğru enstrümanı seç ve aşağıdaki 4 adımı sırayla doldur!</p>
+      <p class="muted">1. Hedef melodiyi dinle → 2. Doğru enstrümanı seç → 3. Piyanodan 4 adımı doldur → 4. Tahminini gönder!</p>
 
       <div class="row" style="margin: 14px 0;">
         <button class="amber" onclick="playTargetMelody()">🔊 Hedef Melodiyi Dinle</button>
         <button class="secondary" onclick="previewMySequence()">🎹 Kendi Melodimi Dinle</button>
         <button class="green" id="submitMimicBtn" onclick="submitMimic()">✅ Tahminimi Gönder</button>
-        <button id="revealMimicBtn" class="secondary hidden" onclick="revealMimic()">🏆 Sonuçları Açıkla</button>
+        <button id="revealMimicBtn" class="secondary" onclick="revealMimic()">🏆 Sonuçları Açıkla</button>
       </div>
 
       <label>Ardışık Notaların (Düzenlemek istediğin adıma tıkla ve piyanodan tuş seç)</label>
       <div id="seqSteps" class="seq-grid"></div>
-
       <div id="mimicResults" style="margin-top: 16px;"></div>
     </div>
 
-    <!-- SES STÜDYOSU & PİYANO -->
     <div id="studio" class="panel hidden">
       <h2>🎹 Ses Stüdyosu</h2>
       <p id="studioHint" class="muted">Piyano tuşlarına dokun. Birden fazla nota seçerek akor oluşturabilirsin.</p>
@@ -642,7 +384,6 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
         <div id="keyboard" class="keyboard"></div>
       </div>
 
-      <!-- Sadece Beste Modlarında (Sıra Sende & Herkes Serbest) Görünür -->
       <div id="normalNoteControls">
         <div class="note-list" id="selectedNotes">
           <span class="muted">Henüz nota seçilmedi.</span>
@@ -653,7 +394,6 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
         </div>
       </div>
 
-      <!-- Sadece Melodiyi Taklit Et Modunda Görünür -->
       <div id="mimicNoteControls" class="hidden" style="margin-top:12px">
         <div class="row">
           <button class="secondary" onclick="clearCurrentStep()">Bu adımı temizle</button>
@@ -661,7 +401,6 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
         </div>
       </div>
 
-      <!-- Sadece Beste Modlarında Ses Efektleri Görünür -->
       <div id="effectsSection">
         <hr>
         <h3>🎛️ Ses Efektleri & Ayarlar</h3>
@@ -710,7 +449,6 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
       </div>
     </div>
 
-    <!-- SADECE BESTE MODLARINDA (SIRA SENDE & HERKES SERBEST) GÖRÜNEN ORTAK MÜZİK PANELİ -->
     <div id="sharedMusicPanel" class="panel hidden">
       <div class="row" style="margin-bottom: 12px;">
         <div>
@@ -776,10 +514,13 @@ function joinRoom() {
 
 function enterRoom(room) {
   roomCode = room.code;
+  roomState = room;
+  clearAllSteps();
   $("home").classList.add("hidden");
   $("game").classList.remove("hidden");
   $("roomCodeText").textContent = room.solo ? "TEK KİŞİLİK" : room.code;
   $("copyCodeBtn").classList.toggle("hidden", room.solo);
+  buildKeyboard();
   updateRoom(room);
   enableAudio();
 }
@@ -832,7 +573,6 @@ function updateRoom(room) {
 
   const isMimic = room.mode === "mimic";
 
-  // Sadece seçilen moda ait panelleri görünür yap, diğerlerini tamamen gizle
   $("sharedMusicPanel").classList.toggle("hidden", isMimic || !room.started);
   $("mimicPanel").classList.toggle("hidden", !isMimic || !room.started);
   $("normalNoteControls").classList.toggle("hidden", isMimic);
@@ -848,7 +588,8 @@ function updateRoom(room) {
     if (isMimic) {
       $("studioHint").textContent = "Yukarıdan bir adım kutusu seç, ardından piyanodan o adımın notasını seç.";
       $("turnStatus").textContent = "🎯 Hedef melodiyi dinle ve 4 adımlık kendi melodini oluştur!";
-      $("revealMimicBtn").classList.toggle("hidden", !isHost || room.challenge?.revealed);
+      $("revealMimicBtn").classList.toggle("hidden", !isHost || Boolean(room.challenge?.revealed));
+      $("submitMimicBtn").disabled = Boolean(room.challenge?.revealed);
       renderMimicPanel(room.challenge);
     } else if (room.mode === "party") {
       $("studioHint").textContent = "Piyano tuşlarına dokun. Birden fazla nota seçerek akor oluşturabilirsin.";
@@ -883,7 +624,6 @@ function renderActions(actions) {
   }).join("");
 }
 
-/* Sadece Oda Sahibinin Başlattığı Ortak Müzik Oynatıcısı */
 function requestPlaySong() {
   socket.emit("play-song", { code: roomCode }, res => {
     if (!res?.ok) message(res?.message || "Müzik başlatılamadı.");
@@ -937,8 +677,7 @@ async function startLocalSongPlayback() {
 
 /* Melodiyi Taklit Et Modu Fonksiyonları */
 function renderMimicPanel(challenge) {
-  if (!challenge) return;
-  const stepsCount = challenge.sequence.length;
+  const stepsCount = challenge?.sequence?.length || 4;
 
   while (mimicSequence.length < stepsCount) mimicSequence.push(new Set());
   if (mimicSequence.length > stepsCount) mimicSequence = mimicSequence.slice(0, stepsCount);
@@ -954,9 +693,9 @@ function renderMimicPanel(challenge) {
   }).join("");
 
   const resultsBox = $("mimicResults");
-  const subs = challenge.submissions || [];
+  const subs = challenge?.submissions || [];
 
-  if (!challenge.revealed) {
+  if (!challenge?.revealed) {
     if (subs.length === 0) {
       resultsBox.innerHTML = '<div class="muted">Henüz kimse tahminini göndermedi.</div>';
     } else {
@@ -1065,24 +804,33 @@ function previewMySequence() {
 }
 
 function submitMimic() {
+  if (!roomCode) return message("Oda bağlantısı bulunamadı.");
   const sequence = mimicSequence.map(s => [...s].sort((a, b) => a - b));
+
+  if (sequence.some(step => step.length === 0)) {
+    return message("⚠️ Lütfen 4 adımın tamamına piyano tuşlarından nota seç!");
+  }
+
   socket.emit("submit-mimic", {
     code: roomCode,
     instrument: $("instrument").value,
     sequence
   }, res => {
     if (!res?.ok) return message(res?.message || "Tahmin gönderilemedi.");
+    if (res.room) updateRoom(res.room);
     message("✅ Melodi tahminin gönderildi!");
   });
 }
 
 function revealMimic() {
+  if (!roomCode) return message("Oda bağlantısı bulunamadı.");
   socket.emit("reveal-mimic", { code: roomCode }, res => {
-    if (!res?.ok) message(res?.message || "Sonuçlar açıklanamadı.");
+    if (!res?.ok) return message(res?.message || "Sonuçlar açıklanamadı.");
+    if (res.room) updateRoom(res.room);
+    message("🏆 Tur sonuçları açıklandı!");
   });
 }
 
-/* Yardımcı İsim ve Nota Fonksiyonları */
 function instrumentName(value) {
   const select = $("instrument");
   const option = [...select.options].find(o => o.value === value);
@@ -1238,7 +986,6 @@ function addSound() {
   });
 }
 
-/* Ses sistemi */
 async function enableAudio() {
   try {
     if (!audioContext) {
@@ -1340,7 +1087,6 @@ async function playNotes(notes, instrumentNameValue, settings) {
   }
 }
 
-/* Ayar göstergeleri */
 const rangeLabels = {
   volume: v => v + "%",
   pitch: v => (v > 0 ? "+" : "") + v + " yarım ses",
