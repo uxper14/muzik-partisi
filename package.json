@@ -1,7 +1,7 @@
 {
   "name": "kollay-gelsin",
   "version": "1.0.0",
-  "description": "Kollay Gelsin! - Çok oyunculu canlı müzik ve looping oyunu",
+  "description": "Kollay Gelsin! - Çok oyunculu müzik ve ritim oyunu",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
