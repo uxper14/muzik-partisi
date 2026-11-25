@@ -8,7 +8,8 @@ const PORT = process.env.PORT || 3000;
 const rooms = new Map();
 const clients = new Map();
 
-const DEFAULT_MODES = ["collab", "theme", "rhythm", "melody", "tabu"];
+const DEFAULT_MODES = ["collab", "theme", "muzziko", "rhythm", "melody", "tabu"];
+const LOOP_MODES = ["collab", "theme", "muzziko"];
 
 function normalizeBeats(raw) {
   const num = Number(raw);
@@ -58,7 +59,7 @@ function serializeRoomForClient(room, viewerId) {
     room.started &&
     !room.finished &&
     room.settings.secretMode &&
-    ["collab", "theme"].includes(room.settings.mode);
+    LOOP_MODES.includes(room.settings.mode);
 
   const visibleLayers = hideLayers
     ? room.layers.map((l) => ({
@@ -361,7 +362,7 @@ wss.on("connection", (ws) => {
               type: "live_note",
               slot: msg.slot || "",
               freq: Number(msg.freq) || 261.63,
-              holdMs: Math.min(5000, Math.max(380, Number(msg.holdMs) || 440)),
+              holdMs: Math.min(8000, Math.max(440, Number(msg.holdMs) || 440)),
               instrumentId: String(msg.instrumentId || "grand_piano"),
               synthParams: msg.synthParams || null,
               serverNow: Date.now()
