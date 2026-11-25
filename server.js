@@ -41,7 +41,19 @@ const server = http.createServer((req, res) => {
 
 const wss = new WebSocket.Server({ server });
 
+function getUniquePlayers(players) {
+  const seen = new Set();
+  const out = [];
+  (players || []).forEach((p) => {
+    if (!p || !p.id || seen.has(p.id)) return;
+    seen.add(p.id);
+    out.push(p);
+  });
+  return out;
+}
+
 function serializeRoomForClient(room, viewerId) {
+  const uniquePlayers = getUniquePlayers(room.players);
   const isSecretActive = Boolean(room.settings?.secretMode) && room.started && !room.finished;
   const visibleLayers = isSecretActive
     ? room.layers.map((l, idx) => ({
@@ -58,7 +70,7 @@ function serializeRoomForClient(room, viewerId) {
     started: room.started,
     finished: room.finished,
     settings: room.settings,
-    players: room.players,
+    players: uniquePlayers,
     turnIndex: room.turnIndex,
     currentRound: room.currentRound,
     concept: room.concept,
@@ -67,6 +79,7 @@ function serializeRoomForClient(room, viewerId) {
     loopBpm: room.loopBpm,
     loopAnchorServerMs: room.loopAnchorServerMs,
     layers: visibleLayers,
+    performances: room.performances || [],
     challenge: room.challenge,
     submissions: room.submissions,
     votes: room.votes,
@@ -76,6 +89,7 @@ function serializeRoomForClient(room, viewerId) {
 }
 
 function broadcastRoom(room) {
+  room.players = getUniquePlayers(room.players);
   room.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(
@@ -161,6 +175,7 @@ wss.on("connection", (ws) => {
         loopBpm: startBpm,
         loopAnchorServerMs: Date.now(),
         layers: [],
+        performances: [],
         challenge: null,
         submissions: {},
         votes: {},
@@ -191,12 +206,16 @@ wss.on("connection", (ws) => {
       }
       ws.roomCode = code;
       room.clients.add(ws);
-      if (!room.players.some((p) => p.id === ws.playerId)) {
+      const existing = room.players.find((p) => p.id === ws.playerId);
+      if (!existing) {
         room.players.push({
           id: ws.playerId,
           name: (msg.player?.name || "Oyuncu").slice(0, 18),
           avatar: msg.player?.avatar || "🐼"
         });
+      } else {
+        existing.name = (msg.player?.name || existing.name || "Oyuncu").slice(0, 18);
+        existing.avatar = msg.player?.avatar || existing.avatar || "🐼";
       }
       if (room.tabu && typeof room.tabu.scores === "object" && room.tabu.scores[ws.playerId] === undefined) {
         room.tabu.scores[ws.playerId] = 0;
@@ -224,6 +243,7 @@ wss.on("connection", (ws) => {
       room.loopBpm = Number(room.settings.bpm) || 110;
       room.loopAnchorServerMs = Date.now();
       room.layers = [];
+      room.performances = [];
       room.submissions = {};
       room.votes = {};
       if (msg.concept) room.concept = msg.concept;
@@ -249,6 +269,7 @@ wss.on("connection", (ws) => {
       room.loopBpm = Number(room.settings.bpm) || 110;
       room.loopAnchorServerMs = Date.now();
       room.layers = [];
+      room.performances = [];
       room.submissions = {};
       room.votes = {};
       broadcastRoom(room);
@@ -271,7 +292,8 @@ wss.on("connection", (ws) => {
       broadcastRoom(room);
     } else if (msg.type === "cast_vote") {
       const targetId = String(msg.targetPlayerId || "");
-      if (room.players.some((p) => p.id === targetId)) {
+      const validTargets = getUniquePlayers(room.players);
+      if (validTargets.some((p) => p.id === targetId)) {
         room.votes[ws.playerId] = targetId;
         broadcastRoom(room);
       }
@@ -311,6 +333,16 @@ wss.on("connection", (ws) => {
         room.layers.push(msg.layer);
       }
       advanceStudioTurn(room, msg.nextConcept);
+      broadcastRoom(room);
+    } else if (msg.type === "submit_muzikinyo") {
+      if (msg.performance) {
+        room.performances.push(msg.performance);
+      }
+      advanceStudioTurn(room, msg.nextConcept);
+      broadcastRoom(room);
+    } else if (msg.type === "finish_muzikinyo_now" && ws.playerId === room.hostId) {
+      room.finished = true;
+      room.loopPlaying = false;
       broadcastRoom(room);
     } else if (msg.type === "skip_turn") {
       advanceStudioTurn(room, msg.nextConcept);
