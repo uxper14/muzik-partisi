@@ -479,15 +479,36 @@ wss.on("connection", (ws) => {
 
     if (msg.type === "tabu_correct") {
       if (!room.tabu || !senderPlayer) return;
-      room.tabu.scores[playerId] = (room.tabu.scores[playerId] || 0) + 1;
+      const teller = room.players[room.turnIndex];
+      const wordLabel = room.tabu.card?.word || "";
+      if (teller && teller.id !== playerId) {
+        room.tabu.scores[teller.id] = (room.tabu.scores[teller.id] || 0) + 1;
+      }
       room.tabu.guesses.push({
         avatar: senderPlayer.avatar,
         name: senderPlayer.name,
-        text: `✅ "${room.tabu.card?.word || ""}" doğru bilindi! (+1 puan)`,
+        text: `✅ "${wordLabel}" doğru bilindi! Kart değişti.`,
         correct: true
       });
       room.tabu.card = msg.nextCard || room.tabu.card;
-      room.tabu.turnToken = (room.tabu.turnToken || 0) + 1;
+      broadcastRoom(room);
+      return;
+    }
+
+    if (msg.type === "tabu_buzz") {
+      if (!room.tabu || !senderPlayer) return;
+      const teller = room.players[room.turnIndex];
+      const wordLabel = room.tabu.card?.word || "";
+      if (teller) {
+        room.tabu.scores[teller.id] = (room.tabu.scores[teller.id] || 0) - 1;
+      }
+      room.tabu.guesses.push({
+        avatar: senderPlayer.avatar,
+        name: senderPlayer.name,
+        text: `🚨 TABU! "${wordLabel}" kartında yasaklı kelime basıldı! (${teller?.name || "Anlatıcı"}: -1 puan, yeni kart)`,
+        correct: false
+      });
+      room.tabu.card = msg.nextCard || room.tabu.card;
       broadcastRoom(room);
       return;
     }
@@ -529,8 +550,11 @@ wss.on("connection", (ws) => {
 
       if (isCorrect) {
         room.tabu.scores[playerId] = (room.tabu.scores[playerId] || 0) + 1;
+        const teller = room.players[room.turnIndex];
+        if (teller && teller.id !== playerId) {
+          room.tabu.scores[teller.id] = (room.tabu.scores[teller.id] || 0) + 1;
+        }
         room.tabu.card = msg.nextCard || room.tabu.card;
-        room.tabu.turnToken = (room.tabu.turnToken || 0) + 1;
       }
       broadcastRoom(room);
       return;
