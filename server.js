@@ -54,6 +54,7 @@ function broadcastRoom(room) {
       turnIndex: room.turnIndex,
       currentRound: room.currentRound,
       concept: room.concept,
+      djEffect: room.djEffect,
       layers: room.layers,
       challenge: room.challenge,
       submissions: room.submissions,
@@ -119,6 +120,7 @@ wss.on("connection", (ws) => {
           mode: msg.settings?.mode || "collab",
           bpm: Number(msg.settings?.bpm) || 110,
           beats: Number(msg.settings?.beats) || 8,
+          rhythmHits: Number(msg.settings?.rhythmHits) || 7,
           totalRounds: Number(msg.settings?.totalRounds) || 2,
           turnDuration: Number(msg.settings?.turnDuration) || 0
         },
@@ -132,13 +134,15 @@ wss.on("connection", (ws) => {
         turnIndex: 0,
         currentRound: 1,
         concept: "Gergin Robot",
+        djEffect: "normal",
         layers: [],
         challenge: null,
         submissions: {},
         tabu: {
           card: null,
           scores: {},
-          guesses: []
+          guesses: [],
+          turnToken: 0
         },
         clients: new Set([ws])
       };
@@ -183,6 +187,7 @@ wss.on("connection", (ws) => {
       room.finished = false;
       room.turnIndex = 0;
       room.currentRound = 1;
+      room.djEffect = "normal";
       room.layers = [];
       room.submissions = {};
       if (msg.concept) room.concept = msg.concept;
@@ -193,7 +198,8 @@ wss.on("connection", (ws) => {
       room.tabu = {
         card: msg.tabuCard || null,
         scores,
-        guesses: []
+        guesses: [],
+        turnToken: Date.now()
       };
 
       broadcastRoom(room);
@@ -202,8 +208,12 @@ wss.on("connection", (ws) => {
       room.finished = false;
       room.turnIndex = 0;
       room.currentRound = 1;
+      room.djEffect = "normal";
       room.layers = [];
       room.submissions = {};
+      broadcastRoom(room);
+    } else if (msg.type === "set_dj_effect" && ws.playerId === room.hostId) {
+      room.djEffect = String(msg.effect || "normal");
       broadcastRoom(room);
     } else if (msg.type === "submit_challenge") {
       const player = room.players.find((p) => p.id === ws.playerId);
@@ -315,6 +325,7 @@ wss.on("connection", (ws) => {
       room.turnIndex = (room.turnIndex + 1) % Math.max(1, room.players.length);
       if (msg.nextCard) room.tabu.card = msg.nextCard;
       room.tabu.guesses = [];
+      room.tabu.turnToken = Date.now();
       broadcastRoom(room);
     }
   });
