@@ -373,3 +373,86 @@ io.on("connection", socket => {
     );
 
     if (sequence.length !== room.challenge.sequence.length || sequence.some(s => s.length === 0)) {
+      return callback?.({
+        ok: false,
+        message: `Lütfen tüm ${room.challenge.sequence.length} adımı da doldur.`
+      });
+    }
+
+    const instrument = String(data?.instrument || "acoustic_grand_piano").slice(0, 60);
+    const score = calculateSimilarity(room.challenge, { instrument, sequence });
+
+    const existingIdx = room.challenge.submissions.findIndex(s => s.playerId === socket.id);
+    const entry = {
+      playerId: socket.id,
+      playerName: player.name,
+      instrument,
+      sequence,
+      score
+    };
+
+    if (existingIdx >= 0) {
+      room.challenge.submissions[existingIdx] = entry;
+    } else {
+      room.challenge.submissions.push(entry);
+    }
+
+    if (room.challenge.submissions.length >= room.players.length) {
+      room.challenge.revealed = true;
+      room.challenge.submissions.sort((a, b) => b.score - a.score);
+    }
+
+    sendRoom(room);
+    callback?.({ ok: true });
+  });
+
+  socket.on("reveal-mimic", (data, callback) => {
+    const room = getRoom(socket, data?.code);
+    if (!room || room.mode !== "mimic" || !room.challenge) {
+      return callback?.({ ok: false, message: "Oda bulunamadı." });
+    }
+    if (room.host !== socket.id) {
+      return callback?.({ ok: false, message: "Sonuçları yalnızca oda sahibi açıklayabilir." });
+    }
+
+    room.challenge.revealed = true;
+    room.challenge.submissions.sort((a, b) => b.score - a.score);
+    sendRoom(room);
+    callback?.({ ok: true });
+  });
+
+  socket.on("next-round", (data, callback) => {
+    const room = getRoom(socket, data?.code);
+
+    if (!room) return callback?.({ ok: false, message: "Oda bulunamadı." });
+    if (room.host !== socket.id) {
+      return callback?.({ ok: false, message: "Bu işlemi yalnızca oda sahibi yapabilir." });
+    }
+
+    room.actions = [];
+    room.currentTurn = 0;
+
+    if (room.mode === "mimic") {
+      const ch = generateChallenge();
+      room.challenge = { ...ch, submissions: [], revealed: false };
+    }
+
+    sendRoom(room);
+    io.to(room.code).emit("round-cleared");
+    callback?.({ ok: true });
+  });
+
+  socket.on("disconnect", () => {
+    removePlayer(socket);
+  });
+});
+
+function clamp(value, min, max, fallback) {
+  const n = Number(value);
+  return Number.isFinite(n) ? Math.max(min, Math.min(max, n)) : fallback;
+}
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`Müzik Partisi çalışıyor: ${PORT}`);
+});
