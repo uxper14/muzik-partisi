@@ -402,6 +402,73 @@
       background: linear-gradient(90deg, rgba(34, 211, 238, 0.14), rgba(124, 92, 255, 0.08));
     }
 
+    .muzziko-card {
+      border-left: 4px solid #fb7185;
+      background: linear-gradient(125deg, rgba(251, 113, 133, 0.14), rgba(124, 92, 255, 0.12), rgba(34, 211, 238, 0.08));
+    }
+
+    .muzziko-vibe-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .muzziko-vibe-btn {
+      border: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .muzziko-vibe-btn.active {
+      background: linear-gradient(135deg, #f43f5e, var(--accent));
+      border-color: transparent;
+      color: #fff;
+    }
+
+    .muzziko-pads-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .muzziko-pad {
+      min-height: 76px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: linear-gradient(155deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+      touch-action: none;
+      transition: transform 0.08s ease, background 0.12s ease, border-color 0.12s ease;
+    }
+
+    .muzziko-pad.active {
+      transform: scale(0.97);
+      border-color: var(--accent-2);
+      background: linear-gradient(155deg, rgba(34, 211, 238, 0.34), rgba(124, 92, 255, 0.34));
+    }
+
+    .muzziko-pad-title {
+      font-weight: 800;
+      font-size: 0.96rem;
+    }
+
+    .muzziko-pad-sub {
+      font-size: 0.74rem;
+      color: var(--muted);
+    }
+
     .synth-knobs-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -620,7 +687,8 @@
       font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
-      touch-action: manipulation;
+      user-select: none;
+      touch-action: none;
     }
 
     .perc-pad-btn.hit {
@@ -810,9 +878,10 @@
       <div class="card">
         <h3>Nasıl Çalışır?</h3>
         <p class="muted">
-          • <strong>Herkes Bir Şey Eklesin &amp; Temalı Beste:</strong> Loop dönerken içinde sıkışmadan özgür ve aksak ritimlerle çal, tuşa basılı tutarak notayı uzat, göndermeden önce loop'ta dinle veya sil, onaylayınca herkes duysun ve sıra geçsin.<br /><br />
+          • <strong>Herkes Bir Şey Eklesin &amp; Temalı Beste:</strong> Loop dönerken istediğin yere bas, basılı tutarak notayı uzat, göndermeden önce loop'ta dinle; onaylayınca sıra diğerine geçer.<br /><br />
+          • <strong>Müzziko:</strong> Nota bilgisi gerektirmeyen ultra kolay müzik modu — uyumlu ses pedlerine dokun veya basılı tut, tek tuşla katman yolla.<br /><br />
           • <strong>Ritmi &amp; Melodiyi Taklit Et:</strong> Duyduğun ritmi veya tek oktav melodiyi birebir çal ve doğruluk oranını gör.<br /><br />
-          • <strong>Tabu:</strong> Yasaklı kelimelere takılmadan anlat, süre bitince anlatıcı sırası otomatik geçsin.
+          • <strong>Tabu:</strong> Yasaklı kelimelere takılmadan anlat, tahmin et.
         </p>
       </div>
     </section>
@@ -992,7 +1061,7 @@
       <div id="resultsList" class="stack"></div>
     </section>
 
-    <!-- DÖNGÜ STÜDYOSU -->
+    <!-- DÖNGÜ STÜDYOSU & MÜZZİKO -->
     <main id="studioGameView" class="stack hidden">
       <section class="card turn-banner">
         <div class="turn-who">
@@ -1021,8 +1090,25 @@
         </div>
       </section>
 
+      <!-- MÜZZİKO ÖZEL KOLAY PANELİ -->
+      <section id="muzzikoPanel" class="card muzziko-card hidden">
+        <div class="section-head">
+          <div>
+            <h2>🌈 Müzziko — Kolay Müzik Modu</h2>
+            <p class="muted" style="margin: 4px 0 0;">Hangi tuşa basarsan kulağa uyumlu gelir. Basılı tutarak uzatabilir, tek tuşla çalabilir veya sıradaki oyuncuya gönderebilirsin.</p>
+          </div>
+          <div class="controls-cluster">
+            <button type="button" id="muzzikoAutoJamBtn" class="btn btn-primary">✨ Tek Tuşla Mini Melodi</button>
+            <button type="button" id="muzzikoClearBtn" class="btn btn-secondary">🧹 Temizle</button>
+          </div>
+        </div>
+
+        <div id="muzzikoVibeRow" class="muzziko-vibe-row"></div>
+        <div id="muzzikoPadsGrid" class="muzziko-pads-grid"></div>
+      </section>
+
       <!-- KURUCU DJ PANELİ -->
-      <section class="card">
+      <section class="card" id="djPanelCard">
         <div class="section-head">
           <div>
             <h3>🎛️ Kurucu DJ Paneli</h3>
@@ -1061,7 +1147,7 @@
         </div>
       </section>
 
-      <div class="studio-row">
+      <div class="studio-row" id="studioMainRow">
         <div id="studioPianoMount"></div>
 
         <section class="card" id="micCard">
@@ -1100,7 +1186,7 @@
 
       <!-- SYNTH & TINI AYARLARI + DÖNGÜ KATMANLARI -->
       <section class="card">
-        <div class="section-head">
+        <div class="section-head" id="synthHeaderRow">
           <h3>🎚️ Synth &amp; Tını Ayarları</h3>
           <div class="controls-cluster">
             <button type="button" id="synthWildRandomBtn" class="btn btn-secondary">🎲 Rastgele Tını</button>
@@ -1108,7 +1194,7 @@
           </div>
         </div>
 
-        <div class="synth-knobs-grid">
+        <div class="synth-knobs-grid" id="synthKnobsRow">
           <div class="synth-knob-card">
             <div class="synth-knob-head"><span>Filtre Kesim</span><strong id="synthCutoffVal">4200 Hz</strong></div>
             <input type="range" id="synthCutoff" min="250" max="8500" step="10" value="4200" />
@@ -1140,7 +1226,7 @@
           </div>
         </div>
 
-        <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 14px 0;" />
+        <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 14px 0;" id="synthDivider" />
 
         <div class="section-head">
           <h3 id="layersSectionTitle">🎚️ Döngü Katmanları</h3>
@@ -1205,7 +1291,7 @@
         <button type="button" class="perc-pad-btn" data-perc="cowbell">🐮 Cowbell</button>
       </div>
 
-      <p class="muted" id="takeStatus" style="margin-top: 8px;">Loop dönerken içinde sıkışmadan özgür çalabilir, tuşa basılı tutarak notayı uzatabilir ve göndermeden önce loop'ta dinleyebilirsin.</p>
+      <p class="muted" id="takeStatus" style="margin-top: 8px;">Loop dönerken istediğin yere bas, basılı tutarak notayı uzat ve göndermeden önce loop'ta dinle.</p>
     </section>
   </div>
 
@@ -1289,9 +1375,65 @@
     const GAME_MODES = [
       { id: "collab", title: "🤝 Herkes Bir Şey Eklesin", desc: "Sırayla ortak döngüye kendi katmanını ekle, sonunda oyla." },
       { id: "theme", title: "🎭 Temalı Beste", desc: "Gelen sahne temasına uygun müzik yap ve ortak döngüye ekle." },
+      { id: "muzziko", title: "🌈 Müzziko", desc: "Süper kolay müzik modu: uyumlu pedlere bas veya tut, tek tuşla yolla." },
       { id: "rhythm", title: "🥁 Ritmi Taklit Et", desc: "Rastgele üretilen ritmi dinle, yap, herkes bitince yüzdeleri gör." },
       { id: "melody", title: "🎹 Melodiyi Taklit Et", desc: "Rastgele seçilen tek oktavdaki melodiyi dinle, çal ve cevabı gör." },
       { id: "tabu", title: "🗣️ Tabu", desc: "Klasik Tabu: yasaklı kelimeleri kullanmadan anlat, tahmin et." }
+    ];
+
+    const MUZZIKO_VIBES = [
+      {
+        id: "sunny",
+        label: "☀️ Neşeli Cila",
+        instrumentId: "marimba",
+        pads: [
+          { title: "Do Çınlama", sub: "C4 • Parlak", midi: 60 },
+          { title: "Mi Güneşi", sub: "E4 • Tatlı", midi: 64 },
+          { title: "Sol Esinti", sub: "G4 • Açık", midi: 67 },
+          { title: "La Melodi", sub: "A4 • Neşeli", midi: 69 },
+          { title: "Do Üst", sub: "C5 • Zirve", midi: 72 },
+          { title: "Re Akış", sub: "D5 • Hareket", midi: 74 }
+        ]
+      },
+      {
+        id: "night_surf",
+        label: "🌙 Gece Sörfü",
+        instrumentId: "epiano",
+        pads: [
+          { title: "La Derinlik", sub: "A3 • Yumuşak", midi: 57 },
+          { title: "Do Dalga", sub: "C4 • Sakin", midi: 60 },
+          { title: "Mi Yıldız", sub: "E4 • Berrak", midi: 64 },
+          { title: "Sol Işık", sub: "G4 • Uzayan", midi: 67 },
+          { title: "Si Rüzgar", sub: "B4 • Hayal", midi: 71 },
+          { title: "E Üst", sub: "E5 • Parıltı", midi: 76 }
+        ]
+      },
+      {
+        id: "warm_lounge",
+        label: "☕ Sıcak Akor",
+        instrumentId: "acoustic_guitar",
+        pads: [
+          { title: "Fa Kök", sub: "F3 • Sıcak", midi: 53 },
+          { title: "La Ton", sub: "A3 • Dolgun", midi: 57 },
+          { title: "Do Tel", sub: "C4 • Akıcı", midi: 60 },
+          { title: "Mi Vurgu", sub: "E4 • Tatlı", midi: 64 },
+          { title: "Sol Tını", sub: "G4 • Yumuşak", midi: 67 },
+          { title: "A Üst", sub: "A4 • Rahat", midi: 69 }
+        ]
+      },
+      {
+        id: "groove_pop",
+        label: "⚡ Ritmik Kafa",
+        instrumentId: "kalimba",
+        pads: [
+          { title: "Sol Nabız", sub: "G3 • Kıvrak", midi: 55 },
+          { title: "Si Adım", sub: "B3 • Canlı", midi: 59 },
+          { title: "Re Çarpma", sub: "D4 • Hızlı", midi: 62 },
+          { title: "Fa Vuruş", sub: "F4 • Keskin", midi: 65 },
+          { title: "La Zıplama", sub: "A4 • Enerji", midi: 69 },
+          { title: "D Üst", sub: "D5 • Patlama", midi: 74 }
+        ]
+      }
     ];
 
     const CHORD_MODES = [
@@ -1409,156 +1551,383 @@
       "Eski Dostlar", "Zafer Anı", "Hüzünlü Veda", "Umut Işığı", "Kutlama"
     ];
 
-    const TABU_CARDS = [
-      { word: "PİYANO", forbidden: ["Tuş", "Siyah", "Beyaz", "Müzik", "Çalmak"] },
-      { word: "UZAY", forbidden: ["Gezegen", "Yıldız", "Astronot", "Roket", "Ay"] },
-      { word: "KAHVE", forbidden: ["Fincan", "Sabah", "Kafein", "Türk", "İçmek"] },
-      { word: "GİTAR", forbidden: ["Tel", "Müzik", "Akustik", "Elektro", "Çalmak"] },
-      { word: "DENİZ", forbidden: ["Su", "Mavi", "Dalga", "Yüzmek", "Plaj"] },
-      { word: "KEDİ", forbidden: ["Miyav", "Tüy", "Pati", "Köpek", "Hayvan"] },
-      { word: "TELEFON", forbidden: ["Aramak", "Ekran", "Mesaj", "Şarj", "Mobil"] },
-      { word: "KİTAP", forbidden: ["Sayfa", "Okumak", "Yazar", "Roman", "Kütüphane"] },
-      { word: "FUTBOL", forbidden: ["Top", "Gol", "Kale", "Maç", "Hakem"] },
-      { word: "YAĞMUR", forbidden: ["Bulut", "Islanmak", "Şemsiye", "Su", "Hava"] },
-      { word: "SİNEMA", forbidden: ["Film", "Mısır", "Bilet", "Salon", "Perde"] },
-      { word: "ROBOT", forbidden: ["Makine", "Metal", "Yapay", "Teknoloji", "İnsan"] },
-      { word: "KAMP", forbidden: ["Çadır", "Ateş", "Orman", "Doğa", "Uyku"] },
-      { word: "BİSİKLET", forbidden: ["Pedal", "Tekerlek", "Sürmek", "Kask", "İki"] },
-      { word: "AŞÇI", forbidden: ["Yemek", "Mutfak", "Tencere", "Restoran", "Şef"] },
-      { word: "SAAT", forbidden: ["Zaman", "Dakika", "Kol", "Yelkovan", "Akrep"] },
-      { word: "KORSAN", forbidden: ["Gemi", "Hazine", "Deniz", "Göz", "Papağan"] },
-      { word: "KÜTÜPHANE", forbidden: ["Kitap", "Sessiz", "Okumak", "Raf", "Ders"] },
-      { word: "DONDURMA", forbidden: ["Yaz", "Soğuk", "Külah", "Tatlı", "Erimek"] },
-      { word: "UÇAK", forbidden: ["Hava", "Kanat", "Pilot", "Yolcu", "Havalimanı"] },
-      { word: "RİTİM", forbidden: ["Vuruş", "Tempo", "Davul", "Aksak", "Nabız"] },
-      { word: "AKOR", forbidden: ["Aynı Anda", "Üçlü", "Majör", "Minör", "Armoni"] },
-      { word: "MELODİ", forbidden: ["Ezgi", "Nota", "Akış", "Şarkı", "Mırıldanmak"] },
-      { word: "NAKARAT", forbidden: ["Tekrar", "Nakış", "En Bilinen", "Koro", "Patlama"] },
-      { word: "KULAKLIK", forbidden: ["Kafa", "Kablosuz", "Dışarısı", "Ses", "Kulağa"] },
-      { word: "YANKI", forbidden: ["Mağara", "Geri Dönmek", "Boşluk", "Ses", "Tekrar"] },
-      { word: "SAHNE", forbidden: ["Perde", "Işık", "Seyirci", "Alkış", "Gösteri"] },
-      { word: "TEMPO", forbidden: ["Hız", "BPM", "Yavaş", "Hızlı", "Metronom"] },
-      { word: "OKTAV", forbidden: ["Sekiz", "İnce", "Kalın", "Do", "Aralık"] },
-      { word: "ASANSÖR", forbidden: ["Kat", "Düğme", "Yukarı", "Aşağı", "Bina"] },
-      { word: "VALİZ", forbidden: ["Tatil", "Bavul", "Kıyafet", "Tekerlek", "Yolculuk"] },
-      { word: "ŞEMSİYE", forbidden: ["Yağmur", "Güneş", "Açmak", "Islanmak", "Sap"] },
-      { word: "ALARM", forbidden: ["Sabah", "Erken", "Çalmak", "Uyanmak", "Ertelemek"] },
-      { word: "AYNA", forbidden: ["Yansıma", "Cam", "Bakmak", "Kendini", "Duvar"] },
-      { word: "DENİZ FENERİ", forbidden: ["Kıyı", "Işık", "Gemi", "Kule", "Liman"] },
-      { word: "LUNAPARK", forbidden: ["Dönme Dolap", "Çarpışan", "Bilet", "Eğlence", "Hız"] },
-      { word: "KIBRIT", forbidden: ["Ateş", "Çakmak", "Kutu", "Kükürt", "Yakmak"] },
-      { word: "FENER", forbidden: ["Karanlık", "Pil", "Işık", "Kamp", "El"] },
-      { word: "KARPUZ", forbidden: ["Yaz", "Peynir", "Yeşil", "Kırmızı", "Çekirdek"] },
-      { word: "ÇİKOLATA", forbidden: ["Kakao", "Tatlı", "Bitter", "Sütlü", "Paket"] },
-      { word: "POPCORN", forbidden: ["Sinema", "Mısır", "Patlamak", "Tuzlu", "Kova"] },
-      { word: "LİMONATA", forbidden: ["Ekşi", "Sarı", "Soğuk", "Nane", "İçecek"] },
-      { word: "TOST", forbidden: ["Ekmek", "Kaşar", "Sucuk", "Makine", "Kahvaltı"] },
-      { word: "ŞİMŞEK", forbidden: ["Gökyüzü", "Fırtına", "Çakmak", "Gök Gürültüsü", "Bulut"] },
-      { word: "SİS", forbidden: ["Görüş", "Bulut", "Sabah", "Puslu", "Hava"] },
-      { word: "ŞELALE", forbidden: ["Su", "Yüksek", "Akıntı", "Doğa", "Düşmek"] },
-      { word: "NOSTALJİ", forbidden: ["Geçmiş", "Özlem", "Eski", "Anı", "Hatıra"] },
-      { word: "HEYECAN", forbidden: ["Kalp", "Atmak", "Sabırsız", "Duygu", "Beklemek"] },
-      { word: "SÜRPRİZ", forbidden: ["Beklenmedik", "Gizli", "Doğum Günü", "Hediye", "Şaşırmak"] },
-      { word: "GÖLGE", forbidden: ["Güneş", "Karanlık", "Peşinde", "Işık", "Şekil"] },
-      { word: "MASKE", forbidden: ["Yüz", "Gizlemek", "Baloya", "Karnaval", "Tiyatro"] },
-      { word: "SİNYAL", forbidden: ["İşaret", "Dalga", "Çekmek", "Yön", "İletişim"] },
-      { word: "ZAMAN", forbidden: ["Akıp Gitmek", "Saat", "Geçmiş", "Gelecek", "An"] },
-      { word: "ORMAN", forbidden: ["Ağaç", "Yeşil", "Doğa", "Hayvan", "Yaprak"] },
-      { word: "AHTAPOT", forbidden: ["Sekiz", "Kol", "Deniz", "Mürekkep", "Su"] },
-      { word: "PENGUEN", forbidden: ["Buz", "Soğuk", "Kutup", "Kanat", "Yürümek"] },
-      { word: "EJDERHA", forbidden: ["Ateş", "Kanat", "Efsane", "Masal", "Uçmak"] },
-      { word: "KASET", forbidden: ["Eski", "Bant", "Kalem", "Müzik", "Çalar"] },
-      { word: "MİKROFON", forbidden: ["Ses", "Konuşmak", "Şarkı", "Sahne", "Kayıt"] },
-      { word: "KARAVAN", forbidden: ["Tekerlek", "Seyahat", "Ev", "Kamp", "Yol"] },
-      { word: "GÖZLÜK", forbidden: ["Cam", "Görmek", "Numara", "Güneş", "Çerçeve"] },
-      { word: "YASTIK", forbidden: ["Uyumak", "Yatak", "Baş", "Kılıf", "Gece"] },
-      { word: "TREN", forbidden: ["Ray", "Vagon", "İstasyon", "Yolculuk", "Hızlı"] },
-      { word: "FOTOĞRAF", forbidden: ["Kamera", "Çekmek", "Poz", "Albüm", "Makine"] },
-      { word: "ANAHTAR", forbidden: ["Kapı", "Kilit", "Açmak", "Çelik", "Daire"] },
-      { word: "KAR", forbidden: ["Kış", "Beyaz", "Soğuk", "Yağmak", "Kardan Adam"] },
-      { word: "HARİTA", forbidden: ["Yol", "Ülke", "Şehir", "Pusula", "Gösterir"] },
-      { word: "PİZZA", forbidden: ["İtalyan", "Dilim", "Hamur", "Peynir", "Fırın"] },
-      { word: "KÖPRÜ", forbidden: ["Karşı", "Geçmek", "Boğaz", "Nehir", "Yol"] },
-      { word: "RÜYA", forbidden: ["Uyumak", "Gece", "Görmek", "Kabus", "Bilinç"] },
-      { word: "BALIK", forbidden: ["Deniz", "Yüzmek", "Olta", "Akvaryum", "Pul"] },
-      { word: "DÜĞÜN", forbidden: ["Gelin", "Damat", "Evlenmek", "Halay", "Nikah"] },
-      { word: "BÜTÇE", forbidden: ["Para", "Harcama", "Gelir", "Gider", "Tasarruf"] },
-      { word: "PİL", forbidden: ["Şarj", "Enerji", "Kumanda", "Bitti", "Artı"] },
-      { word: "AYAKKABI", forbidden: ["Giymek", "Bağcık", "Taban", "Yürümek", "Numara"] },
-      { word: "TİYATRO", forbidden: ["Sahne", "Oyuncu", "Perde", "Alkış", "Oyun"] },
-      { word: "BALKON", forbidden: ["Ev", "Dışarı", "Çamaşır", "Manzara", "Korkuluk"] },
-      { word: "MASAL", forbidden: ["Uyku", "Çocuk", "Prens", "Ejderha", "Anlatmak"] },
-      { word: "SÖZLÜK", forbidden: ["Kelime", "Anlam", "Harf", "Dil", "Sayfa"] },
-      { word: "VİTAMİN", forbidden: ["Sağlık", "Portakal", "C", "Hap", "Bağışıklık"] },
-      { word: "KUTUP", forbidden: ["Buz", "Penguen", "Kuzey", "Güney", "Soğuk"] },
-      { word: "PUSULA", forbidden: ["Yön", "Kuzey", "İğne", "Harita", "Kaybolmak"] },
-      { word: "TERAZİ", forbidden: ["Tartmak", "Kilo", "Ağırlık", "Denge", "Gram"] },
-      { word: "MÜZE", forbidden: ["Tarih", "Eser", "Gezmek", "Sergi", "Bilet"] },
-      { word: "ŞİFRE", forbidden: ["Gizli", "Parola", "Kırmak", "Güvenlik", "Harf"] },
-      { word: "ÇİZGİ FİLM", forbidden: ["Animasyon", "Kare", "Karakter", "Çizmek", "Çocuk"] },
-      { word: "SENARYO", forbidden: ["Film", "Dizi", "Yazmak", "Sahne", "Diyalog"] },
-      { word: "REKLAM", forbidden: ["Tanıtım", "Televizyon", "Marka", "Ürün", "Süre"] },
-      { word: "PODCAST", forbidden: ["Ses", "Bölüm", "Dinlemek", "Mikrofon", "Yayın"] },
-      { word: "TURNUVA", forbidden: ["Yarışma", "Takım", "Şampiyon", "Eleme", "Kupa"] },
-      { word: "STRATEJİ", forbidden: ["Plan", "Hamle", "Oyun", "Zeka", "Takım"] },
-      { word: "VOLKAN", forbidden: ["Lav", "Dağ", "Patlamak", "Magma", "Kül"] },
-      { word: "GÖKKUŞAĞI", forbidden: ["Renk", "Yağmur", "Güneş", "Gökyüzü", "Yedi"] },
-      { word: "METEOR", forbidden: ["Uzay", "Düşmek", "Kayan Yıldız", "Atmosfer", "Taş"] },
-      { word: "DENEY", forbidden: ["Laboratuvar", "Bilim", "Sonuç", "Tüp", "Hipotez"] },
-      { word: "İCAT", forbidden: ["Yeni", "Bulmak", "Mucit", "Patent", "Geliştirmek"] },
-      { word: "PASAPORT", forbidden: ["Yurt Dışı", "Vize", "Kimlik", "Sınır", "Seyahat"] },
-      { word: "LİMAN", forbidden: ["Gemi", "Deniz", "İskele", "Tekne", "Kıyı"] },
-      { word: "ÇARŞI", forbidden: ["Dükkan", "Alışveriş", "Esnaf", "Kalabalık", "Pazar"] },
-      { word: "FIRIN", forbidden: ["Ekmek", "Sıcak", "Pişirmek", "Un", "Simit"] },
-      { word: "ZEYTİN", forbidden: ["Kahvaltı", "Siyah", "Yeşil", "Yağ", "Ağaç"] },
-      { word: "TARÇIN", forbidden: ["Baharat", "Kokulu", "Salep", "Kurabiye", "Kahverengi"] },
-      { word: "İSTİKRAR", forbidden: ["Süreklilik", "Düzen", "Değişmeyen", "Denge", "Uzun"] },
-      { word: "İLHAM", forbidden: ["Fikir", "Yaratıcılık", "Gelmek", "Sanat", "Esin"] },
-      { word: "ANKET", forbidden: ["Soru", "Katılımcı", "Oy", "Araştırma", "Sonuç"] },
-      { word: "ARŞİV", forbidden: ["Kayıt", "Eski", "Saklamak", "Dosya", "Geçmiş"] },
-      { word: "BATERİ", forbidden: ["Davul", "Baget", "Zil", "Ritim", "Trampet"] },
-      { word: "KEMAN", forbidden: ["Yay", "Tel", "Klasik", "Çene", "Orkestra"] },
-      { word: "FLÜT", forbidden: ["Üflemek", "Metal", "Nota", "Yan", "Nefes"] },
-      { word: "KORO", forbidden: ["Birlikte", "Şarkı", "Ses", "Topluluk", "Sahnede"] },
-      { word: "STÜDYO", forbidden: ["Kayıt", "Ses", "Kulaklık", "Oda", "Müzik"] },
-      { word: "EFEKT", forbidden: ["Yankı", "Filtre", "Ses", "Değiştirmek", "İşlem"] },
-      { word: "SOLO", forbidden: ["Tek Başına", "Gitar", "Öne Çıkmak", "Çalmak", "Sahne"] },
-      { word: "METRONOM", forbidden: ["Tık", "Tempo", "Hız", "Zaman", "Çalışmak"] },
-      { word: "KONSER", forbidden: ["Sahne", "Seyirci", "Bilet", "Şarkıcı", "Kalabalık"] },
-      { word: "AFIŞ", forbidden: ["Duvar", "Duyuru", "Poster", "Tasarım", "Etkinlik"] },
-      { word: "GALAKSİ", forbidden: ["Yıldız", "Uzay", "Samanyolu", "Gezegen", "Evren"] },
-      { word: "BULUT", forbidden: ["Gökyüzü", "Yağmur", "Beyaz", "Hava", "Uçmak"] },
-      { word: "DÜRBÜN", forbidden: ["Uzak", "Bakmak", "Mercek", "Görmek", "İki Göz"] },
-      { word: "SANDALYE", forbidden: ["Oturmak", "Masa", "Ayak", "Sırt", "Mobilya"] },
-      { word: "HALI", forbidden: ["Yer", "Desen", "Dokuma", "Salon", "Üstüne"] },
-      { word: "PERDE", forbidden: ["Cam", "Açmak", "Kapatmak", "Güneş", "Sahne"] },
-      { word: "KAVANOZ", forbidden: ["Cam", "Kapak", "Reçel", "Saklamak", "Turşu"] },
-      { word: "KAŞIK", forbidden: ["Çorba", "Yemek", "Metal", "Tatlı", "Karıştırmak"] },
-      { word: "ÇATAL", forbidden: ["Yemek", "Bıçak", "Diş", "Tabak", "Batırmak"] },
-      { word: "SÜRAHİ", forbidden: ["Su", "Dökmek", "Cam", "İçecek", "Bardak"] },
-      { word: "ŞÖMİNE", forbidden: ["Ateş", "Odun", "Kış", "Sıcak", "Baca"] },
-      { word: "KÖPEK", forbidden: ["Havlamak", "Sadık", "Pati", "Kedi", "Tasması"] },
-      { word: "KELEBEK", forbidden: ["Kanat", "Uçmak", "Renkli", "Tırtıl", "Çiçek"] },
-      { word: "ASLAN", forbidden: ["Orman", "Kral", "Yele", "Kükremek", "Hayvan"] },
-      { word: "BAYKUŞ", forbidden: ["Gece", "Göz", "Uçmak", "Orman", "Kuş"] },
-      { word: "YUNUS", forbidden: ["Deniz", "Zeki", "Yüzmek", "Balık", "Atlamak"] },
-      { word: "DEVE", forbidden: ["Çöl", "Hörgüç", "Kum", "Sıcak", "Yürümek"] },
-      { word: "SİNCAP", forbidden: ["Ceviz", "Ağaç", "Kuyruk", "Orman", "Hızlı"] },
-      { word: "KAKTÜS", forbidden: ["Diken", "Çöl", "Su", "Bitki", "Yeşil"] },
-      { word: "GÜNEBAKAN", forbidden: ["Sarı", "Çekirdek", "Çiçek", "Güneş", "Tarla"] },
-      { word: "BAMBU", forbidden: ["Panda", "Yeşil", "Uzun", "Bitki", "Sap"] },
-      { word: "VADİ", forbidden: ["Dağ", "İki Tepe", "Nehir", "Doğa", "Çukur"] },
-      { word: "ÇIĞ", forbidden: ["Kar", "Dağ", "Düşmek", "Kış", "Beyaz"] },
-      { word: "DEPREM", forbidden: ["Sarsıntı", "Yer", "Fay", "Bina", "Salınmak"] },
-      { word: "LABİRENT", forbidden: ["Çıkış", "Yol", "Duvar", "Kaybolmak", "Bulmaca"] },
-      { word: "BULMACA", forbidden: ["Soru", "Kare", "Harf", "Çözmek", "Gazete"] },
-      { word: "SATRANÇ", forbidden: ["Şah", "Vezir", "Tahta", "Hamle", "Mat"] },
-      { word: "ZAR", forbidden: ["Altı", "Atmak", "Oyun", "Nokta", "Şans"] },
-      { word: "MADALYA", forbidden: ["Altın", "Gümüş", "Bronz", "Yarışma", "Boyun"] },
-      { word: "KUPA", forbidden: ["Şampiyon", "Kazanmak", "Final", "Ödül", "Kaldırmak"] },
-      { word: "ANTRENMAN", forbidden: ["Çalışmak", "Spor", "Hazırlık", "Ter", "Egzersiz"] },
-      { word: "HAKEM", forbidden: ["Düdük", "Kart", "Maç", "Kural", "Saha"] }
+    const RAW_TABU_PAIRS = [
+      ["PİYANO", ["Tuş", "Siyah", "Beyaz", "Müzik", "Çalmak"]],
+      ["UZAY", ["Gezegen", "Yıldız", "Astronot", "Roket", "Ay"]],
+      ["KAHVE", ["Fincan", "Sabah", "Kafein", "Türk", "İçmek"]],
+      ["GİTAR", ["Tel", "Müzik", "Akustik", "Elektro", "Çalmak"]],
+      ["DENİZ", ["Su", "Mavi", "Dalga", "Yüzmek", "Plaj"]],
+      ["KEDİ", ["Miyav", "Tüy", "Pati", "Köpek", "Hayvan"]],
+      ["TELEFON", ["Aramak", "Ekran", "Mesaj", "Şarj", "Mobil"]],
+      ["KİTAP", ["Sayfa", "Okumak", "Yazar", "Roman", "Kütüphane"]],
+      ["FUTBOL", ["Top", "Gol", "Kale", "Maç", "Hakem"]],
+      ["YAĞMUR", ["Bulut", "Islanmak", "Şemsiye", "Su", "Hava"]],
+      ["SİNEMA", ["Film", "Mısır", "Bilet", "Salon", "Perde"]],
+      ["ROBOT", ["Makine", "Metal", "Yapay", "Teknoloji", "İnsan"]],
+      ["KAMP", ["Çadır", "Ateş", "Orman", "Doğa", "Uyku"]],
+      ["BİSİKLET", ["Pedal", "Tekerlek", "Sürmek", "Kask", "İki"]],
+      ["AŞÇI", ["Yemek", "Mutfak", "Tencere", "Restoran", "Şef"]],
+      ["SAAT", ["Zaman", "Dakika", "Kol", "Yelkovan", "Akrep"]],
+      ["KORSAN", ["Gemi", "Hazine", "Deniz", "Göz", "Papağan"]],
+      ["KÜTÜPHANE", ["Kitap", "Sessiz", "Okumak", "Raf", "Ders"]],
+      ["DONDURMA", ["Yaz", "Soğuk", "Külah", "Tatlı", "Erimek"]],
+      ["UÇAK", ["Hava", "Kanat", "Pilot", "Yolcu", "Havalimanı"]],
+      ["RİTİM", ["Vuruş", "Tempo", "Davul", "Aksak", "Nabız"]],
+      ["AKOR", ["Aynı Anda", "Üçlü", "Majör", "Minör", "Armoni"]],
+      ["MELODİ", ["Ezgi", "Nota", "Akış", "Şarkı", "Mırıldanmak"]],
+      ["NAKARAT", ["Tekrar", "Nakış", "En Bilinen", "Koro", "Patlama"]],
+      ["KULAKLIK", ["Kafa", "Kablosuz", "Dışarısı", "Ses", "Kulağa"]],
+      ["YANKI", ["Mağara", "Geri Dönmek", "Boşluk", "Ses", "Tekrar"]],
+      ["SAHNE", ["Perde", "Işık", "Seyirci", "Alkış", "Gösteri"]],
+      ["TEMPO", ["Hız", "BPM", "Yavaş", "Hızlı", "Metronom"]],
+      ["OKTAV", ["Sekiz", "İnce", "Kalın", "Do", "Aralık"]],
+      ["ASANSÖR", ["Kat", "Düğme", "Yukarı", "Aşağı", "Bina"]],
+      ["VALİZ", ["Tatil", "Bavul", "Kıyafet", "Tekerlek", "Yolculuk"]],
+      ["ŞEMSİYE", ["Yağmur", "Güneş", "Açmak", "Islanmak", "Sap"]],
+      ["ALARM", ["Sabah", "Erken", "Çalmak", "Uyanmak", "Ertelemek"]],
+      ["AYNA", ["Yansıma", "Cam", "Bakmak", "Kendini", "Duvar"]],
+      ["DENİZ FENERİ", ["Kıyı", "Işık", "Gemi", "Kule", "Liman"]],
+      ["LUNAPARK", ["Dönme Dolap", "Çarpışan", "Bilet", "Eğlence", "Hız"]],
+      ["KIBRIT", ["Ateş", "Çakmak", "Kutu", "Kükürt", "Yakmak"]],
+      ["FENER", ["Karanlık", "Pil", "Işık", "Kamp", "El"]],
+      ["KARPUZ", ["Yaz", "Peynir", "Yeşil", "Kırmızı", "Çekirdek"]],
+      ["ÇİKOLATA", ["Kakao", "Tatlı", "Bitter", "Sütlü", "Paket"]],
+      ["POPCORN", ["Sinema", "Mısır", "Patlamak", "Tuzlu", "Kova"]],
+      ["LİMONATA", ["Ekşi", "Sarı", "Soğuk", "Nane", "İçecek"]],
+      ["TOST", ["Ekmek", "Kaşar", "Sucuk", "Makine", "Kahvaltı"]],
+      ["ŞİMŞEK", ["Gökyüzü", "Fırtına", "Çakmak", "Gök Gürültüsü", "Bulut"]],
+      ["SİS", ["Görüş", "Bulut", "Sabah", "Puslu", "Hava"]],
+      ["ŞELALE", ["Su", "Yüksek", "Akıntı", "Doğa", "Düşmek"]],
+      ["NOSTALJİ", ["Geçmiş", "Özlem", "Eski", "Anı", "Hatıra"]],
+      ["HEYECAN", ["Kalp", "Atmak", "Sabırsız", "Duygu", "Beklemek"]],
+      ["SÜRPRİZ", ["Beklenmedik", "Gizli", "Doğum Günü", "Hediye", "Şaşırmak"]],
+      ["GÖLGE", ["Güneş", "Karanlık", "Peşinde", "Işık", "Şekil"]],
+      ["MASKE", ["Yüz", "Gizlemek", "Baloya", "Karnaval", "Tiyatro"]],
+      ["SİNYAL", ["İşaret", "Dalga", "Çekmek", "Yön", "İletişim"]],
+      ["ZAMAN", ["Akıp Gitmek", "Saat", "Geçmiş", "Gelecek", "An"]],
+      ["ORMAN", ["Ağaç", "Yeşil", "Doğa", "Hayvan", "Yaprak"]],
+      ["AHTAPOT", ["Sekiz", "Kol", "Deniz", "Mürekkep", "Su"]],
+      ["PENGUEN", ["Buz", "Soğuk", "Kutup", "Kanat", "Yürümek"]],
+      ["EJDERHA", ["Ateş", "Kanat", "Efsane", "Masal", "Uçmak"]],
+      ["KASET", ["Eski", "Bant", "Kalem", "Müzik", "Çalar"]],
+      ["MİKROFON", ["Ses", "Konuşmak", "Şarkı", "Sahne", "Kayıt"]],
+      ["KARAVAN", ["Tekerlek", "Seyahat", "Ev", "Kamp", "Yol"]],
+      ["GÖZLÜK", ["Cam", "Görmek", "Numara", "Güneş", "Çerçeve"]],
+      ["YASTIK", ["Uyumak", "Yatak", "Baş", "Kılıf", "Gece"]],
+      ["TREN", ["Ray", "Vagon", "İstasyon", "Yolculuk", "Hızlı"]],
+      ["FOTOĞRAF", ["Kamera", "Çekmek", "Poz", "Albüm", "Makine"]],
+      ["ANAHTAR", ["Kapı", "Kilit", "Açmak", "Çelik", "Daire"]],
+      ["KAR", ["Kış", "Beyaz", "Soğuk", "Yağmak", "Kardan Adam"]],
+      ["HARİTA", ["Yol", "Ülke", "Şehir", "Pusula", "Gösterir"]],
+      ["PİZZA", ["İtalyan", "Dilim", "Hamur", "Peynir", "Fırın"]],
+      ["KÖPRÜ", ["Karşı", "Geçmek", "Boğaz", "Nehir", "Yol"]],
+      ["RÜYA", ["Uyumak", "Gece", "Görmek", "Kabus", "Bilinç"]],
+      ["BALIK", ["Deniz", "Yüzmek", "Olta", "Akvaryum", "Pul"]],
+      ["DÜĞÜN", ["Gelin", "Damat", "Evlenmek", "Halay", "Nikah"]],
+      ["BÜTÇE", ["Para", "Harcama", "Gelir", "Gider", "Tasarruf"]],
+      ["PİL", ["Şarj", "Enerji", "Kumanda", "Bitti", "Artı"]],
+      ["AYAKKABI", ["Giymek", "Bağcık", "Taban", "Yürümek", "Numara"]],
+      ["TİYATRO", ["Sahne", "Oyuncu", "Perde", "Alkış", "Oyun"]],
+      ["BALKON", ["Ev", "Dışarı", "Çamaşır", "Manzara", "Korkuluk"]],
+      ["MASAL", ["Uyku", "Çocuk", "Prens", "Ejderha", "Anlatmak"]],
+      ["SÖZLÜK", ["Kelime", "Anlam", "Harf", "Dil", "Sayfa"]],
+      ["VİTAMİN", ["Sağlık", "Portakal", "C", "Hap", "Bağışıklık"]],
+      ["KUTUP", ["Buz", "Penguen", "Kuzey", "Güney", "Soğuk"]],
+      ["PUSULA", ["Yön", "Kuzey", "İğne", "Harita", "Kaybolmak"]],
+      ["TERAZİ", ["Tartmak", "Kilo", "Ağırlık", "Denge", "Gram"]],
+      ["MÜZE", ["Tarih", "Eser", "Gezmek", "Sergi", "Bilet"]],
+      ["ŞİFRE", ["Gizli", "Parola", "Kırmak", "Güvenlik", "Harf"]],
+      ["ÇİZGİ FİLM", ["Animasyon", "Kare", "Karakter", "Çizmek", "Çocuk"]],
+      ["SENARYO", ["Film", "Dizi", "Yazmak", "Sahne", "Diyalog"]],
+      ["REKLAM", ["Tanıtım", "Televizyon", "Marka", "Ürün", "Süre"]],
+      ["PODCAST", ["Ses", "Bölüm", "Dinlemek", "Mikrofon", "Yayın"]],
+      ["TURNUVA", ["Yarışma", "Takım", "Şampiyon", "Eleme", "Kupa"]],
+      ["STRATEJİ", ["Plan", "Hamle", "Oyun", "Zeka", "Takım"]],
+      ["VOLKAN", ["Lav", "Dağ", "Patlamak", "Magma", "Kül"]],
+      ["GÖKKUŞAĞI", ["Renk", "Yağmur", "Güneş", "Gökyüzü", "Yedi"]],
+      ["METEOR", ["Uzay", "Düşmek", "Kayan Yıldız", "Atmosfer", "Taş"]],
+      ["DENEY", ["Laboratuvar", "Bilim", "Sonuç", "Tüp", "Hipotez"]],
+      ["İCAT", ["Yeni", "Bulmak", "Mucit", "Patent", "Geliştirmek"]],
+      ["PASAPORT", ["Yurt Dışı", "Vize", "Kimlik", "Sınır", "Seyahat"]],
+      ["LİMAN", ["Gemi", "Deniz", "İskele", "Tekne", "Kıyı"]],
+      ["ÇARŞI", ["Dükkan", "Alışveriş", "Esnaf", "Kalabalık", "Pazar"]],
+      ["FIRIN", ["Ekmek", "Sıcak", "Pişirmek", "Un", "Simit"]],
+      ["ZEYTİN", ["Kahvaltı", "Siyah", "Yeşil", "Yağ", "Ağaç"]],
+      ["TARÇIN", ["Baharat", "Kokulu", "Salep", "Kurabiye", "Kahverengi"]],
+      ["İSTİKRAR", ["Süreklilik", "Düzen", "Değişmeyen", "Denge", "Uzun"]],
+      ["İLHAM", ["Fikir", "Yaratıcılık", "Gelmek", "Sanat", "Esin"]],
+      ["ANKET", ["Soru", "Katılımcı", "Oy", "Araştırma", "Sonuç"]],
+      ["ARŞİV", ["Kayıt", "Eski", "Saklamak", "Dosya", "Geçmiş"]],
+      ["BATERİ", ["Davul", "Baget", "Zil", "Ritim", "Trampet"]],
+      ["KEMAN", ["Yay", "Tel", "Klasik", "Çene", "Orkestra"]],
+      ["FLÜT", ["Üflemek", "Metal", "Nota", "Yan", "Nefes"]],
+      ["KORO", ["Birlikte", "Şarkı", "Ses", "Topluluk", "Sahnede"]],
+      ["STÜDYO", ["Kayıt", "Ses", "Kulaklık", "Oda", "Müzik"]],
+      ["EFEKT", ["Yankı", "Filtre", "Ses", "Değiştirmek", "İşlem"]],
+      ["SOLO", ["Tek Başına", "Gitar", "Öne Çıkmak", "Çalmak", "Sahne"]],
+      ["METRONOM", ["Tık", "Tempo", "Hız", "Zaman", "Çalışmak"]],
+      ["KONSER", ["Sahne", "Seyirci", "Bilet", "Şarkıcı", "Kalabalık"]],
+      ["AFIŞ", ["Duvar", "Duyuru", "Poster", "Tasarım", "Etkinlik"]],
+      ["GALAKSİ", ["Yıldız", "Uzay", "Samanyolu", "Gezegen", "Evren"]],
+      ["BULUT", ["Gökyüzü", "Yağmur", "Beyaz", "Hava", "Uçmak"]],
+      ["DÜRBÜN", ["Uzak", "Bakmak", "Mercek", "Görmek", "İki Göz"]],
+      ["KUKLA", ["İp", "Oynamak", "Ahşap", "Sahne", "El"]],
+      ["FİLM", ["Sinema", "Yönetmen", "Kamera", "Senaryo", "İzlemek"]],
+      ["DÜĞME", ["Gömlek", "Basmak", "İlik", "Pantolon", "Küçük"]],
+      ["TAVŞAN", ["Kulak", "Havuç", "Zıplamak", "Beyaz", "Hızlı"]],
+      ["BALON", ["Uçmak", "Patlamak", "Helyum", "Şişirmek", "Parti"]],
+      ["KAVUN", ["Yaz", "Sarı", "Kavun İçi", "Karpuz", "Tatlı"]],
+      ["DÜDÜK", ["Hakem", "Maç", "Üflemek", "Faul", "Ses"]],
+      ["KALEM", ["Yazmak", "Silgi", "Kurşun", "Defter", "Uç"]],
+      ["MUM", ["Işık", "Alev", "Pasta", "Erimek", "Doğum Günü"]],
+      ["TİLKİ", ["Kurnaz", "Orman", "Kuyruk", "Turuncu", "Hayvan"]],
+      ["TARAK", ["Saç", "Diş", "Fırça", "Tarama", "Ayna"]],
+      ["SABUN", ["Köpük", "El", "Yıkamak", "Kokulu", "Banyo"]],
+      ["HAVLU", ["Kurulamak", "Banyo", "Pamuk", "Plaj", "Islak"]],
+      ["TERLİK", ["Ev", "Ayak", "Giymek", "Rahat", "Banyo"]],
+      ["ÇORAP", ["Ayak", "Giymek", "Çift", "Tek", "Yün"]],
+      ["ELDİVEN", ["El", "Kış", "Soğuk", "Parmak", "Giymek"]],
+      ["ŞAPKA", ["Baş", "Güneş", "Kış", "Takmak", "Siperlik"]],
+      ["KEMER", ["Bel", "Pantolon", "Toka", "Bağlamak", "Delik"]],
+      ["CÜZDAN", ["Para", "Kart", "Kimlik", "Cep", "Deri"]],
+      ["ÇANTA", ["Omuz", "Sırt", "Taşımak", "Fermuar", "Eşya"]],
+      ["SÜPÜRGE", ["Temizlik", "Yer", "Toz", "Sap", "Çalı"]],
+      ["KÜREK", ["Kazmak", "Toprak", "Kum", "Bahçe", "Sap"]],
+      ["ÇEKİÇ", ["Çivi", "Vurmak", "Tamir", "Sap", "Demir"]],
+      ["TORNAVİDA", ["Vida", "Çevirmek", "Tamir", "Uç", "Yıldız"]],
+      ["MAKAS", ["Kesmek", "Kağıt", "Uç", "Kumaş", "Açmak"]],
+      ["YAPIŞTIRICI", ["Yapıştırmak", "Kağıt", "Bant", "Tutkal", "Sıvı"]],
+      ["ZIMBA", ["Kağıt", "Tel", "Basmak", "Dosya", "Ofis"]],
+      ["MENDİL", ["Burun", "Kağıt", "Silmek", "Paket", "Cebinde"]],
+      ["ŞİŞE", ["Su", "Cam", "Plastik", "Kapak", "İçmek"]],
+      ["BARDAK", ["Su", "Çay", "Cam", "İçmek", "Kulp"]],
+      ["EKMEK", ["Un", "Fırın", "Dilim", "Kahvaltı", "Maya"]],
+      ["PEYNİR", ["Kahvaltı", "Beyaz", "Kaşar", "Süt", "Dilim"]],
+      ["YUMURTA", ["Kahvaltı", "Tavuk", "Haşlamak", "Omlet", "Kabuk"]],
+      ["ÇAY", ["Demlik", "Bardak", "İnce Belli", "Rize", "İçmek"]],
+      ["SÜT", ["Beyaz", "İnek", "Kahvaltı", "Kutu", "İçmek"]],
+      ["BAL", ["Arı", "Tatlı", "Kahvaltı", "Kovan", "Petek"]],
+      ["REÇEL", ["Kahvaltı", "Çilek", "Tatlı", "Kavanoz", "Meyve"]],
+      ["MAKARNA", ["Su", "Haşlamak", "Sos", "İtalyan", "Tencere"]],
+      ["PİLAV", ["Pirinc", "Tereyağı", "Tencere", "Tane", "Yemek"]],
+      ["ÇORBA", ["Kaşık", "Sıcak", "Kase", "Mercimek", "Başlangıç"]],
+      ["BÖREK", ["Yufka", "Fırın", "Peynirli", "Ispanaklı", "Tepsi"]],
+      ["POĞAÇA", ["Fırın", "Hamur", "Kahvaltı", "Açma", "Mayalı"]],
+      ["SİMİT", ["Susam", "Çay", "Fırın", "Yuvarlak", "Sokak"]],
+      ["KURABİYE", ["Fırın", "Tatlı", "Çay", "Hamur", "Damla Çikolata"]],
+      ["PASTA", ["Doğum Günü", "Kremalı", "Dilim", "Mum", "Tatlı"]],
+      ["DÖNER", ["Et", "Tavuk", "Lavaş", "Ekmek", "Şiş"]],
+      ["KEBAP", ["Et", "Acı", "Şiş", "Ocak", "Adana"]],
+      ["MANTI", ["Hamur", "Yoğurt", "Sarımsak", "Kayseri", "Küçük"]],
+      ["İSKENDER", ["Bursa", "Sos", "Tereyağı", "Et", "Yoğurt"]],
+      ["SALATA", ["Domates", "Salatalık", "Marul", "Limon", "Zeytinyağı"]],
+      ["ÇİLEK", ["Kırmızı", "Yaz", "Tatlı", "Meyve", "Kokulu"]],
+      ["MUZ", ["Sarı", "Kabuk", "Soymak", "Meyve", "Maymun"]],
+      ["PORTAKAL", ["Turuncu", "C Vitamini", "Sıkma", "Kabuk", "Meyve"]],
+      ["ELMA", ["Kırmızı", "Yeşil", "Meyve", "Ağaç", "Isırmak"]],
+      ["ÜZÜM", ["Salkım", "Bağ", "Mor", "Yeşil", "Meyve"]],
+      ["GÜNEŞ", ["Sıcak", "Sarı", "Gökyüzü", "Işık", "Sabah"]],
+      ["AY", ["Gece", "Gökyüzü", "Hilal", "Dolunay", "Yıldız"]],
+      ["YILDIZ", ["Gece", "Gökyüzü", "Parlamak", "Uzay", "Kaymak"]],
+      ["GÖL", ["Su", "Kıyı", "Balık", "Tatlı", "Tekne"]],
+      ["NEHİR", ["Su", "Akmak", "Yatak", "Köprü", "Dere"]],
+      ["DAĞ", ["Zirve", "Yüksek", "Kar", "Tırmanmak", "Yamaç"]],
+      ["ADA", ["Deniz", "Etrafı Su", "Tek Başına", "Sahil", "Tropikal"]],
+      ["ÇÖL", ["Kum", "Sıcak", "Deve", "Vaha", "Kurak"]],
+      ["MAĞARA", ["Karanlık", "Kaya", "İçerisi", "Yarasa", "Derin"]],
+      ["KUŞ", ["Uçmak", "Kanat", "Gaga", "Yuva", "Gökyüzü"]],
+      ["AT", ["Koşmak", "Eyer", "Nal", "Binmek", "Çiftlik"]],
+      ["İNEK", ["Süt", "Çiftlik", "Otlamak", "Manda", "Çan"]],
+      ["KOYUN", ["Yün", "Sürü", "Melemek", "Çoban", "Çiftlik"]],
+      ["TAVUK", ["Yumurta", "Horoz", "Kümes", "Kanat", "Yem"]],
+      ["ARI", ["Bal", "Kovan", "Vızıldamak", "Çiçek", "Sokmak"]],
+      ["KARINCA", ["Küçük", "Çalışkan", "Sıra", "Taşımak", "Yuva"]],
+      ["KURBAĞA", ["Yeşil", "Zıplamak", "Gölet", "Vıraklamak", "Su"]],
+      ["YILAN", ["Sürünmek", "Zehir", "Pullu", "Dil", "Uzun"]],
+      ["AYI", ["Orman", "Bal", "Kış Uykusu", "Büyük", "Pençe"]],
+      ["FİL", ["Hortum", "Büyük", "Gri", "Kulak", "Afrika"]],
+      ["ZÜRAFA", ["Uzun Boyun", "Lekeli", "Afrika", "Yaprak", "Yüksek"]],
+      ["MAYMUN", ["Muz", "Ağaç", "Dal", "Kuyruk", "Orman"]],
+      ["SOKAK", ["Cadde", " Yol", "Ev", "Yürümek", "Mahalle"]],
+      ["PARK", ["Salıncak", "Bank", "Çimen", "Çocuk", "Yeşil"]],
+      ["OKUL", ["Öğrenci", "Öğretmen", "Sınıf", "Ders", "Zil"]],
+      ["HASTANE", ["Doktor", "Hemşire", "Hasta", "İlaç", "Ambulans"]],
+      ["ECZANE", ["İlaç", "Reçete", "Eczacı", "Ağrı Kesici", "Sağlık"]],
+      ["BANKA", ["Para", "Kart", "Şube", "Hesap", "Kredi"]],
+      ["POSTANE", ["Kargo", "Mektup", "Pul", "Göndermek", "Zarf"]],
+      ["RESİM", ["Boya", "Fırça", "Tuval", "Çizmek", "Tablo"]],
+      ["HEYKEL", ["Taş", "Mermer", "Kil", "Şekil", "Müze"]],
+      ["ŞİİR", ["Mısra", "Kafiye", "Duygu", "Kitap", "Şair"]],
+      ["DANS", ["Müzik", "Adım", "Hareket", "Sahne", "Ritmik"]],
+      ["BALE", ["Parıltı", "Ayakkabı", "Sahne", "Dönmek", "Zarif"]],
+      ["ORKESTRA", ["Şef", "Çalgı", "Salon", "Keman", "Müzikal"]],
+      ["DAVUL", ["Vurmak", "Tokmak", "Ritim", "Davulcu", "Ramazan"]],
+      ["BİLMECE", ["Sormak", "Cevap", "İpucu", "Eğlence", "Çocuk"]],
+      ["KARNE", ["Not", "Okul", "Dönem", "Tatil", "Öğrenci"]],
+      ["BAYRAM", ["Tatil", "Şeker", "Ziyaret", "Aile", "Kutlama"]],
+      ["DOĞUM GÜNÜ", ["Pasta", "Mum", "Yaş", "Hediye", "Kutlamalar"]],
+      ["MUTLULUK", ["Gülmek", "Sevinç", "Neşe", "Yüz", "İyi"]],
+      ["ÜZÜNTÜ", ["Ağlamak", "Gözyaşı", "Keder", "Mutsuz", "Moral"]],
+      ["KORKU", ["Titremek", "Karanlık", "Gece", "Endişe", "Kaçmak"]],
+      ["ŞAŞKINLIK", ["Göz", "Ağzı Açık", "İnanamamak", "Beklenmedik", "Tepki"]],
+      ["ÖFKE", ["Kızmak", "Sinir", "Bağırmak", "Yüz", "Duygu"]],
+      ["UTANMAK", ["Yüz", "Kızarmak", "Baş", "Eğmek", "Mahcup"]],
+      ["MERAK", ["Sormak", "Öğrenmek", "Araştırmak", "Neden", "İlgi"]],
+      ["UMUT", ["Beklemek", "Yarın", "İnanç", "Güzel", "Gelecek"]],
+      ["ÖZLEM", ["Hasret", "Özlemek", "Uzak", "Ayrılık", "Görmek"]],
+      ["GURUR", ["Övünmek", "Başarı", "Gururlu", "Kibir", "Göğüs"]],
+      ["SABIR", ["Beklemek", "Sakin", "Zor", "Dayanmak", "Zaman"]],
+      ["CESARET", ["Korkmamak", "Kahraman", "Atılmak", "Yürek", "Risk"]],
+      ["ŞÜPHE", ["Güvenmemek", "Kuşku", "Soru", "İnanamamak", "Gizli"]],
+      ["HUZUR", ["Sakin", "Sessiz", "Rahat", "Dinlenmek", "Barış"]],
+      ["DOKTOR", ["Hastane", "Muayene", "Reçete", "Hasta", "Beyaz Önlük"]],
+      ["ÖĞRETMEN", ["Okul", "Sınıf", "Ders", "Öğrenci", "Tahta"]],
+      ["PİLOT", ["Uçak", "Kokpit", "Gökyüzü", "Kaptan", "Uçuş"]],
+      ["KAPTAN", ["Gemi", "Deniz", "Dümen", "Mürettebat", "Liman"]],
+      ["İTFAİYECİ", ["Yangın", "Alev", "Hortum", "Sireni", "Kurtarmak"]],
+      ["POLİS", ["Karakol", "Suç", "Kelepçe", "Devriye", "Asayiş"]],
+      ["MİMAR", ["Bina", "Çizim", "Proje", "Yapı", "Tasarım"]],
+      ["MÜHENDİS", ["Hesap", "Proje", "Teknik", "Makine", "Sistem"]],
+      ["AVUKAT", ["Mahkeme", "Dava", "Savunma", "Hukuk", "Hakim"]],
+      ["HAKİM", ["Mahkeme", "Karar", "Tokmak", "Cübbe", "Adalet"]],
+      ["GAZETECİ", ["Haber", "Muhabir", "Yazı", "Röportaj", "Basın"]],
+      ["FOTOĞRAFÇI", ["Makine", "Çekmek", "Poz", "Objektif", "Kare"]],
+      ["TERZİ", ["Dikiş", "Kumaş", "Makas", "İğne", "Ölçü"]],
+      ["KUAFÖR", ["Saç", "Makas", "Fön", "Boya", "Kesim"]],
+      ["BİLGİSAYAR", ["Klavye", "Fare", "Ekran", "Kasa", "Masaüstü"]],
+      ["KLAVYE", ["Tuş", "Yazmak", "Harf", "Boşluk", "Bilgisayar"]],
+      ["FARE", ["Tıklamak", "İmleç", "Kablo", "Kaydırmak", "Bilgisayar"]],
+      ["EKRAN", ["Görüntü", "Monitör", "Parlaklık", "Çözünürlük", "Piksel"]],
+      ["KAMERA", ["Çekmek", "Video", "Lens", "Kayıt", "Görüntü"]],
+      ["OTOBÜS", ["Yolcu", "Durak", "Şoför", "Şehir", "Bilet"]],
+      ["GEMİ", ["Deniz", "Liman", "Güverte", "Çapa", "Yolcu"]],
+      ["ROKET", ["Uzay", "Fırlatmak", "Yakıt", "Atmosfer", "Ay"]],
+      ["GEZEGEN", ["Uzay", "Güneş", "Yörünge", "Dünya", "Mars"]],
+      ["ASTRONOT", ["Uzay", "Roket", "Ay", "Kask", "Yerçekimi"]],
+      ["YATAK", ["Uyku", "Yastık", "Yorgan", "Oda", "Sabah"]],
+      ["KAPI", ["Açmak", "Kapatmak", "Kilit", "Anahtar", "Kol"]],
+      ["PENCERE", ["Cam", "Dışarı", "Açmak", "Perde", "Hava"]],
+      ["PERDE", ["Pencere", "Güneş", "Kumaş", "Korniş", "Çekmek"]],
+      ["TENCERE", ["Yemek", "Ocak", "Kapak", "Kaynamak", "Sap"]],
+      ["TAVA", ["Kızartmak", "Yumurta", "Sap", "Ocak", "Yağ"]],
+      ["BIÇAK", ["Kesmek", "Mutfak", "Keskin", "Sap", "Ekmek"]],
+      ["AĞAÇ", ["Yaprak", "Dal", "Kök", "Orman", "Gölge"]],
+      ["ÇİÇEK", ["Bahçe", "Koku", "Yaprak", "Renk", "Saksı"]],
+      ["KAMPÜS", ["Üniversite", "Fakülte", "Bahçe", "Öğrenci", "Bina"]],
+      ["SİHİRBAZ", ["Şapka", "Tavşan", "Hokus", "İllüzyon", "Sahne"]],
+      ["BALIKÇI", ["Tekne", "Olta", "Ağ", "Deniz", "Balık"]],
+      ["ÇİFTÇİ", ["Tarla", "Traktör", "Ekin", "Hasat", "Toprak"]],
+      ["DEDEKTİF", ["İz", "Büyüteç", "Gizem", "Şüpheli", "Soruşturma"]],
+      ["KAHRAMAN", ["Kurtarmak", "Güç", "Cesaret", "Cüppe", "Süper"]],
+      ["DENİZCİ", ["Gemi", "Dalga", "Pusula", "Liman", "Tayfa"]],
+      ["RÜZGAR", ["Esmek", "Yaprak", "Hava", "Uçurtma", "Serin"]],
+      ["KAR TANESİ", ["Kış", "Altıgen", "Soğuk", "Beyaz", "Erimək"]],
+      ["GÜNDÖNDÜ", ["Sarı", "Güneş", "Çiçek", "Tarla", "Dönmek"]],
+      ["KUM SAATİ", ["Kum", "Zaman", "Cam", "Akış", "Ters Çevirmek"]],
+      ["DÜNYA", ["Gezegen", "Kıta", "Okyanus", "İnsan", "Uzay"]],
+      ["GÖKDELEN", ["Yüksek", "Cam", "Kat", "Asansör", "Şehir"]],
+      ["İSTASYON", ["Tren", "Peron", "Bilet", "Beklemek", "Ray"]],
+      ["HAVALİMANI", ["Uçak", "Pist", "Pasaport", "Bagaj", "Kapı"]],
+      ["AKVARYUM", ["Balık", "Cam", "Su", "Yosun", "İzlemek"]],
+      ["SERA", ["Cam", "Bitki", "Sıcak", "Domates", "Büyümek"]],
+      ["KÖY", ["Muhtar", "Tarla", "Sakin", "Meydan", "Doğa"]],
+      ["ŞEHİR", ["Bina", "Trafik", "Kalabalık", "Cadde", "Metropol"]],
+      ["KALE", ["Sur", "Tarih", "Şövalye", "Yüksek", "Savunma"]],
+      ["SARAY", ["Padişah", "Sultan", "Taht", "Büyük", "Tarih"]],
+      ["ÇEŞME", ["Su", "Musluk", "Meydan", "Soğuk", "Taş"]],
+      ["HAMAM", ["Kese", "Köpük", "Sıcak", "Göbek Taşı", "Buhar"]],
+      ["FIRÇA", ["Boya", "Diş", "Saç", "Kıl", "Sürmek"]],
+      ["BOYA", ["Renk", "Fırça", "Duvar", "Tuval", "Kutu"]],
+      ["TUVAL", ["Resim", "Boya", "Sehpa", "Bez", "Sanat"]],
+      ["ALBÜM", ["Fotoğraf", "Anı", "Sayfa", "Müzik", "Kapak"]],
+      ["BAVUL", ["Valiz", "Tatil", "Eşya", "Kilit", "Yolculuk"]],
+      ["ÇADIR", ["Kamp", "İp", "Kazık", "Orman", "Uyku Tulumu"]],
+      ["PUSULA", ["Kuzey", "Güney", "İğne", "Yön", "Harita"]],
+      ["DÜDÜK", ["Hakem", "Maç", "Üflemek", "Faul", "Ses"]],
+      ["KUPA", ["Şampiyon", "Kazanmak", "Final", "Ödül", "Kaldırmak"]],
+      ["MADALYA", ["Altın", "Gümüş", "Bronz", "Yarışma", "Boyun"]],
+      ["ANTRENMAN", ["Çalışmak", "Spor", "Hazırlık", "Ter", "Egzersiz"]],
+      ["HAKEM", ["Düdük", "Kart", "Maç", "Kural", "Saha"]],
+      ["KALECİ", ["Eldiven", "Kurtarmak", "Kale", "Penaltı", "Top"]],
+      ["PENALTI", ["Beyaz Nokta", "Kaleci", "Vuruş", "Gol", "Ceza Alanı"]],
+      ["KORNER", ["Köşe", "Bayrak", "Orta", "Top", "Vuruş"]],
+      ["BASKETBOL", ["Potaya", "Smaç", "Üçlük", "Parke", "Turuncu Top"]],
+      ["VOLEYBOL", ["File", "Smaç", "Pas", "Servis", "Altı Kişi"]],
+      ["TENİS", ["Raket", "Top", "Kort", "File", "Set"]],
+      ["YÜZME", ["Havuz", "Kulaç", "Deniz", "Bone", "Su"]],
+      ["KOŞU", ["Maraton", "Ayakkabı", "Hız", "Pist", "Nefes"]],
+      ["KAYAK", ["Kar", "Dağ", "Baston", "Pist", "Kış"]],
+      ["SÖRF", ["Dalga", "Tahta", "Deniz", "Denge", "Plaj"]],
+      ["PATEN", ["Tekerlek", "Buz", "Kaymak", "Denge", "Pist"]],
+      ["KAYKAY", ["Tahta", "Tekerlek", "Hareket", "Sokak", "Denge"]],
+      ["OKÇULUK", ["Yay", "Ok", "Hedef", "Nişan", "Kiriş"]],
+      ["ESKRİM", ["Kılıç", "Maske", "Hamle", "Piste", "Dokunmak"]],
+      ["GÜREŞ", ["Minder", "Kemer", "Güç", "Sırt", "Müsabaka"]],
+      ["BOKS", ["Eldiven", "Ring", "Yumruk", "Raunt", "Savunma"]],
+      ["JİMNASTİK", ["Esneklik", "Denge", "Takla", "Halka", "Minder"]],
+      ["BİLARDO", ["Istaka", "Top", "Masa", "Delik", "Vurmak"]],
+      ["BOVLİNG", ["Lobu", "Top", "Hat", "Devirmek", "Salon"]],
+      ["DART", ["Tahta", "Ok", "Hedef", "Puan", "Atmak"]],
+      ["OLTA", ["Balık", "İğne", "Misina", "Deniz", "Tutmak"]],
+      ["AV", ["Orman", "Tüfek", "İz", "Takip", "Doğa"]],
+      ["SAFARI", ["Afrika", "Aslan", "Jip", "Vahşi Doğa", "Gezi"]],
+      ["PİKNİK", ["Sepet", "Örtü", "Çimen", "Mangal", "Açık Hava"]],
+      ["MANGAL", ["Kömür", "Ateş", "Et", "Duman", "Şiş"]],
+      ["BARBEKÜ", ["Izgara", "Et", "Sos", "Bahçe", "Ateş"]],
+      ["KAHVALTI", ["Sabah", "Çay", "Peynir", "Zeytin", "Yumurta"]],
+      ["AKŞAM YEMEĞİ", ["Akşam", "Sofrası", "Aile", "Yemek", "Gün Sonu"]],
+      ["TATLI", ["Şeker", "Şerbet", "Kek", "Pastane", "Lezzet"]],
+      ["TUZ", ["Beyaz", "Deniz", "Yemek", "Tat", "Şeker"]],
+      ["ŞEKER", ["Tatlı", "Çay", "Küp", "Toz", "Pancar"]],
+      ["KARABİBER", ["Baharat", "Acı", "Siyah", "Öğütmek", "Yemek"]],
+      ["KİMYON", ["Baharat", "Köfte", "Koku", "Yemek", "Toz"]],
+      ["NANE", ["Yeşil", "Ferah", "Limon", "Yaprak", "Koku"]],
+      ["FESLEĞEN", ["Yeşil", "Koku", "Saksı", "Yaprak", "Bitki"]],
+      ["KAKAO", ["Çikolata", "Kahverengi", "Toz", "Acı", "Süt"]],
+      ["VANİLYA", ["Tatlı", "Koku", "Dondurma", "Pasta", "Çubuk"]],
+      ["TARHANA", ["Çorba", "Kış", "Kuru", "Yoğurt", "Un"]],
+      ["MERCİMEK", ["Çorba", "Sarı", "Kırmızı", "Baklagil", "Limon"]],
+      ["NOHUT", ["Baklagil", "Pilav", "Humus", "Haşlamak", "Tane"]],
+      ["FASULYE", ["Kuru", "Pilav", "Taze", "Baklagil", "Yemek"]],
+      ["PATATES", ["Kızartma", "Fırın", "Püre", "Toprak", "Dilim"]],
+      ["DOMATES", ["Kırmızı", "Salata", "Sos", "Biber", "Yaz"]],
+      ["SALATALIK", ["Yeşil", "Salata", "Cacık", "Su", "Dilim"]],
+      ["SOĞAN", ["Göz Yaşartmak", "Yemek", "Kabuk", "Sarımsak", "Doğramak"]],
+      ["SARIMSAK", ["Koku", "Diş", "Yoğurt", "Yemek", "Sağlık"]],
+      ["BİBER", ["Acı", "Tatlı", "Yeşil", "Kırmızı", "Dolma"]],
+      ["PATLICAN", ["Mor", "Közlemek", "Kızartmak", "Kebap", "Sebze"]],
+      ["KABAK", ["Yeşil", "Mücver", "Tatlı", "Dolma", "Sebze"]],
+      ["ISPANAK", ["Yeşil", "Demir", "Börek", "Yemek", "Yaprak"]],
+      ["HAVUÇ", ["Turuncu", "Tavşan", "Salata", "Göz", "Sebze"]],
+      ["BROKOLİ", ["Yeşil", "Ağaç", "Haşlamak", "Sebze", "Çiçek"]],
+      ["MANTAR", ["Şapka", "Orman", "Kremalı", "Sote", "Beyaz"]],
+      ["FINDIK", ["Karadeniz", "Kabuk", "Kavrulmuş", "Çikolata", "Kuruyemiş"]],
+      ["CEVİZ", ["Beyin", "Kabuk", "Ağaç", "Tatlı", "Kuruyemiş"]],
+      ["BADEM", ["Kuruyemiş", "Yeşil", "Süt", "Çiçek", "Kabuk"]],
+      ["ANTEP FISTIĞI", ["Yeşil", "Baklava", "Gaziantep", "Kuruyemiş", "Kabuk"]],
+      ["KESTANE", ["Kış", "Kebap", "Soba", "Kabuk", "Şeker"]],
+      ["KİRAZ", ["Yaz", "Kırmızı", "Sap", "Meyve", "Küpe"]],
+      ["KARPUZ", ["Dilim", "Yaz", "Peynir", "Çekirdek", "Yeşil"]],
+      ["ŞEFTALİ", ["Tüylü", "Yaz", "Tatlı", "Meyve", "Sulu"]],
+      ["KAYISI", ["Malatya", "Turuncu", "Kuru", "Meyve", "Çekirdek"]],
+      ["İNCİR", ["Yaz", "Tatlı", "Kuru", "Yaprak", "Meyve"]],
+      ["NAR", ["Kırmızı", "Tane", "Ekşi", "Meyve", "Bereket"]],
+      ["KİVİ", ["Yeşil", "Tüylü", "Ekşi", "Meyve", "Dilim"]],
+      ["ANANAS", ["Tropikal", "Sarı", "Dikenli", "Meyve", "Dilim"]],
+      ["HİNDİSTAN CEVİZİ", ["Tropikal", "Beyaz", "Sert", "Süt", "Koku"]]
     ];
+
+    const TABU_CARDS = (() => {
+      const seen = new Set();
+      const out = [];
+      for (const [word, forbidden] of RAW_TABU_PAIRS) {
+        const cleanWord = String(word || "").trim().toLocaleUpperCase("tr-TR");
+        if (!cleanWord || seen.has(cleanWord)) continue;
+        seen.add(cleanWord);
+        out.push({ word: cleanWord, forbidden: forbidden.slice(0, 5) });
+      }
+      return out;
+    })();
 
     const BASE_KEYS = [
       { slot: "C0", label: "Do", semi: 0, isBlack: false },
@@ -1658,6 +2027,7 @@
       octave: 4,
       chordModeEnabled: false,
       chordTypeId: "maj",
+      muzzikoVibeId: MUZZIKO_VIBES[0].id,
       djEffect: "normal",
       synth: cloneSynth(DEFAULT_SYNTH),
       isPlaying: false,
@@ -1687,7 +2057,7 @@
       micReverse: false,
       micEffect: "normal",
       micBpm: 110,
-      micPhase: "idle", // "idle" | "waiting_for_loop_start" | "recording"
+      micPhase: "idle",
       micStream: null,
       mediaRecorder: null,
       micChunks: []
@@ -2121,8 +2491,8 @@
       const targetMidi = freqToMidi(f);
       const sampleHit = findClosestSample(inst.id, targetMidi);
 
-      const tapTailSec = 0.42 * durScale;
-      const holdReleaseSec = 0.38 * durScale;
+      const tapTailSec = 0.44 * durScale;
+      const holdReleaseSec = 0.36 * durScale;
 
       if (sampleHit) {
         const src = ctx.createBufferSource();
@@ -2131,14 +2501,16 @@
         src.playbackRate.setValueAtTime(Math.pow(2, semiDiff / 12), now);
         src.detune.setValueAtTime(detuneCents, now);
         master.gain.setValueAtTime(0.0001, now);
-        master.gain.linearRampToValueAtTime(0.45, now + 0.008);
+        master.gain.linearRampToValueAtTime(0.46, now + 0.008);
         if (!isHoldMode) {
-          const endT = now + Math.max(tapTailSec, timedDuration * durScale);
-          master.gain.setValueAtTime(0.38, Math.max(now + 0.015, endT - 0.14));
+          const totalHold = Math.max(tapTailSec, timedDuration * durScale);
+          const sustainEnd = now + totalHold;
+          const endT = sustainEnd + holdReleaseSec;
+          master.gain.setValueAtTime(0.42, Math.max(now + 0.015, sustainEnd - 0.04));
           master.gain.exponentialRampToValueAtTime(0.0001, endT);
           src.connect(filter);
           src.start(now);
-          src.stop(endT + 0.03);
+          src.stop(endT + 0.04);
           return { release: () => {} };
         }
         src.connect(filter);
@@ -2158,7 +2530,7 @@
       }
 
       let attack = 0.008;
-      let peak = 0.34;
+      let peak = 0.35;
       let partials = [
         { ratio: 1, wave: "triangle", gain: 0.78, cents: -detuneCents * 0.25 },
         { ratio: 2, wave: "sine", gain: 0.18, cents: detuneCents * 0.2 }
@@ -2172,7 +2544,7 @@
           { ratio: 2, wave: "sawtooth", gain: 0.38, cents: 0 }
         ];
       } else if (inst.type === "strings" || inst.type === "cello") {
-        attack = 0.045; peak = 0.34;
+        attack = 0.045; peak = 0.35;
         const ratioBase = inst.type === "cello" ? 0.5 : 1;
         partials = [
           { ratio: ratioBase, wave: "sawtooth", gain: 0.62, cents: -10 - detuneCents * 0.4 },
@@ -2208,10 +2580,12 @@
       });
 
       if (!isHoldMode) {
-        const endT = now + Math.max(tapTailSec, timedDuration * durScale);
-        master.gain.setValueAtTime(Math.max(0.001, peak * 0.78), Math.max(now + attack + 0.015, endT - 0.14));
+        const totalHold = Math.max(tapTailSec, timedDuration * durScale);
+        const sustainEnd = now + totalHold;
+        const endT = sustainEnd + holdReleaseSec;
+        master.gain.setValueAtTime(Math.max(0.001, peak * 0.82), Math.max(now + attack + 0.015, sustainEnd - 0.04));
         master.gain.exponentialRampToValueAtTime(0.0001, endT);
-        oscs.forEach((o) => o.stop(endT + 0.03));
+        oscs.forEach((o) => o.stop(endT + 0.04));
         return { release: () => {} };
       }
 
@@ -2363,16 +2737,23 @@
       }
 
       document.getElementById("takeStatus").textContent =
-        `${app.currentTakeNotes.length} nota/vuruş kaydedildi (bastığın konuma kilitlendi, basılı tutma süresi korunuyor).`;
+        `${app.currentTakeNotes.length} nota/vuruş kaydedildi (basılı tutunca uzayan süre döngüye işleniyor).`;
     }
 
     function finalizeStudioTakeNote(holdKey) {
       if (!holdKey) return;
       const entry = app.pendingTakeByHoldKey.get(holdKey);
       if (!entry) return;
-      const heldMs = Math.max(440, Math.min(4800, performance.now() - (entry._pressPerf || performance.now())));
+      const heldMs = Math.max(440, Math.min(8000, performance.now() - (entry._pressPerf || performance.now())));
       entry.holdDurationMs = heldMs;
       app.pendingTakeByHoldKey.delete(holdKey);
+
+      document.getElementById("takeStatus").textContent =
+        `${app.currentTakeNotes.length} nota/vuruş kaydedildi • Son süre: ${(heldMs / 1000).toFixed(2)} sn`;
+    }
+
+    function flushAllPendingHoldDurations() {
+      Array.from(app.pendingTakeByHoldKey.keys()).forEach((k) => finalizeStudioTakeNote(k));
     }
 
     function onPianoKeyPressDown(keyObj) {
@@ -2449,6 +2830,81 @@
         releaseHoldVoice(chk);
         finalizeStudioTakeNote(chk);
       }
+    }
+
+    function getCurrentMuzzikoVibe() {
+      return MUZZIKO_VIBES.find((v) => v.id === app.muzzikoVibeId) || MUZZIKO_VIBES[0];
+    }
+
+    function renderMuzzikoUI() {
+      const vibeRow = document.getElementById("muzzikoVibeRow");
+      const padsGrid = document.getElementById("muzzikoPadsGrid");
+      if (!vibeRow || !padsGrid) return;
+
+      vibeRow.innerHTML = "";
+      MUZZIKO_VIBES.forEach((v) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "muzziko-vibe-btn" + (v.id === app.muzzikoVibeId ? " active" : "");
+        b.textContent = v.label;
+        b.onclick = () => {
+          getAudioCtx();
+          app.muzzikoVibeId = v.id;
+          app.instrumentId = v.instrumentId;
+          loadInstrumentSamples(v.instrumentId);
+          renderMuzzikoUI();
+        };
+        vibeRow.appendChild(b);
+      });
+
+      const activeVibe = getCurrentMuzzikoVibe();
+      padsGrid.innerHTML = "";
+      activeVibe.pads.forEach((pad, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "muzziko-pad";
+        btn.innerHTML = `<span class="muzziko-pad-title">${pad.title}</span><span class="muzziko-pad-sub">${pad.sub}</span>`;
+
+        const hk = `muzziko:${activeVibe.id}:${idx}`;
+        const freq = midiToFreq(pad.midi);
+        const lockedSynth = cloneSynth(app.synth);
+
+        btn.onpointerdown = (e) => {
+          if (e) e.stopPropagation();
+          try { btn.setPointerCapture(e.pointerId); } catch (_) {}
+          getAudioCtx();
+          btn.classList.add("active");
+          beginHoldVoice(hk, freq, activeVibe.instrumentId, true, lockedSynth);
+          sendWs({
+            type: "live_note",
+            slot: "",
+            freq,
+            holdMs: 440,
+            instrumentId: activeVibe.instrumentId,
+            synthParams: lockedSynth
+          });
+          beginStudioTakeNote({
+            holdKey: hk,
+            slot: "",
+            freq,
+            label: pad.title,
+            instrumentId: activeVibe.instrumentId,
+            synthParams: lockedSynth
+          });
+        };
+
+        const onUp = (e) => {
+          if (e) e.stopPropagation();
+          btn.classList.remove("active");
+          releaseHoldVoice(hk);
+          finalizeStudioTakeNote(hk);
+        };
+
+        btn.onpointerup = onUp;
+        btn.onpointercancel = onUp;
+        btn.onlostpointercapture = onUp;
+        padsGrid.appendChild(btn);
+      });
     }
 
     function pickRhythmHitCount() {
@@ -2609,12 +3065,12 @@
       const pool = avail.length ? avail : TABU_CARDS;
       const pick = pool[Math.floor(Math.random() * pool.length)];
       app.tabuHistory.push(pick.word);
-      if (app.tabuHistory.length > 55) app.tabuHistory.shift();
+      if (app.tabuHistory.length > 80) app.tabuHistory.shift();
       return pick;
     }
 
     function updateLobbyModeFields(mode) {
-      const isLoopMode = ["collab", "theme"].includes(mode);
+      const isLoopMode = ["collab", "theme", "muzziko"].includes(mode);
       document.getElementById("fieldRounds").classList.toggle("hidden", !isLoopMode);
       document.getElementById("fieldBpm").classList.toggle("hidden", !isLoopMode);
       document.getElementById("fieldBeats").classList.toggle("hidden", !isLoopMode);
@@ -2668,7 +3124,7 @@
           renderRoomState();
         } else if (msg.type === "live_note") {
           getAudioCtx();
-          const durSec = Math.min(4.8, Math.max(0.42, (Number(msg.holdMs) || 440) / 1000));
+          const durSec = Math.min(8.0, Math.max(0.44, (Number(msg.holdMs) || 440) / 1000));
           playFreqSound(msg.freq, msg.instrumentId, durSec, true, msg.synthParams);
           flashPianoKey(msg.slot, true);
         }
@@ -2792,7 +3248,7 @@
 
     function syncLoopStateWithRoom(room) {
       if (app.previewTakeActive) return;
-      const isLoopMode = ["collab", "theme"].includes(room.settings?.mode);
+      const isLoopMode = ["collab", "theme", "muzziko"].includes(room.settings?.mode);
       const shouldPlay = Boolean(room.started && room.loopPlaying && isLoopMode);
       const anchor = Number(room.loopAnchorServerMs) || estimatedServerNow();
       const cycleKey = `${anchor}_${app.bpm}_${app.beats}_${app.djEffect}`;
@@ -3053,13 +3509,25 @@
         return;
       }
 
+      const isMuzziko = mode === "muzziko";
       document.getElementById("studioGameView").classList.remove("hidden");
+      document.getElementById("muzzikoPanel").classList.toggle("hidden", !isMuzziko);
+      document.getElementById("studioMainRow").classList.toggle("hidden", isMuzziko);
+      document.getElementById("synthHeaderRow").classList.toggle("hidden", isMuzziko);
+      document.getElementById("synthKnobsRow").classList.toggle("hidden", isMuzziko);
+      document.getElementById("synthDivider").classList.toggle("hidden", isMuzziko);
+
       const pianoCard = document.getElementById("pianoCard");
-      pianoCard.classList.remove("hidden");
-      document.getElementById("chordModeBar").classList.remove("hidden");
-      document.getElementById("studioInstWrap").classList.remove("hidden");
-      document.getElementById("studioPercWrap").classList.remove("hidden");
-      document.getElementById("studioPianoMount").appendChild(pianoCard);
+      if (isMuzziko) {
+        pianoCard.classList.add("hidden");
+        renderMuzzikoUI();
+      } else {
+        pianoCard.classList.remove("hidden");
+        document.getElementById("chordModeBar").classList.remove("hidden");
+        document.getElementById("studioInstWrap").classList.remove("hidden");
+        document.getElementById("studioPercWrap").classList.remove("hidden");
+        document.getElementById("studioPianoMount").appendChild(pianoCard);
+      }
 
       document.getElementById("themeBanner").classList.toggle("hidden", mode !== "theme");
       document.getElementById("conceptTitle").textContent = room.concept;
@@ -3173,7 +3641,7 @@
         app.currentTakeNotes.forEach((n) => {
           const basePos = resolveNoteOffsetMs(n, cycleMs, 1);
           const pos = app.reverseTake ? Math.max(0, cycleMs - basePos) : basePos;
-          const durSec = Math.min(4.8, Math.max(0.42, (Number(n.holdDurationMs) || 440) / 1000));
+          const durSec = Math.min(8.0, Math.max(0.44, (Number(n.holdDurationMs) || 440) / 1000));
           enqueueAtCycleTime(pos, () => {
             playFreqSound(n.freq, n.instrumentId, durSec, true, n.synthParams);
             if (n.slot) flashPianoKey(n.slot, true);
@@ -3190,7 +3658,7 @@
           const basePos = resolveNoteOffsetMs(n, cycleMs, scale);
           const pos = layer.reverse ? Math.max(0, cycleMs - basePos) : basePos;
           const noteSynth = n.synthParams ? cloneSynth(n.synthParams) : layerLockedSynth;
-          const durSec = Math.min(4.8, Math.max(0.42, ((Number(n.holdDurationMs) || 440) * scale) / 1000));
+          const durSec = Math.min(8.0, Math.max(0.44, ((Number(n.holdDurationMs) || 440) * scale) / 1000));
           enqueueAtCycleTime(pos, () => {
             const ctx = getAudioCtx();
             const out = routeThroughDjBus(ctx, ctx.destination, app.djEffect);
@@ -3667,56 +4135,52 @@
         btn.title = av.id;
         btn.innerHTML = av.svg;
         btn.onclick = () => {
-          app.myAvatar = av.id;
           document.querySelectorAll(".avatar-btn").forEach((b) => b.classList.remove("selected"));
           btn.classList.add("selected");
+          app.myAvatar = av.id;
         };
         avGrid.appendChild(btn);
       });
 
-      const cardsWrap = document.getElementById("modeCardsWrap");
+      const modeWrap = document.getElementById("modeCardsWrap");
       GAME_MODES.forEach((m) => {
         const card = document.createElement("button");
         card.type = "button";
-        card.className = "mode-card";
+        card.className = "mode-card" + (m.id === "collab" ? " selected" : "");
         card.dataset.mode = m.id;
         card.innerHTML = `<span class="mode-card-title">${m.title}</span><span class="mode-card-desc">${m.desc}</span>`;
         card.onclick = () => {
-          sendWs({
-            type: "update_settings",
-            settings: {
-              mode: m.id,
-              totalRounds: Number(document.getElementById("lobbyRounds").value) || 2,
-              bpm: Number(document.getElementById("lobbyBpm").value) || 110,
-              beats: normalizeBeats(document.getElementById("lobbyBeats").value),
-              turnDuration: Number(document.getElementById("lobbyTimer").value) || 0,
-              secretMode: document.getElementById("lobbySecretToggle").checked
-            }
-          });
+          if (app.room && app.room.hostId !== app.myId) return;
+          document.querySelectorAll(".mode-card").forEach((c) => c.classList.remove("selected"));
+          card.classList.add("selected");
+          updateLobbyModeFields(m.id);
+          if (app.room) {
+            sendWs({ type: "update_settings", settings: { mode: m.id } });
+          }
         };
-        cardsWrap.appendChild(card);
+        modeWrap.appendChild(card);
       });
 
       const instSel = document.getElementById("instrumentSelect");
-      INSTRUMENTS.forEach((i) => {
-        const opt = document.createElement("option");
-        opt.value = i.id;
-        opt.textContent = i.name;
-        instSel.appendChild(opt);
+      const melodyGuessSel = document.getElementById("melodyGuessSelect");
+      INSTRUMENTS.forEach((inst) => {
+        const o1 = document.createElement("option");
+        o1.value = inst.id;
+        o1.textContent = inst.name;
+        instSel.appendChild(o1);
+      });
+      MELODIC_INSTRUMENTS.forEach((inst) => {
+        const o2 = document.createElement("option");
+        o2.value = inst.id;
+        o2.textContent = inst.name;
+        melodyGuessSel.appendChild(o2);
       });
 
-      const guessSel = document.getElementById("melodyGuessSelect");
-      MELODIC_INSTRUMENTS.forEach((i) => {
-        const opt = document.createElement("option");
-        opt.value = i.id;
-        opt.textContent = i.name;
-        guessSel.appendChild(opt);
-      });
-
-      buildPianoBoard();
-      syncSynthSlidersUI();
-      renderChordControlsUI();
       loadInstrumentSamples(app.instrumentId);
+      buildPianoBoard();
+      renderChordControlsUI();
+      renderMuzzikoUI();
+      syncSynthSlidersUI();
 
       document.getElementById("chordModeToggleBtn").onclick = () => {
         getAudioCtx();
@@ -3724,94 +4188,89 @@
         renderChordControlsUI();
       };
 
-      const bindSynthRange = (elId, key) => {
-        document.getElementById(elId).oninput = (e) => {
-          getAudioCtx();
-          app.synth[key] = Number(e.target.value);
-          syncSynthSlidersUI();
-        };
+      document.getElementById("muzzikoAutoJamBtn").onclick = () => {
+        getAudioCtx();
+        const vibe = getCurrentMuzzikoVibe();
+        app.instrumentId = vibe.instrumentId;
+        loadInstrumentSamples(vibe.instrumentId);
+        const lockedSynth = cloneSynth(app.synth);
+        const cycleMs = getCycleDurationMs();
+
+        vibe.pads.slice(0, 4).forEach((pad, i) => {
+          const offsetMs = ((i * 220) % cycleMs);
+          const offsetRatio = Math.max(0, Math.min(0.999999, offsetMs / Math.max(1, cycleMs)));
+          const freq = midiToFreq(pad.midi);
+          const durMs = 520 + i * 160;
+          setTimeout(() => {
+            playFreqSound(freq, vibe.instrumentId, durMs / 1000, true, lockedSynth);
+          }, i * 160);
+
+          app.currentTakeNotes.push({
+            offsetMs,
+            offsetRatio,
+            holdDurationMs: durMs,
+            slot: "",
+            freq,
+            label: pad.title,
+            instrumentId: vibe.instrumentId,
+            instrumentName: INSTRUMENTS.find((x) => x.id === vibe.instrumentId)?.name || "Müzziko",
+            synthParams: lockedSynth
+          });
+        });
+
+        document.getElementById("takeStatus").textContent =
+          `${app.currentTakeNotes.length} Müzziko notası eklendi — dinleyip yollayabilirsin.`;
       };
-      bindSynthRange("synthCutoff", "cutoff");
-      bindSynthRange("synthRes", "resonance");
-      bindSynthRange("synthPitch", "pitchSemi");
-      bindSynthRange("synthDetune", "detune");
-      bindSynthRange("synthDecay", "decayScale");
-      bindSynthRange("synthDrive", "drive");
+
+      document.getElementById("muzzikoClearBtn").onclick = () => {
+        app.currentTakeNotes = [];
+        app.pendingTakeByHoldKey.clear();
+        document.getElementById("takeStatus").textContent = "Müzziko kaydı temizlendi.";
+      };
+
+      document.getElementById("synthCutoff").oninput = (e) => {
+        app.synth.cutoff = Number(e.target.value);
+        syncSynthSlidersUI();
+      };
+      document.getElementById("synthRes").oninput = (e) => {
+        app.synth.resonance = Number(e.target.value);
+        syncSynthSlidersUI();
+      };
+      document.getElementById("synthPitch").oninput = (e) => {
+        app.synth.pitchSemi = Number(e.target.value);
+        syncSynthSlidersUI();
+      };
+      document.getElementById("synthDetune").oninput = (e) => {
+        app.synth.detune = Number(e.target.value);
+        syncSynthSlidersUI();
+      };
+      document.getElementById("synthDecay").oninput = (e) => {
+        app.synth.decayScale = Number(e.target.value);
+        syncSynthSlidersUI();
+      };
+      document.getElementById("synthDrive").oninput = (e) => {
+        app.synth.drive = Number(e.target.value);
+        syncSynthSlidersUI();
+      };
 
       document.getElementById("synthWildRandomBtn").onclick = () => {
         getAudioCtx();
+        const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
         app.synth = {
-          cutoff: 320 + Math.floor(Math.random() * 7500),
-          resonance: Number((1.0 + Math.random() * 11).toFixed(1)),
-          pitchSemi: [-7, -5, -3, 0, 3, 5, 7, 12][Math.floor(Math.random() * 8)],
-          detune: Math.floor(Math.random() * 85),
-          decayScale: Number((0.4 + Math.random() * 1.7).toFixed(2)),
-          drive: Math.floor(Math.random() * 85)
+          cutoff: pick([520, 980, 1850, 3400, 5600, 7900]),
+          resonance: pick([1.2, 3.4, 6.2, 9.5]),
+          pitchSemi: pick([-7, -5, -3, 0, 3, 5, 7]),
+          detune: pick([0, 18, 42, 75]),
+          decayScale: pick([0.45, 0.85, 1.35, 1.95]),
+          drive: pick([0, 22, 55, 85])
         };
         syncSynthSlidersUI();
-        playFreqSound(392.0, app.instrumentId, 0.45, true, app.synth);
+        playFreqSound(midiToFreq(60 + app.synth.pitchSemi), app.instrumentId, 0.45, true, app.synth);
       };
 
       document.getElementById("synthResetBtn").onclick = () => {
-        getAudioCtx();
         app.synth = cloneSynth(DEFAULT_SYNTH);
         syncSynthSlidersUI();
-      };
-
-      document.querySelectorAll(".perc-pad-btn").forEach((btn) => {
-        const hk = `perc:${btn.dataset.perc}`;
-        btn.onpointerdown = (e) => {
-          if (e) e.stopPropagation();
-          try { btn.setPointerCapture(e.pointerId); } catch (_) {}
-          getAudioCtx();
-          const percId = btn.dataset.perc;
-          btn.classList.add("hit");
-          const lockedSynth = cloneSynth(app.synth);
-          beginHoldVoice(hk, 261.63, percId, true, lockedSynth);
-          sendWs({ type: "live_note", slot: "", freq: 261.63, holdMs: 440, instrumentId: percId, synthParams: lockedSynth });
-          beginStudioTakeNote({
-            holdKey: hk,
-            slot: "",
-            freq: 261.63,
-            label: btn.textContent.trim(),
-            instrumentId: percId,
-            synthParams: lockedSynth
-          });
-        };
-        const onPercUp = (e) => {
-          if (e) e.stopPropagation();
-          btn.classList.remove("hit");
-          releaseHoldVoice(hk);
-          finalizeStudioTakeNote(hk);
-        };
-        btn.onpointerup = onPercUp;
-        btn.onpointercancel = onPercUp;
-        btn.onlostpointercapture = onPercUp;
-      });
-
-      document.querySelectorAll("#djButtonsWrap button").forEach((btn) => {
-        btn.onclick = () => {
-          getAudioCtx();
-          sendWs({ type: "set_dj_effect", effect: btn.dataset.dj });
-        };
-      });
-
-      document.getElementById("octDownBtn").onclick = () => {
-        if (app.octave > 1) {
-          releaseAllHeldVoices();
-          app.octave--;
-          document.getElementById("octaveLabel").textContent = app.octave;
-          buildPianoBoard();
-        }
-      };
-
-      document.getElementById("octUpBtn").onclick = () => {
-        if (app.octave < 7) {
-          releaseAllHeldVoices();
-          app.octave++;
-          document.getElementById("octaveLabel").textContent = app.octave;
-          buildPianoBoard();
-        }
       };
 
       document.getElementById("uiThemeSelect").onchange = (e) => {
@@ -3821,10 +4280,19 @@
       document.getElementById("createRoomBtn").onclick = () => {
         getAudioCtx();
         const name = document.getElementById("myNameInput").value.trim() || "Oyuncu";
+        const selectedMode = document.querySelector(".mode-card.selected")?.dataset.mode || "collab";
+        const bpm = Number(document.getElementById("lobbyBpm").value) || 110;
+        const beats = normalizeBeats(document.getElementById("lobbyBeats").value);
+        const totalRounds = Number(document.getElementById("lobbyRounds").value) || 2;
+        const turnDuration = Number(document.getElementById("lobbyTimer").value) || 0;
+        const secretMode = document.getElementById("lobbySecretToggle").checked;
+
+        app.bpm = bpm;
+        app.beats = beats;
         sendWs({
           type: "create_room",
           player: { name, avatar: app.myAvatar },
-          settings: { mode: "collab", totalRounds: 2, bpm: 110, beats: 8, turnDuration: 0, secretMode: false }
+          settings: { mode: selectedMode, bpm, beats, totalRounds, turnDuration, secretMode }
         });
       };
 
@@ -3841,115 +4309,357 @@
       };
 
       ["lobbyRounds", "lobbyBpm", "lobbyBeats", "lobbyTimer", "lobbySecretToggle"].forEach((id) => {
-        document.getElementById(id).oninput = () => {
-          const bpm = Number(document.getElementById("lobbyBpm").value) || 110;
-          document.getElementById("lobbyBpmVal").textContent = bpm;
-          sendWs({
-            type: "update_settings",
-            settings: {
-              totalRounds: Number(document.getElementById("lobbyRounds").value) || 2,
-              bpm,
-              beats: normalizeBeats(document.getElementById("lobbyBeats").value),
-              turnDuration: Number(document.getElementById("lobbyTimer").value) || 0,
-              secretMode: document.getElementById("lobbySecretToggle").checked
-            }
-          });
+        document.getElementById(id).onchange = () => {
+          const bpmVal = Number(document.getElementById("lobbyBpm").value) || 110;
+          const beatsVal = normalizeBeats(document.getElementById("lobbyBeats").value);
+          document.getElementById("lobbyBpmVal").textContent = bpmVal;
+          app.bpm = bpmVal;
+          app.beats = beatsVal;
+          if (app.room && app.room.hostId === app.myId) {
+            sendWs({
+              type: "update_settings",
+              settings: {
+                totalRounds: Number(document.getElementById("lobbyRounds").value) || 2,
+                bpm: bpmVal,
+                beats: beatsVal,
+                turnDuration: Number(document.getElementById("lobbyTimer").value) || 0,
+                secretMode: document.getElementById("lobbySecretToggle").checked
+              }
+            });
+          }
         };
       });
 
       document.getElementById("startGameBtn").onclick = () => {
         getAudioCtx();
         const mode = app.room?.settings?.mode || "collab";
-        app.rhythmTaps = [];
-        app.melodyPlayed = [];
-        app.currentTakeNotes = [];
-        app.pendingTakeByHoldKey.clear();
-        app.micBuffer = null;
-        app.previewTakeActive = false;
-        clearInterval(app.challengeTimer);
-        clearInterval(app.tabuTimer);
-        app.challengeTimer = null;
-        app.tabuTimer = null;
-        app.activeTabuToken = null;
-
-        const challenge = mode === "rhythm" || mode === "melody" ? buildChallengeForMode(mode) : null;
-        const tabuCard = mode === "tabu" ? nextTabuCard() : null;
-
-        sendWs({
+        const payload = {
           type: "start_game",
           concept: nextRandomConcept(),
-          challenge,
-          tabuCard
-        });
+          challenge: mode === "rhythm" || mode === "melody" ? buildChallengeForMode(mode) : null,
+          tabuCard: mode === "tabu" ? nextTabuCard() : null
+        };
+        sendWs(payload);
       };
 
-      ["restartGameBtn", "resultsBackLobbyBtn"].forEach((id) => {
-        document.getElementById(id).onclick = () => {
-          releaseAllHeldVoices();
-          stopMicRecordingNow();
-          app.currentTakeNotes = [];
-          app.pendingTakeByHoldKey.clear();
-          app.micBuffer = null;
-          app.rhythmTaps = [];
-          app.melodyPlayed = [];
-          app.previewTakeActive = false;
-          clearInterval(app.challengeTimer);
-          clearInterval(app.tabuTimer);
-          app.challengeTimer = null;
-          app.tabuTimer = null;
-          app.activeTabuToken = null;
-          sendWs({ type: "restart_game" });
+      document.getElementById("restartGameBtn").onclick = () => {
+        app.previewTakeActive = false;
+        stopLocalLoop();
+        sendWs({ type: "restart_game" });
+      };
+
+      document.getElementById("resultsBackLobbyBtn").onclick = () => {
+        app.previewTakeActive = false;
+        stopLocalLoop();
+        sendWs({ type: "restart_game" });
+      };
+
+      document.getElementById("octDownBtn").onclick = () => {
+        if (app.octave > 1) {
+          app.octave--;
+          document.getElementById("octaveLabel").textContent = app.octave;
+          buildPianoBoard();
+        }
+      };
+
+      document.getElementById("octUpBtn").onclick = () => {
+        if (app.octave < 7) {
+          app.octave++;
+          document.getElementById("octaveLabel").textContent = app.octave;
+          buildPianoBoard();
+        }
+      };
+
+      instSel.onchange = (e) => {
+        app.instrumentId = e.target.value;
+        loadInstrumentSamples(app.instrumentId);
+      };
+
+      document.getElementById("randomInstBtn").onclick = () => {
+        const pick = INSTRUMENTS[Math.floor(Math.random() * INSTRUMENTS.length)];
+        app.instrumentId = pick.id;
+        instSel.value = pick.id;
+        loadInstrumentSamples(pick.id);
+        playFreqSound(261.63, pick.id, 0.35, true);
+      };
+
+      document.getElementById("reverseTakeBtn").onclick = (e) => {
+        app.reverseTake = !app.reverseTake;
+        e.currentTarget.classList.toggle("active", app.reverseTake);
+      };
+
+      document.querySelectorAll(".perc-pad-btn").forEach((btn) => {
+        const pId = btn.dataset.perc;
+        const hk = `perc:${pId}`;
+        const onDown = (e) => {
+          if (e) e.stopPropagation();
+          try { btn.setPointerCapture(e.pointerId); } catch (_) {}
+          getAudioCtx();
+          btn.classList.add("hit");
+          const lockedSynth = cloneSynth(app.synth);
+          beginHoldVoice(hk, 261.63, pId, true, lockedSynth);
+          sendWs({ type: "live_note", slot: "", freq: 261.63, holdMs: 440, instrumentId: pId, synthParams: lockedSynth });
+          beginStudioTakeNote({
+            holdKey: hk,
+            slot: "",
+            freq: 261.63,
+            label: btn.textContent.trim(),
+            instrumentId: pId,
+            synthParams: lockedSynth
+          });
+        };
+        const onUp = (e) => {
+          if (e) e.stopPropagation();
+          btn.classList.remove("hit");
+          releaseHoldVoice(hk);
+          finalizeStudioTakeNote(hk);
+        };
+        btn.onpointerdown = onDown;
+        btn.onpointerup = onUp;
+        btn.onpointercancel = onUp;
+        btn.onlostpointercapture = onUp;
+      });
+
+      document.querySelectorAll("#djButtonsWrap button").forEach((btn) => {
+        btn.onclick = () => {
+          if (app.room?.hostId !== app.myId) return;
+          sendWs({ type: "set_dj_effect", effect: btn.dataset.dj });
         };
       });
 
-      document.getElementById("rhythmListenBtn").onclick = playCurrentChallenge;
-      document.getElementById("rhythmResetBtn").onclick = () => {
-        app.rhythmTaps = [];
-        document.getElementById("rhythmTapInfo").textContent = "Temizlendi — Tekrar ritim vuruşu yap";
-      };
-
-      const rhythmTapBtn = document.getElementById("rhythmTapBtn");
-      rhythmTapBtn.onpointerdown = () => {
+      document.getElementById("loopToggleBtn").onclick = () => {
         getAudioCtx();
-        rhythmTapBtn.classList.add("hit");
-        setTimeout(() => rhythmTapBtn.classList.remove("hit"), 110);
-        const ch = app.room?.challenge;
-        playFreqSound(ch?.freq || 261.63, ch?.instrumentId || "handshake", 0.28, false);
-        app.rhythmTaps.push(performance.now());
-        document.getElementById("rhythmTapInfo").textContent = `${app.rhythmTaps.length} vuruş yapıldı`;
+        if (app.previewTakeActive) {
+          app.previewTakeActive = false;
+          stopLocalLoop();
+        }
+        const nextPlaying = !app.room?.loopPlaying;
+        const anchor = estimatedServerNow();
+        sendWs({ type: "set_loop_playing", playing: nextPlaying, anchorServerMs: anchor });
+        if (nextPlaying) {
+          app.activeCycleKey = `${anchor}_${app.bpm}_${app.beats}_${app.djEffect}`;
+          startLocalLoop(anchor, { includeUnconfirmedTake: false });
+        } else {
+          stopLocalLoop();
+        }
       };
 
-      document.getElementById("rhythmFinishBtn").onclick = () => {
-        clearInterval(app.challengeTimer);
-        sendWs({
-          type: "submit_challenge",
-          accuracy: calculateRhythmAccuracy(),
-          detail: `${app.rhythmTaps.length} vuruş yaptı`
+      document.getElementById("previewTakeLoopBtn").onclick = () => {
+        getAudioCtx();
+        flushAllPendingHoldDurations();
+        if (app.previewTakeActive) {
+          app.previewTakeActive = false;
+          stopLocalLoop();
+          if (app.room?.loopPlaying) {
+            const anchor = Number(app.room.loopAnchorServerMs) || estimatedServerNow();
+            app.activeCycleKey = `${anchor}_${app.bpm}_${app.beats}_${app.djEffect}`;
+            startLocalLoop(anchor, { includeUnconfirmedTake: false });
+          }
+          renderRoomState();
+          return;
+        }
+
+        if (app.room?.loopPlaying) {
+          sendWs({ type: "set_loop_playing", playing: false });
+        }
+        app.previewTakeActive = true;
+        const localAnchor = estimatedServerNow();
+        app.activeCycleKey = `preview_${localAnchor}_${app.bpm}_${app.beats}_${app.djEffect}`;
+        startLocalLoop(localAnchor, { includeUnconfirmedTake: true });
+        renderRoomState();
+      };
+
+      document.getElementById("clearTakeBtn").onclick = () => {
+        app.currentTakeNotes = [];
+        app.pendingTakeByHoldKey.clear();
+        app.micBuffer = null;
+        document.getElementById("micPlayBtn").disabled = true;
+        document.getElementById("micRevBtn").disabled = true;
+        document.getElementById("micDelBtn").disabled = true;
+        document.getElementById("takeStatus").textContent = "Kaydın silindi, yeniden çalabilirsin.";
+      };
+
+      document.getElementById("liveBpmSlider").oninput = (e) => {
+        const val = Number(e.target.value) || 110;
+        app.bpm = val;
+        document.getElementById("liveBpmText").textContent = val;
+        sendWs({ type: "set_loop_bpm", bpm: val });
+        if (app.isPlaying) {
+          const anchor = estimatedServerNow();
+          app.activeCycleKey = `${anchor}_${app.bpm}_${app.beats}_${app.djEffect}`;
+          startLocalLoop(anchor, { includeUnconfirmedTake: app.previewTakeActive });
+        }
+      };
+
+      document.getElementById("newConceptBtn").onclick = () => {
+        sendWs({ type: "new_concept", concept: nextRandomConcept() });
+      };
+
+      document.getElementById("saveTurnBtn").onclick = async () => {
+        getAudioCtx();
+        flushAllPendingHoldDurations();
+        releaseAllHeldVoices();
+        if (app.micPhase !== "idle") stopMicRecordingNow();
+
+        if (app.previewTakeActive) {
+          app.previewTakeActive = false;
+          stopLocalLoop();
+        }
+
+        let vocalData = null;
+        let vocalEffect = null;
+        if (app.micBuffer) {
+          vocalData = await bufferToBase64(app.micBuffer);
+          vocalEffect = app.micEffect;
+        }
+
+        const inst = INSTRUMENTS.find((i) => i.id === app.instrumentId) || INSTRUMENTS[0];
+        const cleanNotes = app.currentTakeNotes.map((n) => {
+          const { _rawPerf, _pressPerf, ...rest } = n;
+          return {
+            ...rest,
+            holdDurationMs: Math.max(440, Math.min(8000, Number(rest.holdDurationMs) || 440))
+          };
+        });
+
+        const layer = {
+          id: "l_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+          playerId: app.myId,
+          playerName: document.getElementById("myNameInput").value.trim() || "Oyuncu",
+          avatar: app.myAvatar,
+          instrumentId: inst.id,
+          instrumentName: inst.name,
+          sourceBpm: app.bpm,
+          notes: cleanNotes,
+          reverse: app.reverseTake,
+          synthParams: cloneSynth(app.synth),
+          hasVocal: Boolean(vocalData),
+          vocalData,
+          vocalEffect
+        };
+
+        sendWs({ type: "add_layer", layer, nextConcept: nextRandomConcept() });
+        app.currentTakeNotes = [];
+        app.pendingTakeByHoldKey.clear();
+        app.reverseTake = false;
+        document.getElementById("reverseTakeBtn").classList.remove("active");
+        app.micBuffer = null;
+        document.getElementById("micPlayBtn").disabled = true;
+        document.getElementById("micRevBtn").disabled = true;
+        document.getElementById("micDelBtn").disabled = true;
+        document.getElementById("takeStatus").textContent = "Katman döngüye eklendi ve sıra geçti.";
+      };
+
+      document.getElementById("skipTurnBtn").onclick = () => {
+        releaseAllHeldVoices();
+        if (app.micPhase !== "idle") stopMicRecordingNow();
+        if (app.previewTakeActive) {
+          app.previewTakeActive = false;
+          stopLocalLoop();
+        }
+        app.currentTakeNotes = [];
+        app.pendingTakeByHoldKey.clear();
+        sendWs({ type: "skip_turn", nextConcept: nextRandomConcept() });
+      };
+
+      document.getElementById("resultsPlaySongBtn").onclick = () => {
+        getAudioCtx();
+        const nextPlaying = !app.room?.loopPlaying;
+        const anchor = estimatedServerNow();
+        sendWs({ type: "set_loop_playing", playing: nextPlaying, anchorServerMs: anchor });
+        if (nextPlaying) {
+          app.activeCycleKey = `${anchor}_${app.bpm}_${app.beats}_${app.djEffect}`;
+          startLocalLoop(anchor, { includeUnconfirmedTake: false });
+        } else {
+          stopLocalLoop();
+        }
+      };
+
+      document.getElementById("micRecBtn").onclick = toggleMic;
+      document.getElementById("micPlayBtn").onclick = () => {
+        if (!app.micBuffer) return;
+        getAudioCtx();
+        playVocalBuffer(app.micBuffer, {
+          reverse: app.micReverse,
+          effect: app.micEffect,
+          sourceBpm: app.micBpm,
+          targetBpm: app.bpm,
+          djEffect: app.djEffect
         });
       };
+      document.getElementById("micRevBtn").onclick = (e) => {
+        app.micReverse = !app.micReverse;
+        e.currentTarget.classList.toggle("active", app.micReverse);
+      };
+      document.getElementById("micDelBtn").onclick = () => {
+        app.micBuffer = null;
+        document.getElementById("micPlayBtn").disabled = true;
+        document.getElementById("micRevBtn").disabled = true;
+        document.getElementById("micDelBtn").disabled = true;
+        document.getElementById("micStatus").textContent = "Mikrofon kaydı silindi.";
+      };
+      document.getElementById("voiceEffectSelect").onchange = (e) => {
+        app.micEffect = e.target.value;
+      };
+      document.getElementById("randomVoiceFxBtn").onclick = () => {
+        const sel = document.getElementById("voiceEffectSelect");
+        const opts = Array.from(sel.options).map((o) => o.value);
+        const pick = opts[Math.floor(Math.random() * opts.length)];
+        sel.value = pick;
+        app.micEffect = pick;
+        if (app.micBuffer) {
+          playVocalBuffer(app.micBuffer, {
+            reverse: app.micReverse,
+            effect: app.micEffect,
+            sourceBpm: app.micBpm,
+            targetBpm: app.bpm,
+            djEffect: app.djEffect
+          });
+        }
+      };
 
+      document.getElementById("rhythmListenBtn").onclick = playCurrentChallenge;
+      document.getElementById("rhythmTapBtn").onpointerdown = () => {
+        getAudioCtx();
+        const tapBtn = document.getElementById("rhythmTapBtn");
+        tapBtn.classList.add("hit");
+        setTimeout(() => tapBtn.classList.remove("hit"), 110);
+        const ch = app.room?.challenge;
+        playFreqSound(ch?.freq || 261.63, ch?.instrumentId || "snare_drum", 0.24, false);
+        app.rhythmTaps.push(performance.now());
+        document.getElementById("rhythmTapInfo").textContent = `${app.rhythmTaps.length} vuruş kaydedildi.`;
+      };
+      document.getElementById("rhythmResetBtn").onclick = () => {
+        app.rhythmTaps = [];
+        document.getElementById("rhythmTapInfo").textContent = "Vuruşlar sıfırlandı.";
+      };
+      document.getElementById("rhythmFinishBtn").onclick = () => {
+        clearInterval(app.challengeTimer);
+        const acc = calculateRhythmAccuracy();
+        sendWs({
+          type: "submit_challenge",
+          accuracy: acc,
+          detail: `${app.rhythmTaps.length} vuruş yapıldı`
+        });
+      };
       document.getElementById("rhythmForceEndBtn").onclick = () => sendWs({ type: "force_finish_challenge" });
 
       document.getElementById("melodyListenBtn").onclick = playCurrentChallenge;
       document.getElementById("melodyResetBtn").onclick = () => {
-        releaseAllHeldVoices();
         app.melodyPlayed = [];
-        document.getElementById("takeStatus").textContent = "Temizlendi — Tekrar çalabilirsin.";
+        document.getElementById("takeStatus").textContent = "Çalınan notalar sıfırlandı.";
       };
-
       document.getElementById("melodyFinishBtn").onclick = () => {
-        releaseAllHeldVoices();
         clearInterval(app.challengeTimer);
-        const guessSelEl = document.getElementById("melodyGuessSelect");
-        const guessName = guessSelEl.options[guessSelEl.selectedIndex]?.textContent || "";
-        const playedStr = app.melodyPlayed.map((p) => p.label).join(", ");
+        releaseAllHeldVoices();
+        const acc = calculateMelodyAccuracy();
+        const guessName = MELODIC_INSTRUMENTS.find((i) => i.id === melodyGuessSel.value)?.name || "-";
         sendWs({
           type: "submit_challenge",
-          accuracy: calculateMelodyAccuracy(),
-          detail: `Tahmin: ${guessName}${playedStr ? " • Notalar: " + playedStr : ""}`
+          accuracy: acc,
+          detail: `Tahmin: ${guessName} • ${app.melodyPlayed.length} nota`
         });
       };
-
       document.getElementById("melodyForceEndBtn").onclick = () => sendWs({ type: "force_finish_challenge" });
 
       document.getElementById("tabuCorrectBtn").onclick = () => {
@@ -3959,10 +4669,9 @@
         sendWs({ type: "tabu_pass", nextCard: nextTabuCard() });
       };
       document.getElementById("tabuNextTurnBtn").onclick = () => {
-        clearInterval(app.tabuTimer);
-        app.tabuTimer = null;
         sendWs({ type: "tabu_next_turn", nextCard: nextTabuCard() });
       };
+
       const sendTabuGuess = () => {
         const inp = document.getElementById("tabuGuessInput");
         const text = inp.value.trim();
@@ -3973,171 +4682,6 @@
       document.getElementById("tabuSendGuessBtn").onclick = sendTabuGuess;
       document.getElementById("tabuGuessInput").onkeydown = (e) => {
         if (e.key === "Enter") sendTabuGuess();
-      };
-
-      document.getElementById("loopToggleBtn").onclick = () => {
-        getAudioCtx();
-        app.previewTakeActive = false;
-        sendWs({ type: "set_loop_playing", playing: !app.room?.loopPlaying });
-      };
-
-      document.getElementById("previewTakeLoopBtn").onclick = () => {
-        getAudioCtx();
-        if (app.previewTakeActive) {
-          app.previewTakeActive = false;
-          stopLocalLoop();
-          renderRoomState();
-          return;
-        }
-        app.previewTakeActive = true;
-        startLocalLoop(estimatedServerNow(), { includeUnconfirmedTake: true });
-        renderRoomState();
-      };
-
-      document.getElementById("resultsPlaySongBtn").onclick = () => {
-        getAudioCtx();
-        sendWs({ type: "set_loop_playing", playing: !app.room?.loopPlaying });
-      };
-
-      document.getElementById("clearTakeBtn").onclick = () => {
-        releaseAllHeldVoices();
-        stopMicRecordingNow();
-        app.currentTakeNotes = [];
-        app.pendingTakeByHoldKey.clear();
-        app.micBuffer = null;
-        app.reverseTake = false;
-        app.micReverse = false;
-        app.previewTakeActive = false;
-        document.getElementById("reverseTakeBtn").classList.remove("active");
-        document.getElementById("micPlayBtn").disabled = true;
-        document.getElementById("micRevBtn").disabled = true;
-        document.getElementById("micDelBtn").disabled = true;
-        stopLocalLoop();
-        renderRoomState();
-        document.getElementById("takeStatus").textContent = "Mevcut kayıt silindi; baştan çalabilirsin.";
-      };
-
-      document.getElementById("saveTurnBtn").onclick = async () => {
-        getAudioCtx();
-        releaseAllHeldVoices();
-        stopMicRecordingNow();
-        app.previewTakeActive = false;
-        stopLocalLoop();
-
-        const me = (app.room?.players || []).find((p) => p.id === app.myId) || {
-          id: app.myId,
-          name: "Oyuncu",
-          avatar: app.myAvatar
-        };
-        const inst = INSTRUMENTS.find((i) => i.id === app.instrumentId) || INSTRUMENTS[0];
-        const vocalData = app.micBuffer ? await bufferToBase64(app.micBuffer) : null;
-        const lockedLayerSynth = cloneSynth(app.synth);
-
-        if (app.currentTakeNotes.length || vocalData) {
-          const cleanNotes = app.currentTakeNotes.map(({ _rawPerf, _pressPerf, ...rest }) => ({
-            ...rest,
-            holdDurationMs: Math.min(4800, Math.max(440, Number(rest.holdDurationMs) || 440)),
-            synthParams: cloneSynth(rest.synthParams || lockedLayerSynth)
-          }));
-          const uniqueInsts = [...new Set(cleanNotes.map((n) => n.instrumentName))];
-          const layerInstSummary = uniqueInsts.length > 1 ? uniqueInsts.join(" + ") : (uniqueInsts[0] || inst.name);
-
-          sendWs({
-            type: "add_layer",
-            nextConcept: nextRandomConcept(),
-            layer: {
-              id: "l_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
-              playerId: me.id,
-              playerName: me.name,
-              avatar: me.avatar,
-              instrumentName: layerInstSummary,
-              notes: cleanNotes,
-              synthParams: lockedLayerSynth,
-              vocalData,
-              hasVocal: Boolean(vocalData),
-              vocalEffect: app.micEffect,
-              sourceBpm: app.bpm,
-              reverse: app.reverseTake || app.micReverse,
-              muted: false
-            }
-          });
-
-          app.currentTakeNotes = [];
-          app.pendingTakeByHoldKey.clear();
-          app.micBuffer = null;
-          app.reverseTake = false;
-          document.getElementById("reverseTakeBtn").classList.remove("active");
-          document.getElementById("micPlayBtn").disabled = true;
-          document.getElementById("micRevBtn").disabled = true;
-          document.getElementById("micDelBtn").disabled = true;
-          document.getElementById("takeStatus").textContent =
-            "Katman gönderildi, odadaki herkes duyacak ve sıra devredildi!";
-        } else {
-          sendWs({ type: "skip_turn", nextConcept: nextRandomConcept() });
-        }
-      };
-
-      document.getElementById("skipTurnBtn").onclick = () => {
-        releaseAllHeldVoices();
-        app.previewTakeActive = false;
-        sendWs({ type: "skip_turn", nextConcept: nextRandomConcept() });
-      };
-
-      document.getElementById("newConceptBtn").onclick = () => {
-        sendWs({ type: "new_concept", concept: nextRandomConcept() });
-      };
-
-      document.getElementById("liveBpmSlider").oninput = (e) => {
-        const nextBpm = Number(e.target.value) || 110;
-        app.bpm = nextBpm;
-        document.getElementById("liveBpmText").textContent = nextBpm;
-        sendWs({ type: "set_loop_bpm", bpm: nextBpm });
-      };
-
-      instSel.onchange = (e) => {
-        app.instrumentId = e.target.value;
-        loadInstrumentSamples(app.instrumentId);
-      };
-      document.getElementById("randomInstBtn").onclick = () => {
-        const pick = INSTRUMENTS[Math.floor(Math.random() * INSTRUMENTS.length)];
-        app.instrumentId = pick.id;
-        instSel.value = pick.id;
-        loadInstrumentSamples(app.instrumentId);
-      };
-
-      document.getElementById("reverseTakeBtn").onclick = (e) => {
-        app.reverseTake = !app.reverseTake;
-        e.currentTarget.classList.toggle("active", app.reverseTake);
-      };
-
-      const fxSelect = document.getElementById("voiceEffectSelect");
-      fxSelect.onchange = (e) => { app.micEffect = e.target.value; };
-      document.getElementById("randomVoiceFxBtn").onclick = () => {
-        const opts = Array.from(fxSelect.options).map((o) => o.value);
-        const pick = opts[Math.floor(Math.random() * opts.length)];
-        app.micEffect = pick;
-        fxSelect.value = pick;
-      };
-
-      document.getElementById("micRecBtn").onclick = toggleMic;
-      document.getElementById("micPlayBtn").onclick = () =>
-        playVocalBuffer(app.micBuffer, {
-          reverse: app.micReverse,
-          effect: app.micEffect,
-          sourceBpm: app.micBpm,
-          targetBpm: app.bpm,
-          djEffect: app.djEffect
-        });
-      document.getElementById("micRevBtn").onclick = (e) => {
-        app.micReverse = !app.micReverse;
-        e.currentTarget.classList.toggle("active", app.micReverse);
-      };
-      document.getElementById("micDelBtn").onclick = () => {
-        app.micBuffer = null;
-        document.getElementById("micPlayBtn").disabled = true;
-        document.getElementById("micRevBtn").disabled = true;
-        document.getElementById("micDelBtn").disabled = true;
-        document.getElementById("micStatus").textContent = "Ses kaydı silindi.";
       };
 
       connectSocket();
