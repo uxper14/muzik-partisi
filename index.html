@@ -15,7 +15,6 @@
   --bg: #0b0d14;
   --panel: rgba(22, 26, 39, 0.88);
   --card: #1e2334;
-  --card-hover: #252b40;
   --border: rgba(255, 255, 255, 0.09);
   --text: #f4f6ff;
   --muted: #98a0bd;
@@ -109,6 +108,42 @@ button.small { padding: 8px 12px; font-size: 13px; }
 .mode-card p { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0 0 14px; }
 .mode-buttons { display: flex; flex-direction: column; gap: 8px; }
 
+/* Akor Modu ve Beat Çubuğu */
+.studio-toolbar {
+  display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 12px 14px; margin-bottom: 14px;
+}
+.toggle-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 14px; border-radius: 12px; font-size: 13.5px; font-weight: 700;
+  cursor: pointer; user-select: none; border: 1px solid rgba(255,255,255,0.12);
+  background: #131724; color: var(--muted); transition: all 0.15s;
+}
+.toggle-pill.active {
+  background: rgba(139, 92, 246, 0.25);
+  border-color: #a78bfa;
+  color: #fff;
+  box-shadow: 0 0 16px rgba(139, 92, 246, 0.28);
+}
+
+.rec-box {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-top: 12px;
+}
+.rec-box.recording {
+  background: rgba(239, 68, 68, 0.22);
+  border-color: #ef4444;
+  animation: pulseRec 1.2s infinite;
+}
+@keyframes pulseRec {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35); }
+  50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+}
+
 .settings-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .control { background: var(--card); border: 1px solid var(--border); padding: 12px 14px; border-radius: 13px; }
 .control label { margin: 0 0 8px; color: #e4e7f5; }
@@ -157,6 +192,7 @@ button.small { padding: 8px 12px; font-size: 13px; }
 .action {
   background: var(--card); border-left: 4px solid var(--accent);
   border-radius: 11px; padding: 12px 14px; font-size: 13.5px;
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
 }
 .action.playing-now { background: rgba(16, 185, 129, 0.2); border-left-color: var(--accent2); }
 .action small { color: var(--muted); display: block; margin-top: 4px; }
@@ -189,7 +225,7 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
   <div class="hero">
     <div class="badge-top">CANLI ÇOK OYUNCULU MÜZİK STÜDYOSU</div>
     <h1>🎹 Müzik Partisi</h1>
-    <p class="subtitle">Arkadaşlarınla beste yap veya hedef melodiyi taklit ederek yarış!</p>
+    <p class="subtitle">Tek tuşla akor bas, ritim altyapısı seç, arkadaşlarınla akıcı şarkılar üret!</p>
   </div>
 
   <div id="message" class="status">Hoş geldin! Adını yazıp tek başına veya arkadaşlarınla bir mod seç.</div>
@@ -206,7 +242,7 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
           <div>
             <div class="mode-icon">🎼</div>
             <strong>Sıra Sende</strong>
-            <p>Oyuncular sırayla enstrüman ve nota ekleyerek ortak bir şarkı besteler.</p>
+            <p>Oyuncular sırayla akor veya kısa ritim ekleyerek ortak bir şarkı oluşturur.</p>
           </div>
           <div class="mode-buttons">
             <button onclick="createRoom('party', false)">👥 Çok Oyunculu Oda Kur</button>
@@ -217,7 +253,7 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
           <div>
             <div class="mode-icon">🎉</div>
             <strong>Herkes Serbest (Stüdyo)</strong>
-            <p>Sıra beklemeden istediğin an nota ve efekt ekleyerek özgürce müzik üret.</p>
+            <p>Ritim altyapısı eşliğinde istediğin an canlı ritim kaydet, katmanlar üst üste aksın!</p>
           </div>
           <div class="mode-buttons">
             <button onclick="createRoom('free', false)">👥 Çok Oyunculu Oda Kur</button>
@@ -270,6 +306,7 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
       </div>
     </div>
 
+    <!-- MELODİYİ TAKLİT ET PANELİ -->
     <div id="mimicPanel" class="panel hidden">
       <h2>🎯 Hedef Melodi Yarışması</h2>
       <p class="muted">1. Hedef melodiyi dinle → 2. Doğru enstrümanı seç → 3. Piyanodan 4 adımı doldur → 4. Tahminini gönder!</p>
@@ -286,9 +323,27 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
       <div id="mimicResults" style="margin-top: 16px;"></div>
     </div>
 
+    <!-- SES STÜDYOSU & PİYANO -->
     <div id="studio" class="panel hidden">
       <h2>🎹 Ses Stüdyosu</h2>
-      <p id="studioHint" class="muted">Piyano tuşlarına dokun. Birden fazla nota seçerek akor oluşturabilirsin.</p>
+
+      <!-- AKOR MODU VE RİTİM ALTYAPISI ÇUBUĞU -->
+      <div class="studio-toolbar">
+        <div id="chordToggle" class="toggle-pill active" onclick="toggleChordMode()">
+          ✨ Akor Modu: AÇIK <small style="font-weight:400;opacity:.85">(Tek tuşla 3'lü akor)</small>
+        </div>
+
+        <div id="beatControlWrap" style="flex:1; min-width:220px;">
+          <select id="beatSelect" onchange="changeBeat()">
+            <option value="none">🥁 Arka Plan Ritmi: Kapalı</option>
+            <option value="pop">🥁 Ritim: Pop / Dance (110 BPM)</option>
+            <option value="lofi">🥁 Ritim: Lo-Fi Chill (85 BPM)</option>
+            <option value="trap">🥁 Ritim: Trap / Hip-Hop (130 BPM)</option>
+          </select>
+        </div>
+      </div>
+
+      <p id="studioHint" class="muted">Akor Modu açıkken tek bir tuşa basman yeterli; otomatik uyumlu 3'lü akor basar!</p>
 
       <div class="row">
         <div>
@@ -384,16 +439,32 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
         <div id="keyboard" class="keyboard"></div>
       </div>
 
+      <!-- BESTE MODLARI KONTROLLERİ (TEK AKOR VEYA CANLI RİTİM KAYDI) -->
       <div id="normalNoteControls">
         <div class="note-list" id="selectedNotes">
-          <span class="muted">Henüz nota seçilmedi.</span>
+          <span class="muted">Henüz nota/akor seçilmedi.</span>
         </div>
         <div class="row" style="margin-top:12px">
-          <button class="secondary" onclick="clearSelected()">Notaları temizle</button>
-          <button class="green" id="addButton" onclick="addSound()">🎵 Müziğe ekle</button>
+          <button class="secondary" onclick="clearSelected()">Seçimi temizle</button>
+          <button class="green" id="addButton" onclick="addSound()">🎵 Tek Akor / Nota Ekle</button>
+        </div>
+
+        <!-- CANLI RİTİM KAYDI KUTUSU -->
+        <div id="recBox" class="rec-box">
+          <div class="row">
+            <div>
+              <strong id="recStatusTitle">🔴 Canlı Ritim Kaydı</strong>
+              <div id="recStatusDesc" class="muted">Kayda bas, piyanodan kendi ritminle çal, bitirince şarkıya eklensin!</div>
+            </div>
+            <div class="row" style="justify-content:flex-end;">
+              <button class="red" id="recStartBtn" onclick="startRhythmRecord()">🔴 Ritim Kaydet (4 sn)</button>
+              <button class="green hidden" id="recStopBtn" onclick="stopAndSendRhythm()">⏹ Bitir ve Ekle</button>
+            </div>
+          </div>
         </div>
       </div>
 
+      <!-- MELODİYİ TAKLİT ET KONTROLLERİ -->
       <div id="mimicNoteControls" class="hidden" style="margin-top:12px">
         <div class="row">
           <button class="secondary" onclick="clearCurrentStep()">Bu adımı temizle</button>
@@ -449,19 +520,20 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
       </div>
     </div>
 
+    <!-- ORTAK MÜZİK KATMANLARI & DÖNGÜ PANELİ -->
     <div id="sharedMusicPanel" class="panel hidden">
       <div class="row" style="margin-bottom: 12px;">
         <div>
-          <h2 style="margin:0;">🎧 Ortak Müzik</h2>
-          <div id="playbackOwnerHint" class="muted">Oynatma kontrolü yalnızca oda sahibindedir.</div>
+          <h2 style="margin:0;">🎧 Ortak Müzik Katmanları (4 sn Döngü)</h2>
+          <div id="playbackOwnerHint" class="muted">Tüm katmanlar ve seçili davul ritmi birlikte akar.</div>
         </div>
         <div id="hostPlaybackControls" class="row hidden" style="justify-content:flex-end;">
-          <button class="green" id="playSongBtn" onclick="requestPlaySong()">▶ Müziği Çal</button>
+          <button class="green" id="playSongBtn" onclick="requestPlaySong()">▶ Şarkıyı Akıt (Çal)</button>
           <button class="red" id="stopSongBtn" onclick="requestStopSong()">⏹ Durdur</button>
         </div>
       </div>
       <div id="actions" class="actions">
-        <div class="muted">Henüz ses eklenmedi.</div>
+        <div class="muted">Henüz müzik katmanı eklenmedi.</div>
       </div>
     </div>
   </section>
@@ -476,7 +548,21 @@ let selected = new Set();
 let audioContext = null;
 let masterGain = null;
 let instrumentCache = new Map();
-let songTimers = [];
+
+// Akor Modu durumu (varsayılan açık: müzik bilmeyenler için)
+let chordMode = true;
+
+// Canlı Ritim Kaydı durumu
+let isRecording = false;
+let recordStartTime = 0;
+let recordedEvents = [];
+let recordAutoStopTimer = null;
+
+// Akıcı Loop / Döngü Oynatıcı zamanlayıcıları
+let isSongPlaying = false;
+let loopTimers = [];
+let beatInterval = null;
+let beatStep = 0;
 
 let mimicSequence = [new Set(), new Set(), new Set(), new Set()];
 let activeStepIndex = 0;
@@ -495,6 +581,35 @@ function escapeHTML(value) {
 
 function playerName() {
   return $("playerName").value.trim() || "Oyuncu";
+}
+
+/* Akor Modu: Tek bir MIDI notasından kulağa hoş gelen 3'lü akor üretir */
+function getChordNotes(rootMidi) {
+  if (!chordMode) return [rootMidi];
+  const semitone = rootMidi % 12;
+  // Do Majör dizisindeki doğal akor dereceleri (Majör / Minör uyumlu)
+  const minorRoots = new Set([2, 4, 9, 11]); // Re, Mi, La, Si -> Minör akor (0, +3, +7)
+  const third = minorRoots.has(semitone) ? 3 : 4;
+  return [rootMidi, Math.min(127, rootMidi + third), Math.min(127, rootMidi + 7)];
+}
+
+function toggleChordMode() {
+  chordMode = !chordMode;
+  const pill = $("chordToggle");
+  pill.classList.toggle("active", chordMode);
+  pill.innerHTML = chordMode
+    ? `✨ Akor Modu: AÇIK <small style="font-weight:400;opacity:.85">(Tek tuşla 3'lü akor)</small>`
+    : `🎹 Akor Modu: KAPALI <small style="font-weight:400;opacity:.85">(Tekli nota)</small>`;
+  $("studioHint").textContent = chordMode
+    ? "Akor Modu açık: Tek bir tuşa basman yeterli; otomatik uyumlu 3'lü akor basar!"
+    : "Akor Modu kapalı: Piyano tuşlarına tek tek dokunarak kendi notalarını seç.";
+}
+
+function changeBeat() {
+  if (!roomCode) return;
+  socket.emit("set-beat", { code: roomCode, beat: $("beatSelect").value }, res => {
+    if (!res?.ok) message(res?.message || "Ritim değiştirilemedi.");
+  });
 }
 
 function createRoom(mode, solo = false) {
@@ -559,9 +674,8 @@ function updateRoom(room) {
   $("clearButton").classList.toggle("hidden", !isHost || !room.started);
 
   $("hostPlaybackControls").classList.toggle("hidden", !isHost);
-  $("playbackOwnerHint").textContent = isHost
-    ? "Oda sahibi olarak ortak müziği başlatıp durdurabilirsin."
-    : "Oynatma kontrolü yalnızca oda sahibindedir.";
+  $("beatSelect").value = room.beat || "none";
+  $("beatSelect").disabled = !isHost;
 
   $("players").innerHTML = room.players.map((p, i) => {
     const active = room.mode === "party" && room.started && i === room.currentTurn;
@@ -578,6 +692,7 @@ function updateRoom(room) {
   $("normalNoteControls").classList.toggle("hidden", isMimic);
   $("mimicNoteControls").classList.toggle("hidden", !isMimic);
   $("effectsSection").classList.toggle("hidden", isMimic);
+  $("beatControlWrap").classList.toggle("hidden", isMimic);
 
   if (!room.started) {
     $("turnStatus").textContent = "Oyun başlamayı bekliyor. Oda sahibi oyunu başlatabilir.";
@@ -586,44 +701,204 @@ function updateRoom(room) {
     $("studio").classList.remove("hidden");
 
     if (isMimic) {
-      $("studioHint").textContent = "Yukarıdan bir adım kutusu seç, ardından piyanodan o adımın notasını seç.";
       $("turnStatus").textContent = "🎯 Hedef melodiyi dinle ve 4 adımlık kendi melodini oluştur!";
       $("revealMimicBtn").classList.toggle("hidden", !isHost || Boolean(room.challenge?.revealed));
       $("submitMimicBtn").disabled = Boolean(room.challenge?.revealed);
       renderMimicPanel(room.challenge);
     } else if (room.mode === "party") {
-      $("studioHint").textContent = "Piyano tuşlarına dokun. Birden fazla nota seçerek akor oluşturabilirsin.";
       const current = room.players[room.currentTurn];
       const myTurn = current?.id === socket.id;
       $("turnStatus").textContent = myTurn
-        ? "🎵 Sıra sende! Piyanodan notalarını seç."
-        : `🎧 Şimdi ${current?.name || "başka bir oyuncu"} ses ekliyor.`;
+        ? "🎵 Sıra sende! İster tek akor bas, ister 'Ritim Kaydet' ile melodi çal."
+        : `🎧 Şimdi ${current?.name || "başka bir oyuncu"} katman ekliyor.`;
       $("addButton").disabled = !myTurn;
+      $("recStartBtn").disabled = !myTurn;
     } else {
-      $("studioHint").textContent = "Piyano tuşlarına dokun. Birden fazla nota seçerek akor oluşturabilirsin.";
-      $("turnStatus").textContent = "🎉 Herkes istediği zaman ses ekleyebilir!";
+      $("turnStatus").textContent = "🎉 Herkes serbest! Ritim kaydı yap veya akor ekle, şarkı döngüde aksın!";
       $("addButton").disabled = false;
+      $("recStartBtn").disabled = false;
     }
   }
 
-  renderActions(room.actions || []);
+  renderActions(room.actions || [], isHost);
 }
 
-function renderActions(actions) {
+function renderActions(actions, isHost = false) {
   if (!actions.length) {
-    $("actions").innerHTML = '<div class="muted">Henüz ses eklenmedi.</div>';
+    $("actions").innerHTML = '<div class="muted">Henüz müzik katmanı eklenmedi.</div>';
     return;
   }
 
   $("actions").innerHTML = actions.map((a, i) => {
     const notes = a.notes.map(n => noteName(n)).join(" + ");
+    const tag = a.isRhythm ? `🎶 Ritimli Melodi (${a.events.length} vuruş)` : `🎹 Akor / Nota (${notes})`;
+    const delBtn = isHost
+      ? `<button class="red small" style="flex:0;" onclick="removeAction('${a.id}')">🗑️</button>`
+      : "";
     return `<div class="action" id="action-row-${i}">
-      <b>${i + 1}. ${escapeHTML(a.playerName)}</b> — ${escapeHTML(instrumentName(a.instrument))}
-      <small>Notalar: ${escapeHTML(notes)}</small>
+      <div>
+        <b>${i + 1}. ${escapeHTML(a.playerName)}</b> — ${escapeHTML(instrumentName(a.instrument))}
+        <small>${escapeHTML(tag)}</small>
+      </div>
+      ${delBtn}
     </div>`;
   }).join("");
 }
 
+function removeAction(actionId) {
+  socket.emit("remove-action", { code: roomCode, actionId });
+}
+
+/* CANLI RİTİM KAYDI (4 Saniyelik Ölçü) */
+async function startRhythmRecord() {
+  if (isRecording) return;
+  await enableAudio();
+
+  isRecording = true;
+  recordedEvents = [];
+  recordStartTime = performance.now();
+
+  $("recBox").classList.add("recording");
+  $("recStartBtn").classList.add("hidden");
+  $("recStopBtn").classList.remove("hidden");
+  $("recStatusTitle").textContent = "🔴 KAYIT YAPILIYOR... Piyanoya ritimle bas!";
+  $("recStatusDesc").textContent = "4 saniye içinde istediğin tuşlara ritimle dokun (Akor Modu açıksa akor kaydeder).";
+
+  // Kayıt sırasında altta seçili ritim varsa çalsın ki oyuncu ritmi yakalasın
+  if (!isSongPlaying && roomState?.beat && roomState.beat !== "none") {
+    startDrumBeat(roomState.beat);
+  }
+
+  recordAutoStopTimer = setTimeout(() => {
+    if (isRecording) stopAndSendRhythm();
+  }, 4000);
+}
+
+function stopAndSendRhythm() {
+  if (!isRecording) return;
+  isRecording = false;
+  clearTimeout(recordAutoStopTimer);
+
+  $("recBox").classList.remove("recording");
+  $("recStartBtn").classList.remove("hidden");
+  $("recStopBtn").classList.add("hidden");
+  $("recStatusTitle").textContent = "🔴 Canlı Ritim Kaydı";
+  $("recStatusDesc").textContent = "Kayda bas, piyanodan kendi ritminle çal, bitirince şarkıya eklensin!";
+
+  if (!isSongPlaying) stopDrumBeat();
+
+  if (recordedEvents.length === 0) {
+    return message("⚠️ Kayıt sırasında hiçbir tuşa basmadın.");
+  }
+
+  socket.emit("add-sound", {
+    code: roomCode,
+    events: recordedEvents,
+    instrument: $("instrument").value,
+    settings: getSettings()
+  }, result => {
+    if (!result?.ok) {
+      message(result?.message || "Ritim eklenemedi.");
+    } else {
+      message(`🎶 ${recordedEvents.length} vuruşluk ritimli katmanın şarkıya eklendi!`);
+      recordedEvents = [];
+    }
+  });
+}
+
+/* DAVUL / RİTİM SENTEZLEYİCİ (Web Audio API ile gerçek zamanlı beat) */
+function playDrumHit(type) {
+  if (!audioContext || !masterGain) return;
+  const now = audioContext.currentTime;
+
+  if (type === "kick") {
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(140, now);
+    osc.frequency.exponentialRampToValueAtTime(38, now + 0.16);
+    gain.gain.setValueAtTime(0.55, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+    osc.connect(gain);
+    gain.connect(masterGain);
+    osc.start(now);
+    osc.stop(now + 0.23);
+  } else if (type === "snare") {
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(190, now);
+    osc.frequency.exponentialRampToValueAtTime(75, now + 0.12);
+    gain.gain.setValueAtTime(0.32, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    osc.connect(gain);
+    gain.connect(masterGain);
+    osc.start(now);
+    osc.stop(now + 0.16);
+  } else if (type === "hat") {
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    osc.type = "square";
+    osc.frequency.setValueAtTime(6500, now);
+    gain.gain.setValueAtTime(0.06, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+    osc.connect(gain);
+    gain.connect(masterGain);
+    osc.start(now);
+    osc.stop(now + 0.05);
+  }
+}
+
+function stopDrumBeat() {
+  if (beatInterval) {
+    clearInterval(beatInterval);
+    beatInterval = null;
+  }
+  beatStep = 0;
+}
+
+async function startDrumBeat(style) {
+  stopDrumBeat();
+  if (!style || style === "none") return;
+  await enableAudio();
+
+  const configs = {
+    pop: {
+      stepMs: 250, // 120 BPM 8'lik adımlar (8 adım = 2 sn, 16 adım = 4 sn)
+      kicks: [0, 4, 8, 12],
+      snares: [4, 12],
+      hats: [0, 2, 4, 6, 8, 10, 12, 14]
+    },
+    lofi: {
+      stepMs: 250,
+      kicks: [0, 7, 10],
+      snares: [4, 12],
+      hats: [0, 2, 4, 6, 8, 10, 12, 14]
+    },
+    trap: {
+      stepMs: 250,
+      kicks: [0, 6, 11],
+      snares: [4, 12],
+      hats: [0, 1, 2, 3, 4, 6, 8, 9, 10, 12, 14, 15]
+    }
+  };
+
+  const cfg = configs[style] || configs.pop;
+  beatStep = 0;
+
+  const tick = () => {
+    const s = beatStep % 16;
+    if (cfg.kicks.includes(s)) playDrumHit("kick");
+    if (cfg.snares.includes(s)) playDrumHit("snare");
+    if (cfg.hats.includes(s)) playDrumHit("hat");
+    beatStep++;
+  };
+
+  tick();
+  beatInterval = setInterval(tick, cfg.stepMs);
+}
+
+/* AKICI DÖNGÜ (LOOP) ŞARKI OYNATICI — Tüm katmanlar 4 saniyelik ritim ölçüsünde birlikte akar */
 function requestPlaySong() {
   socket.emit("play-song", { code: roomCode }, res => {
     if (!res?.ok) message(res?.message || "Müzik başlatılamadı.");
@@ -637,48 +912,58 @@ function requestStopSong() {
 }
 
 function stopLocalSongPlayback() {
-  songTimers.forEach(t => clearTimeout(t));
-  songTimers = [];
+  isSongPlaying = false;
+  loopTimers.forEach(t => clearTimeout(t));
+  loopTimers = [];
+  stopDrumBeat();
   document.querySelectorAll(".action.playing-now").forEach(el => el.classList.remove("playing-now"));
 }
 
 async function startLocalSongPlayback() {
   stopLocalSongPlayback();
-  const actions = roomState?.actions || [];
-  if (!actions.length) return;
-
   await enableAudio();
-  message("▶ Ortak müzik çalınıyor...");
 
-  let elapsedMs = 0;
+  isSongPlaying = true;
+  message("▶ Şarkı ritim döngüsünde akıyor! (Durdurmak için Durdur'a bas)");
 
-  actions.forEach((act, index) => {
-    const stepDurationSec = Math.max(0.45, Math.min(2.5, act.settings?.duration || 0.8));
+  if (roomState?.beat && roomState.beat !== "none") {
+    startDrumBeat(roomState.beat);
+  }
 
-    const timer = setTimeout(() => {
-      document.querySelectorAll(".action.playing-now").forEach(el => el.classList.remove("playing-now"));
-      const row = $("action-row-" + index);
-      if (row) row.classList.add("playing-now");
+  const LOOP_DURATION_MS = 4000;
 
-      playNotes(act.notes, act.instrument, act.settings);
-    }, elapsedMs);
+  function scheduleCycle() {
+    if (!isSongPlaying) return;
+    const actions = roomState?.actions || [];
 
-    songTimers.push(timer);
-    elapsedMs += stepDurationSec * 1000;
-  });
+    actions.forEach((act, index) => {
+      const events = act.events && act.events.length ? act.events : [{ time: 0, notes: act.notes }];
 
-  const endTimer = setTimeout(() => {
-    document.querySelectorAll(".action.playing-now").forEach(el => el.classList.remove("playing-now"));
-    message("✅ Ortak müzik tamamlandı.");
-  }, elapsedMs + 200);
+      events.forEach(ev => {
+        const offsetMs = Math.min(LOOP_DURATION_MS - 80, Math.max(0, ev.time || 0));
+        const t = setTimeout(() => {
+          if (!isSongPlaying) return;
+          const row = $("action-row-" + index);
+          if (row) {
+            row.classList.add("playing-now");
+            setTimeout(() => row.classList.remove("playing-now"), 240);
+          }
+          playNotes(ev.notes, act.instrument, act.settings);
+        }, offsetMs);
+        loopTimers.push(t);
+      });
+    });
 
-  songTimers.push(endTimer);
+    const nextCycleTimer = setTimeout(scheduleCycle, LOOP_DURATION_MS);
+    loopTimers.push(nextCycleTimer);
+  }
+
+  scheduleCycle();
 }
 
 /* Melodiyi Taklit Et Modu Fonksiyonları */
 function renderMimicPanel(challenge) {
   const stepsCount = challenge?.sequence?.length || 4;
-
   while (mimicSequence.length < stepsCount) mimicSequence.push(new Set());
   if (mimicSequence.length > stepsCount) mimicSequence = mimicSequence.slice(0, stepsCount);
 
@@ -766,23 +1051,14 @@ function clearAllSteps() {
 async function playSequenceArray(sequence, instrumentVal, tempoSec = 0.55) {
   await enableAudio();
   const baseSettings = {
-    volume: 0.85,
-    pitch: 0,
-    duration: tempoSec * 0.9,
-    attack: 0.02,
-    release: 0.15,
-    sustain: 0.85,
-    reverb: 0.15,
-    echo: 0,
-    distortion: 0,
-    filter: 12000
+    volume: 0.85, pitch: 0, duration: tempoSec * 0.9,
+    attack: 0.02, release: 0.15, sustain: 0.85,
+    reverb: 0.15, echo: 0, distortion: 0, filter: 12000
   };
 
   sequence.forEach((notesArr, idx) => {
     if (!notesArr || !notesArr.length) return;
-    setTimeout(() => {
-      playNotes(notesArr, instrumentVal, baseSettings);
-    }, idx * tempoSec * 1000);
+    setTimeout(() => playNotes(notesArr, instrumentVal, baseSettings), idx * tempoSec * 1000);
   });
 }
 
@@ -795,9 +1071,7 @@ function playTargetMelody() {
 
 function previewMySequence() {
   const seq = mimicSequence.map(s => [...s].sort((a, b) => a - b));
-  if (seq.every(s => s.length === 0)) {
-    return message("Önce adımlara nota ekle.");
-  }
+  if (seq.every(s => s.length === 0)) return message("Önce adımlara nota ekle.");
   const tempo = roomState?.challenge?.tempo || 0.55;
   message("🎹 Kendi oluşturduğun melodi çalınıyor...");
   playSequenceArray(seq, $("instrument").value, tempo);
@@ -806,7 +1080,6 @@ function previewMySequence() {
 function submitMimic() {
   if (!roomCode) return message("Oda bağlantısı bulunamadı.");
   const sequence = mimicSequence.map(s => [...s].sort((a, b) => a - b));
-
   if (sequence.some(step => step.length === 0)) {
     return message("⚠️ Lütfen 4 adımın tamamına piyano tuşlarından nota seç!");
   }
@@ -902,53 +1175,71 @@ function buildKeyboard() {
   }
 }
 
+function syncKeyboardToSelectedSet() {
+  document.querySelectorAll(".key").forEach(k => {
+    const midi = Number(k.dataset.midi);
+    k.classList.toggle("selected", selected.has(midi));
+  });
+}
+
 function selectNote(midi, element) {
+  const notesToPlay = getChordNotes(midi);
+
+  // Melodiyi Taklit Et Modu
   if (roomState?.mode === "mimic") {
     const stepSet = mimicSequence[activeStepIndex];
     if (!stepSet) return;
 
-    if (stepSet.has(midi)) {
-      stepSet.delete(midi);
-      element.classList.remove("selected");
-    } else {
-      stepSet.clear();
-      stepSet.add(midi);
-      syncKeyboardToCurrentStep();
-      if (activeStepIndex < mimicSequence.length - 1) {
-        activeStepIndex++;
-        setTimeout(() => {
-          syncKeyboardToCurrentStep();
-          renderMimicPanel(roomState?.challenge);
-        }, 180);
-      }
+    stepSet.clear();
+    notesToPlay.forEach(n => stepSet.add(n));
+    syncKeyboardToCurrentStep();
+
+    if (activeStepIndex < mimicSequence.length - 1) {
+      activeStepIndex++;
+      setTimeout(() => {
+        syncKeyboardToCurrentStep();
+        renderMimicPanel(roomState?.challenge);
+      }, 180);
     }
     renderMimicPanel(roomState?.challenge);
-    playNotes([midi], $("instrument").value, getSettings());
+    playNotes(notesToPlay, $("instrument").value, getSettings());
     return;
   }
 
-  if (selected.has(midi)) {
-    selected.delete(midi);
-    element.classList.remove("selected");
-  } else {
-    selected.add(midi);
+  // Canlı Ritim Kaydı aktifse vuruş zamanını ve akoru/notayı kaydet
+  if (isRecording) {
+    const elapsed = Math.round(performance.now() - recordStartTime);
+    recordedEvents.push({ time: elapsed, notes: notesToPlay });
     element.classList.add("selected");
+    setTimeout(() => element.classList.remove("selected"), 160);
+    playNotes(notesToPlay, $("instrument").value, getSettings());
+    return;
   }
 
+  // Normal Akor / Nota Seçimi
+  if (chordMode) {
+    selected.clear();
+    notesToPlay.forEach(n => selected.add(n));
+  } else {
+    if (selected.has(midi)) selected.delete(midi);
+    else selected.add(midi);
+  }
+
+  syncKeyboardToSelectedSet();
   renderSelected();
-  playNotes([midi], $("instrument").value, getSettings());
+  playNotes(notesToPlay, $("instrument").value, getSettings());
 }
 
 function renderSelected() {
   const notes = [...selected].sort((a,b) => a-b);
   $("selectedNotes").innerHTML = notes.length
     ? notes.map(n => `<span class="note-chip">${escapeHTML(noteName(n))}</span>`).join("")
-    : '<span class="muted">Henüz nota seçilmedi.</span>';
+    : '<span class="muted">Henüz nota/akor seçilmedi.</span>';
 }
 
 function clearSelected() {
   selected.clear();
-  document.querySelectorAll(".key.selected").forEach(k => k.classList.remove("selected"));
+  syncKeyboardToSelectedSet();
   renderSelected();
 }
 
@@ -969,7 +1260,7 @@ function getSettings() {
 
 function addSound() {
   const notes = [...selected].sort((a,b) => a-b);
-  if (!notes.length) return message("Önce piyano tuşlarından nota seç.");
+  if (!notes.length) return message("Önce piyano tuşlarından nota veya akor seç.");
 
   socket.emit("add-sound", {
     code: roomCode,
@@ -980,7 +1271,7 @@ function addSound() {
     if (!result?.ok) {
       message(result?.message || "Ses eklenemedi.");
     } else {
-      message("🎵 Sesin müziğe eklendi!");
+      message("🎵 Katmanın ortak müziğe eklendi!");
       clearSelected();
     }
   });
@@ -1110,34 +1401,42 @@ socket.on("room-state", room => {
   if (roomCode && room.code === roomCode) updateRoom(room);
 });
 
+socket.on("beat-changed", data => {
+  if (isSongPlaying) {
+    startDrumBeat(data.beat);
+  }
+});
+
 socket.on("game-started", () => {
+  stopLocalSongPlayback();
   clearAllSteps();
   $("studio").classList.remove("hidden");
   buildKeyboard();
   message(
     roomState?.mode === "mimic"
       ? "🎯 Yarışma başladı! Hedef melodiyi dinle ve 4 adımı doldur."
-      : "Oyun başladı! Piyanodan nota seç."
+      : "Oyun başladı! Akor Modu ile tek tuşla akor basabilir veya Ritim Kaydedebilirsin."
   );
 });
 
 socket.on("sound-added", action => {
-  renderActions([...(roomState?.actions || []).filter(a => a.id !== action.id), action]);
-  playNotes(action.notes, action.instrument, action.settings);
+  if (!isSongPlaying) {
+    const firstNotes = action.events?.[0]?.notes || action.notes;
+    playNotes(firstNotes, action.instrument, action.settings);
+  }
 });
 
 socket.on("song-playback", data => {
   if (data.action === "play") startLocalSongPlayback();
   if (data.action === "stop") {
     stopLocalSongPlayback();
-    message("⏹ Ortak müzik durduruldu.");
+    message("⏹ Şarkı durduruldu.");
   }
 });
 
 socket.on("round-cleared", () => {
   stopLocalSongPlayback();
   clearAllSteps();
-  renderActions([]);
   message("🔄 Yeni tur başladı!");
 });
 
