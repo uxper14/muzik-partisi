@@ -7,7 +7,11 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { maxHttpBufferSize: 5e6 });
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 const rooms = {};
 
@@ -62,6 +66,10 @@ function getRoomState(room) {
   };
 }
 
+function assignChaosTask(room, playerId) {
+  room.chaosTasks[playerId] = CHAOS_TASKS[Math.floor(Math.random() * CHAOS_TASKS.length)];
+}
+
 io.on('connection', (socket) => {
   socket.on('createRoom', ({ name, mode, bpm, timeLimit, blindMode }) => {
     const code = genCode();
@@ -105,10 +113,6 @@ io.on('connection', (socket) => {
     socket.emit('roomJoined', getRoomState(room));
     io.to(room.code).emit('stateUpdate', getRoomState(room));
   });
-
-  function assignChaosTask(room, playerId) {
-    room.chaosTasks[playerId] = CHAOS_TASKS[Math.floor(Math.random() * CHAOS_TASKS.length)];
-  }
 
   socket.on('addLayer', (layer) => {
     const room = rooms[socket.roomCode];
