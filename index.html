@@ -25,13 +25,11 @@
   .hidden { display: none !important; }
   .container { max-width: 1120px; margin: 0 auto; padding: 20px; }
 
-  /* LOGO & HEADER */
   .brand { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 16px 0 6px; }
   .brand-icon { font-size: 2.2rem; filter: drop-shadow(0 0 14px rgba(236,72,153,0.6)); }
   .brand h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(90deg, #fff, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .subtitle { text-align: center; color: var(--muted); font-size: 0.92rem; margin-bottom: 24px; }
 
-  /* SADE ANA MENÜ */
   .menu-wrap { max-width: 780px; margin: 0 auto; background: var(--panel); border: 1px solid var(--border); border-radius: 20px; padding: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.45); }
   .top-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
   .field { display: flex; flex-direction: column; gap: 6px; }
@@ -65,13 +63,11 @@
   .btn-amber { background: linear-gradient(135deg, var(--amber), #d97706); border: none; }
   .btn-sm { padding: 6px 10px; font-size: 0.78rem; border-radius: 8px; }
 
-  /* STÜDYO ÜST BAR */
   .studio-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 12px 18px; margin-bottom: 14px; }
   .badge { background: var(--card); border: 1px solid var(--border); padding: 6px 12px; border-radius: 99px; font-size: 0.82rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
   .badge.highlight { border-color: var(--accent2); color: #67e8f9; }
   .bpm-ctrl { display: inline-flex; align-items: center; gap: 6px; background: var(--card); border: 1px solid var(--border); padding: 4px 10px; border-radius: 99px; font-size: 0.85rem; font-weight: 700; }
 
-  /* SPEKTRUM & İLERLEME ÇUBUĞU */
   .transport-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 14px 18px; margin-bottom: 14px; }
   .transport-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
   #visualizer { width: 100%; height: 48px; background: #090c12; border-radius: 10px; display: block; margin-bottom: 10px; border: 1px solid #1e2638; }
@@ -80,19 +76,15 @@
   .beat-ticks { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(8, 1fr); pointer-events: none; }
   .beat-ticks span { border-right: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.65); }
 
-  /* BANNER / GÖREV / YARIŞMA */
   .banner { background: linear-gradient(90deg, rgba(99,102,241,0.16), rgba(6,182,212,0.16)); border: 1px solid rgba(99,102,241,0.4); border-radius: 12px; padding: 10px 16px; margin-bottom: 14px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; font-size: 0.9rem; }
 
-  /* ANA ÇALIŞMA ALANI */
   .workspace { display: grid; grid-template-columns: 1.45fr 1fr; gap: 14px; }
   .box { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
   .box-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
 
-  /* ENSTRÜMAN & AKOR ARAÇLARI */
   .tool-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; align-items: center; }
   .chord-hint { font-size: 0.78rem; color: #a5b4fc; background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.25); padding: 7px 10px; border-radius: 8px; margin-bottom: 12px; }
 
-  /* PİYANO */
   .piano-wrap { overflow-x: auto; padding-bottom: 6px; margin-bottom: 12px; }
   .piano { position: relative; display: flex; height: 138px; min-width: 560px; background: #080a0f; padding: 6px; border-radius: 12px; border: 1px solid var(--border); }
   .w-key { flex: 1; background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%); border: 1px solid #94a3b8; border-radius: 0 0 8px 8px; color: #1e293b; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 8px; cursor: pointer; position: relative; z-index: 1; transition: 0.06s; }
@@ -102,7 +94,6 @@
   .b-key { position: absolute; width: 26px; height: 84px; background: linear-gradient(180deg, #1e293b 0%, #090d16 100%); border: 1px solid #000; border-radius: 0 0 6px 6px; color: #cbd5e1; z-index: 2; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 6px; font-size: 0.65rem; cursor: pointer; }
   .b-key:active, .b-key.pressed { background: var(--accent); color: #fff; }
 
-  /* DAVUL PEDLERİ & MİKROFON */
   .drum-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 12px; }
   .pad { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 4px; text-align: center; cursor: pointer; font-size: 0.78rem; font-weight: 700; transition: 0.08s; }
   .pad:active, .pad.pressed { background: var(--pink); border-color: #f472b6; transform: scale(0.96); }
@@ -110,11 +101,9 @@
 
   .mic-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; background: rgba(0,0,0,0.25); padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px; }
 
-  /* DJ FX & SOUNDBOARD */
   .fx-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px; }
   .sb-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
 
-  /* KATMAN LİSTESİ (MİKSER) */
   .layer-list { display: flex; flex-direction: column; gap: 8px; max-height: 290px; overflow-y: auto; margin-bottom: 12px; }
   .layer-item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .layer-item.muted { opacity: 0.45; }
@@ -123,7 +112,6 @@
   .layer-meta { font-size: 0.72rem; color: var(--muted); }
   .layer-btns { display: flex; gap: 4px; flex-wrap: wrap; }
 
-  /* EMOJİ TEPKİLER */
   .emoji-bar { display: flex; gap: 6px; align-items: center; }
   .floating-emoji { position: fixed; bottom: 70px; font-size: 2rem; pointer-events: none; animation: floatUp 2.2s ease-out forwards; z-index: 999; display: flex; flex-direction: column; align-items: center; }
   .floating-emoji small { font-size: 0.68rem; background: rgba(0,0,0,0.7); padding: 2px 6px; border-radius: 6px; color: #fff; }
@@ -132,7 +120,6 @@
     100% { transform: translateY(-260px) scale(1.3); opacity: 0; }
   }
 
-  /* MODAL */
   .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
   .modal { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 22px; max-width: 440px; width: 100%; text-align: center; }
   .modal h3 { margin-bottom: 10px; font-size: 1.25rem; }
@@ -154,7 +141,6 @@
   </div>
   <p class="subtitle">Müzik bilgisi gerekmeden saniyeler içinde canlı döngüler, akorlar ve ortak şarkılar üret.</p>
 
-  <!-- ANA MENÜ -->
   <div id="menuView" class="menu-wrap">
     <div class="top-inputs">
       <div class="field">
@@ -229,7 +215,6 @@
     </div>
   </div>
 
-  <!-- STÜDYO EKRANI -->
   <div id="studioView" class="hidden">
     <div class="studio-header">
       <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
@@ -249,13 +234,11 @@
       </div>
     </div>
 
-    <!-- MOD BİLGİ & OYLAMA BANNER -->
     <div id="modeBanner" class="banner">
       <div id="bannerText">Stüdyo hazır!</div>
       <div id="bannerActions" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
     </div>
 
-    <!-- TRANSPORT & SPEKTRUM -->
     <div class="transport-panel">
       <div class="transport-top">
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -280,9 +263,7 @@
       </div>
     </div>
 
-    <!-- ÇALIŞMA ALANI -->
     <div class="workspace">
-      <!-- SOL PANEL: ENSTRÜMANLAR -->
       <div class="box">
         <div class="box-title">
           <span>🎹 Enstrüman & Akor Stüdyosu</span>
@@ -312,12 +293,10 @@
           ✨ <b>Otomatik Uyumlu Akor:</b> Hangi tuşa basarsan bas kulağa uyumlu 3'lü akor basar. Hiç müzik bilgisi gerekmez!
         </div>
 
-        <!-- PİYANO KLAVYESİ -->
         <div class="piano-wrap">
           <div class="piano" id="pianoEl"></div>
         </div>
 
-        <!-- CANLI DAVUL PEDLERİ -->
         <div class="box-title" style="margin-top:6px;">
           <span>🥁 Canlı Davul Pedleri (Klavye: 1–6)</span>
           <select id="beatPresetSelect" onchange="changeBeatPreset(this.value)" style="padding:4px 8px; font-size:0.78rem;">
@@ -337,7 +316,6 @@
           <div class="pad" data-drum="rim" onclick="triggerDrum('rim', true)">RIM<span>[6]</span></div>
         </div>
 
-        <!-- MİKROFON KAYDI -->
         <div class="mic-bar">
           <button id="micRecBtn" class="btn-amber btn-sm" onclick="armMicRecording()">🎤 Mikrofon / Beatbox Kaydet</button>
           <select id="voiceFx" style="padding:5px 8px; font-size:0.78rem;">
@@ -349,7 +327,6 @@
           <span id="micStatus" style="font-size:0.75rem; color:var(--muted);">8 vuruşluk vokal/beatbox ekle</span>
         </div>
 
-        <!-- DJ FX & SOUNDBOARD -->
         <div class="box-title"><span>🎛️ Canlı DJ Efektleri & Ses Tahtası</span></div>
         <div class="fx-grid">
           <button id="fxFilterBtn" onmousedown="setDjFilter(true)" onmouseup="setDjFilter(false)" onmouseleave="setDjFilter(false)">🌊 Su Altı Filtresi (Basılı Tut)</button>
@@ -364,7 +341,6 @@
         </div>
       </div>
 
-      <!-- SAĞ PANEL: ORTAK DÖNGÜ & MİKSER -->
       <div class="box">
         <div class="box-title">
           <span>🎚️ Ortak Döngü Katmanları</span>
@@ -387,7 +363,6 @@
   </div>
 </div>
 
-<!-- OYLAMA & KAZANAN MODALI -->
 <div id="voteModal" class="modal-bg hidden">
   <div class="modal">
     <h3 id="voteTitle">🏆 Gecenin Prodüktörünü Seç!</h3>
@@ -403,7 +378,6 @@ let selectedMode = 'free';
 let roomState = null;
 let isSolo = false;
 
-// SES MOTORU (WEB AUDIO API)
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let ctx = null;
 let masterGain, filterNode, analyser;
@@ -439,7 +413,6 @@ function setHalfTime(on) {
   document.getElementById('fxHalfBtn').classList.toggle('btn-cyan', on);
 }
 
-// NOTA & AKOR FREKANSLARI
 const NOTE_FREQS = {
   'C3':130.81,'C#3':138.59,'D3':146.83,'D#3':155.56,'E3':164.81,'F3':174.61,'F#3':185.00,'G3':196.00,'G#3':207.65,'A3':220.00,'A#3':233.08,'B3':246.94,
   'C4':261.63,'C#4':277.18,'D4':293.66,'D#4':311.13,'E4':329.63,'F4':349.23,'F#4':369.99,'G4':392.00,'G#4':415.30,'A4':440.00,'A#4':466.16,'B4':493.88,
@@ -455,7 +428,6 @@ function getChordNotes(rootNote, style) {
   if (style === 'minor') return [rootNote, pick(3), pick(7)];
   if (style === 'lofi') return [rootNote, pick(3), pick(7), pick(10)];
   if (style === 'power') return [rootNote, pick(7), pick(12)];
-  // auto (C Majör / A Minör doğal uyumlu akorlar)
   const name = rootNote.replace(/\d/, '');
   const minors = ['D', 'E', 'A', 'B'];
   return minors.includes(name) ? [rootNote, pick(3), pick(7)] : [rootNote, pick(4), pick(7)];
@@ -497,7 +469,6 @@ function playNotes(notes, inst = 'piano', duration = 0.45, dest = null) {
   });
 }
 
-// DAVUL SENTEZLEYİCİ
 function triggerDrum(type, recordable = false, dest = null) {
   initAudio();
   const target = dest || filterNode;
@@ -545,7 +516,6 @@ function triggerDrum(type, recordable = false, dest = null) {
   }
 }
 
-// STÜDYO FX SES TAHTASI
 function emitFx(fx) { socket.emit('triggerFx', fx); }
 socket.on('playFx', (fx) => {
   initAudio();
@@ -586,7 +556,6 @@ socket.on('playFx', (fx) => {
   }
 });
 
-// PİYANO OLUŞTURMA & ETKİLEŞİM
 const WHITE_NOTES = ['C4','D4','E4','F4','G4','A4','B4','C5','D5','E5','F5','G5','A5','B5'];
 const BLACK_MAP = { 0:'C#4', 1:'D#4', 3:'F#4', 4:'G#4', 5:'A#4', 7:'C#5', 8:'D#5', 10:'F#5', 11:'G#5', 12:'A#5' };
 const KBD_WHITE = ['Z','X','C','V','B','N','M','Q','W','E','R','T','Y','U'];
@@ -642,7 +611,6 @@ function handleKeyPress(rootNote, keyEl) {
   }
 }
 
-// KLAVYE KONTROLLERİ
 window.addEventListener('keydown', (e) => {
   if (e.repeat || ['INPUT', 'SELECT'].includes(document.activeElement.tagName)) return;
   const k = e.key.toUpperCase();
@@ -656,7 +624,6 @@ window.addEventListener('keydown', (e) => {
   if (drumKeys[k]) triggerDrum(drumKeys[k], true);
 });
 
-// LOOP ENGINE & KAYIT (OVERDUB)
 let isPlaying = false;
 let currentBeatFloat = 0;
 let lastStepTriggered = -1;
@@ -665,7 +632,7 @@ let lastTime = 0;
 
 let recArmed = false;
 let isRecording = false;
-let recType = 'note'; // 'note' veya 'mic'
+let recType = 'note';
 let recEvents = [];
 let mediaRecorder = null;
 let micChunks = [];
@@ -780,7 +747,6 @@ function loopTick(now) {
   const prevBeat = currentBeatFloat;
   currentBeatFloat = (currentBeatFloat + dt * beatsPerSec) % 8;
 
-  // DÖNGÜ BAŞA SARDIĞINDA
   if (currentBeatFloat < prevBeat) {
     if (isRecording) {
       isRecording = false;
@@ -817,12 +783,10 @@ function loopTick(now) {
 
 function onBeatStep(step) {
   if (!roomState) return;
-  // Hazır Ritim
   if (roomState.beatPreset && roomState.beatPreset !== 'none') {
     const pat = BEAT_PATTERNS[roomState.beatPreset]?.[step] || [];
     pat.forEach(d => triggerDrum(d, false));
   }
-  // Nota / Davul Katmanları
   roomState.layers.forEach(layer => {
     if (!isLayerAudible(layer)) return;
     if (layer.type === 'notes' && layer.events) {
@@ -858,7 +822,6 @@ function isLayerAudible(layer) {
   return !mutedLayers.has(layer.id);
 }
 
-// SPEKTRUM GÖRSELLEŞTİRİCİ
 function drawVisualizer() {
   const canvas = document.getElementById('visualizer');
   const c = canvas.getContext('2d');
@@ -878,7 +841,6 @@ function drawVisualizer() {
   render();
 }
 
-// YARIŞMA MODLARI (MELODİ & RİTİM TAKLİT ET)
 let userChallengeInput = null;
 function playChallengeDemo() {
   if (!roomState?.challenge) return;
@@ -908,7 +870,6 @@ function checkChallengeResult() {
   userChallengeInput = null;
 }
 
-// WAV DIŞA AKTARMA (OFFLINE RENDER)
 async function exportWav() {
   if (!roomState) return;
   const bpm = roomState.bpm || 100;
@@ -978,7 +939,6 @@ function audioBufferToWav(buffer) {
   return new Blob([out], { type: 'audio/wav' });
 }
 
-// ODA & ARAYÜZ GÜNCELLEME
 function selectMode(el) {
   document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
@@ -1063,7 +1023,6 @@ function updateUI(state) {
 
   if (state.songTitle) document.getElementById('songTitleDisplay').textContent = `💿 "${state.songTitle}"`;
 
-  // BANNER GÜNCELLEME
   const bText = document.getElementById('bannerText');
   const bAct = document.getElementById('bannerActions');
   bAct.innerHTML = '';
@@ -1093,7 +1052,6 @@ function updateUI(state) {
       : `🎛️ Ortak stüdyo aktif. Katmanlarını ekle, mikserden düzenle!`;
   }
 
-  // KATMAN LİSTESİ (MİKSER)
   const listEl = document.getElementById('layerList');
   if (state.layers.length === 0) {
     listEl.innerHTML = `<div style="color:var(--muted); font-size:0.85rem; text-align:center; padding:30px 10px;">Henüz katman yok. Bir tuşa bas, kayıt al veya hazır ritim seç!</div>`;
@@ -1122,7 +1080,6 @@ function updateUI(state) {
     }).join('');
   }
 
-  // OYLAMA & KAZANAN MODALI
   const modal = document.getElementById('voteModal');
   if (state.votingActive || state.winnerId) {
     modal.classList.remove('hidden');
