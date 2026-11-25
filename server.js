@@ -157,7 +157,9 @@ wss.on("connection", (ws) => {
       room.layers = [];
       broadcastRoom(room);
     } else if (msg.type === "add_layer") {
-      room.layers.push(msg.layer);
+      if (msg.layer) {
+        room.layers.push(msg.layer);
+      }
       room.turnIndex = (room.turnIndex + 1) % Math.max(1, room.players.length);
       if (msg.nextConcept) room.concept = msg.nextConcept;
       broadcastRoom(room);
@@ -180,7 +182,11 @@ wss.on("connection", (ws) => {
       room.layers = room.layers.filter((l) => l.id !== msg.layerId);
       broadcastRoom(room);
     } else if (msg.type === "live_note") {
-      broadcastEvent(room, { type: "live_note", keyId: msg.keyId, instrumentId: msg.instrumentId }, ws);
+      broadcastEvent(
+        room,
+        { type: "live_note", freq: msg.freq, keyId: msg.keyId, instrumentId: msg.instrumentId },
+        ws
+      );
     }
   });
 
