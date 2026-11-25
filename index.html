@@ -406,6 +406,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 10px;
+      margin-bottom: 14px;
     }
 
     .synth-knob-card {
@@ -445,17 +446,17 @@
 
     .beat-dots {
       display: flex;
-      gap: 6px;
+      gap: 5px;
       flex-wrap: wrap;
     }
 
     .beat-dot {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 8px;
       display: grid;
       place-items: center;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       font-weight: 700;
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--card-border);
@@ -809,7 +810,7 @@
       <div class="card">
         <h3>Nasıl Çalışır?</h3>
         <p class="muted">
-          • <strong>Herkes Bir Şey Eklesin &amp; Temalı Beste:</strong> Yukarıdaki ortak döngüye göre çal, göndermeden önce loop'ta dinle veya sil, onaylayınca herkes duysun ve sıra geçsin.<br /><br />
+          • <strong>Herkes Bir Şey Eklesin &amp; Temalı Beste:</strong> Serbest ve aksak ritimlerle çal, tuşa basılı tutarak notayı uzat, göndermeden önce loop'ta dinle veya sil, onaylayınca herkes duysun ve sıra geçsin.<br /><br />
           • <strong>Ritmi &amp; Melodiyi Taklit Et:</strong> Duyduğun ritmi veya tek oktav melodiyi birebir çal ve doğruluk oranını gör.<br /><br />
           • <strong>Tabu:</strong> Yasaklı kelimelere takılmadan anlat, süre bitince anlatıcı sırası otomatik geçsin.
         </p>
@@ -848,13 +849,8 @@
         </div>
 
         <div class="field-box" id="fieldBeats">
-          <label for="lobbyBeats">Vuruş Sayısı</label>
-          <select id="lobbyBeats">
-            <option value="4">4 Vuruş</option>
-            <option value="8" selected>8 Vuruş</option>
-            <option value="12">12 Vuruş</option>
-            <option value="16">16 Vuruş</option>
-          </select>
+          <label for="lobbyBeats">Vuruş Sayısı (1–16)</label>
+          <select id="lobbyBeats"></select>
         </div>
 
         <div class="field-box" id="fieldTimer">
@@ -1040,46 +1036,6 @@
             <button type="button" class="btn btn-secondary" data-dj="cave">🏔️ Mağara</button>
           </div>
         </div>
-
-        <div class="section-head" style="margin-top: 8px;">
-          <h3>🎚️ Synth &amp; Tını Ayarları</h3>
-          <div class="controls-cluster">
-            <button type="button" id="synthWildRandomBtn" class="btn btn-secondary">🎲 Rastgele Tını</button>
-            <button type="button" id="synthResetBtn" class="btn btn-secondary">↺ Sıfırla</button>
-          </div>
-        </div>
-
-        <div class="synth-knobs-grid">
-          <div class="synth-knob-card">
-            <div class="synth-knob-head"><span>Filtre Kesim</span><strong id="synthCutoffVal">4200 Hz</strong></div>
-            <input type="range" id="synthCutoff" min="250" max="8500" step="10" value="4200" />
-          </div>
-
-          <div class="synth-knob-card">
-            <div class="synth-knob-head"><span>Rezonans (Q)</span><strong id="synthResVal">2.0</strong></div>
-            <input type="range" id="synthRes" min="0.6" max="12" step="0.1" value="2.0" />
-          </div>
-
-          <div class="synth-knob-card">
-            <div class="synth-knob-head"><span>Perde Kaydırma</span><strong id="synthPitchVal">0 st</strong></div>
-            <input type="range" id="synthPitch" min="-12" max="12" step="1" value="0" />
-          </div>
-
-          <div class="synth-knob-card">
-            <div class="synth-knob-head"><span>Detune Kalınlık</span><strong id="synthDetuneVal">12 ct</strong></div>
-            <input type="range" id="synthDetune" min="0" max="90" step="1" value="12" />
-          </div>
-
-          <div class="synth-knob-card">
-            <div class="synth-knob-head"><span>Kuyruk / Sönüm</span><strong id="synthDecayVal">1.00x</strong></div>
-            <input type="range" id="synthDecay" min="0.25" max="2.4" step="0.05" value="1.0" />
-          </div>
-
-          <div class="synth-knob-card">
-            <div class="synth-knob-head"><span>Çarpıtma / Drive</span><strong id="synthDriveVal">0%</strong></div>
-            <input type="range" id="synthDrive" min="0" max="100" step="1" value="0" />
-          </div>
-        </div>
       </section>
 
       <!-- ORTAK / SENKRON DÖNGÜ & GÖNDERİM ÖNCESİ ÖNİZLEME KONTROLÜ -->
@@ -1132,17 +1088,60 @@
           </div>
 
           <div class="controls-cluster" style="margin-bottom: 10px;">
-            <button type="button" id="micRecBtn" class="btn btn-danger">⏺️ Kaydet</button>
+            <button type="button" id="micRecBtn" class="btn btn-danger">⏺️ Kaydet (1 Döngü)</button>
             <button type="button" id="micPlayBtn" class="btn btn-secondary" disabled>▶️ Dinle</button>
             <button type="button" id="micRevBtn" class="btn btn-secondary" disabled>⏪ Ters</button>
             <button type="button" id="micDelBtn" class="btn btn-secondary" disabled>🗑️</button>
           </div>
 
-          <p class="muted" id="micStatus">Sesini kaydet, göndermeden önce loop'ta dinle ve katmana ekle.</p>
+          <p class="muted" id="micStatus">Kayda bastığında loop başlar, loop bitince kayıt otomatik durur.</p>
         </section>
       </div>
 
+      <!-- SYNTH & TINI AYARLARI + DÖNGÜ KATMANLARI -->
       <section class="card">
+        <div class="section-head">
+          <h3>🎚️ Synth &amp; Tını Ayarları</h3>
+          <div class="controls-cluster">
+            <button type="button" id="synthWildRandomBtn" class="btn btn-secondary">🎲 Rastgele Tını</button>
+            <button type="button" id="synthResetBtn" class="btn btn-secondary">↺ Sıfırla</button>
+          </div>
+        </div>
+
+        <div class="synth-knobs-grid">
+          <div class="synth-knob-card">
+            <div class="synth-knob-head"><span>Filtre Kesim</span><strong id="synthCutoffVal">4200 Hz</strong></div>
+            <input type="range" id="synthCutoff" min="250" max="8500" step="10" value="4200" />
+          </div>
+
+          <div class="synth-knob-card">
+            <div class="synth-knob-head"><span>Rezonans (Q)</span><strong id="synthResVal">2.0</strong></div>
+            <input type="range" id="synthRes" min="0.6" max="12" step="0.1" value="2.0" />
+          </div>
+
+          <div class="synth-knob-card">
+            <div class="synth-knob-head"><span>Perde Kaydırma</span><strong id="synthPitchVal">0 st</strong></div>
+            <input type="range" id="synthPitch" min="-12" max="12" step="1" value="0" />
+          </div>
+
+          <div class="synth-knob-card">
+            <div class="synth-knob-head"><span>Detune Kalınlık</span><strong id="synthDetuneVal">12 ct</strong></div>
+            <input type="range" id="synthDetune" min="0" max="90" step="1" value="12" />
+          </div>
+
+          <div class="synth-knob-card">
+            <div class="synth-knob-head"><span>Kuyruk / Sönüm</span><strong id="synthDecayVal">1.00x</strong></div>
+            <input type="range" id="synthDecay" min="0.25" max="2.4" step="0.05" value="1.0" />
+          </div>
+
+          <div class="synth-knob-card">
+            <div class="synth-knob-head"><span>Çarpıtma / Drive</span><strong id="synthDriveVal">0%</strong></div>
+            <input type="range" id="synthDrive" min="0" max="100" step="1" value="0" />
+          </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 14px 0;" />
+
         <div class="section-head">
           <h3 id="layersSectionTitle">🎚️ Döngü Katmanları</h3>
           <span class="muted" id="layerCountText">0 katman</span>
@@ -1153,7 +1152,7 @@
       </section>
     </main>
 
-    <!-- TEK PİYANO, BASILI TUTMA, AKOR MODU & ZENGİN RİTİM/PERKÜSYON PEDİ -->
+    <!-- TEK PİYANO, BASILI TUTMA, AKOR MODU & ÇOĞALTILMIŞ RİTİM/PERKÜSYON PEDİ -->
     <section class="card hidden" id="pianoCard">
       <div class="section-head">
         <h3>🎹 Piyano</h3>
@@ -1185,6 +1184,14 @@
 
       <div id="studioPercWrap" class="perc-pad-row">
         <button type="button" class="perc-pad-btn" data-perc="handshake">🤝 Handshake</button>
+        <button type="button" class="perc-pad-btn" data-perc="clap">👏 Alkış</button>
+        <button type="button" class="perc-pad-btn" data-perc="snap">🫰 Şıklatma</button>
+        <button type="button" class="perc-pad-btn" data-perc="tambourine">🪘 Tef</button>
+        <button type="button" class="perc-pad-btn" data-perc="woodblock">🪵 Woodblock</button>
+        <button type="button" class="perc-pad-btn" data-perc="claves">🥢 Claves</button>
+        <button type="button" class="perc-pad-btn" data-perc="bongo">🥁 Bongo</button>
+        <button type="button" class="perc-pad-btn" data-perc="conga">🪘 Conga</button>
+        <button type="button" class="perc-pad-btn" data-perc="cabasa">🎶 Cabasa</button>
         <button type="button" class="perc-pad-btn" data-perc="snare_drum">🥁 Snare</button>
         <button type="button" class="perc-pad-btn" data-perc="kick_drum">💥 Kick</button>
         <button type="button" class="perc-pad-btn" data-perc="hihat_closed">🔔 Hi-Hat</button>
@@ -1198,7 +1205,7 @@
         <button type="button" class="perc-pad-btn" data-perc="cowbell">🐮 Cowbell</button>
       </div>
 
-      <p class="muted" id="takeStatus" style="margin-top: 8px;">Basılı tuttukça ses uzar; göndermeden önce loop'ta dinleyebilir veya silebilirsin.</p>
+      <p class="muted" id="takeStatus" style="margin-top: 8px;">Aksak ritim çalabilir, tuşa basılı tutarak notayı uzatabilir ve göndermeden önce loop'ta dinleyebilirsin.</p>
     </section>
   </div>
 
@@ -1302,8 +1309,16 @@
 
     const PERC_TYPES = new Set([
       "kick", "snare", "hihat", "open_hihat", "pedal_hihat", "crash", "ride",
-      "rimshot", "tom", "shaker", "cowbell", "handshake"
+      "rimshot", "tom", "shaker", "cowbell", "handshake", "clap", "snap",
+      "tambourine", "woodblock", "claves", "bongo", "conga", "cabasa"
     ]);
+
+    const RHYTHM_CHALLENGE_SOUNDS = [
+      "handshake", "clap", "snap", "tambourine", "woodblock", "claves",
+      "bongo", "conga", "cabasa", "snare_drum", "kick_drum", "hihat_closed",
+      "hihat_open", "hihat_pedal", "crash_cymbal", "ride_cymbal", "rimshot",
+      "tom_drum", "shaker", "cowbell", "marimba", "kalimba"
+    ];
 
     const SAMPLE_BASES = [
       "https://nbrosowsky.github.io/tonejs-instruments/samples/"
@@ -1351,6 +1366,14 @@
       { id: "synth_lead", name: "Synth Lead", type: "synth" },
       { id: "music_box", name: "Müzik Kutusu", type: "musicbox" },
       { id: "handshake", name: "Handshake (El Çarpma)", type: "handshake" },
+      { id: "clap", name: "Alkış (Clap)", type: "clap" },
+      { id: "snap", name: "Şıklatma (Snap)", type: "snap" },
+      { id: "tambourine", name: "Tef (Tambourine)", type: "tambourine" },
+      { id: "woodblock", name: "Woodblock", type: "woodblock" },
+      { id: "claves", name: "Claves", type: "claves" },
+      { id: "bongo", name: "Bongo", type: "bongo" },
+      { id: "conga", name: "Conga", type: "conga" },
+      { id: "cabasa", name: "Cabasa", type: "cabasa" },
       { id: "snare_drum", name: "Snare (Trampet)", type: "snare" },
       { id: "kick_drum", name: "Kick Davul", type: "kick" },
       { id: "hihat_closed", name: "Hi-Hat Zil", type: "hihat" },
@@ -1406,7 +1429,47 @@
       { word: "KORSAN", forbidden: ["Gemi", "Hazine", "Deniz", "Göz", "Papağan"] },
       { word: "KÜTÜPHANE", forbidden: ["Kitap", "Sessiz", "Okumak", "Raf", "Ders"] },
       { word: "DONDURMA", forbidden: ["Yaz", "Soğuk", "Külah", "Tatlı", "Erimek"] },
-      { word: "UÇAK", forbidden: ["Hava", "Kanat", "Pilot", "Yolcu", "Havalimanı"] }
+      { word: "UÇAK", forbidden: ["Hava", "Kanat", "Pilot", "Yolcu", "Havalimanı"] },
+      { word: "RİTİM", forbidden: ["Vuruş", "Tempo", "Davul", "Aksak", "Nabız"] },
+      { word: "AKOR", forbidden: ["Aynı Anda", "Üçlü", "Majör", "Minör", "Armoni"] },
+      { word: "MELODİ", forbidden: ["Ezgi", "Nota", "Akış", "Şarkı", "Mırıldanmak"] },
+      { word: "NAKARAT", forbidden: ["Tekrar", "Nakış", "En Bilinen", "Koro", "Patlama"] },
+      { word: "KULAKLIK", forbidden: ["Kafa", "Kablosuz", "Dışarısı", "Ses", "Kulağa"] },
+      { word: "YANKI", forbidden: ["Mağara", "Geri Dönmek", "Boşluk", "Ses", "Tekrar"] },
+      { word: "SAHNE", forbidden: ["Perde", "Işık", "Seyirci", "Alkış", "Gösteri"] },
+      { word: "TEMPO", forbidden: ["Hız", "BPM", "Yavaş", "Hızlı", "Metronom"] },
+      { word: "OKTAV", forbidden: ["Sekiz", "İnce", "Kalın", "Do", "Aralık"] },
+      { word: "ASANSÖR", forbidden: ["Kat", "Düğme", "Yukarı", "Aşağı", "Bina"] },
+      { word: "VALİZ", forbidden: ["Tatil", "Bavul", "Kıyafet", "Tekerlek", "Yolculuk"] },
+      { word: "ŞEMSİYE", forbidden: ["Yağmur", "Güneş", "Açmak", "Islanmak", "Sap"] },
+      { word: "ALARM", forbidden: ["Sabah", "Erken", "Çalmak", "Uyanmak", "Ertelemek"] },
+      { word: "AYNA", forbidden: ["Yansıma", "Cam", "Bakmak", "Kendini", "Duvar"] },
+      { word: "DENİZ FENERİ", forbidden: ["Kıyı", "Işık", "Gemi", "Kule", "Liman"] },
+      { word: "LUNAPARK", forbidden: ["Dönme Dolap", "Çarpışan", "Bilet", "Eğlence", "Hız"] },
+      { word: "KIBRIT", forbidden: ["Ateş", "Çakmak", "Kutu", "Kükürt", "Yakmak"] },
+      { word: "FENER", forbidden: ["Karanlık", "Pil", "Işık", "Kamp", "El"] },
+      { word: "KARPUZ", forbidden: ["Yaz", "Peynir", "Yeşil", "Kırmızı", "Çekirdek"] },
+      { word: "ÇİKOLATA", forbidden: ["Kakao", "Tatlı", "Bitter", "Sütlü", "Paket"] },
+      { word: "POPCORN", forbidden: ["Sinema", "Mısır", "Patlamak", "Tuzlu", "Kova"] },
+      { word: "LİMONATA", forbidden: ["Ekşi", "Sarı", "Soğuk", "Nane", "İçecek"] },
+      { word: "TOST", forbidden: ["Ekmek", "Kaşar", "Sucuk", "Makine", "Kahvaltı"] },
+      { word: "ŞİMŞEK", forbidden: ["Gökyüzü", "Fırtına", "Çakmak", "Gök Gürültüsü", "Bulut"] },
+      { word: "SİS", forbidden: ["Görüş", "Bulut", "Sabah", "Puslu", "Hava"] },
+      { word: "ŞELALE", forbidden: ["Su", "Yüksek", "Akıntı", "Doğa", "Düşmek"] },
+      { word: "NOSTALJİ", forbidden: ["Geçmiş", "Özlem", "Eski", "Anı", "Hatıra"] },
+      { word: "HEYECAN", forbidden: ["Kalp", "Atmak", "Sabırsız", "Duygu", "Beklemek"] },
+      { word: "SÜRPRİZ", forbidden: ["Beklenmedik", "Gizli", "Doğum Günü", "Hediye", "Şaşırmak"] },
+      { word: "GÖLGE", forbidden: ["Güneş", "Karanlık", "Peşinde", "Işık", "Şekil"] },
+      { word: "MASKE", forbidden: ["Yüz", "Gizlemek", "Baloya", "Karnaval", "Tiyatro"] },
+      { word: "SİNYAL", forbidden: ["İşaret", "Dalga", "Çekmek", "Yön", "İletişim"] },
+      { word: "ZAMAN", forbidden: ["Akıp Gitmek", "Saat", "Geçmiş", "Gelecek", "An"] },
+      { word: "ORMAN", forbidden: ["Ağaç", "Yeşil", "Doğa", "Hayvan", "Yaprak"] },
+      { word: "AHTAPOT", forbidden: ["Sekiz", "Kol", "Deniz", "Mürekkep", "Su"] },
+      { word: "PENGUEN", forbidden: ["Buz", "Soğuk", "Kutup", "Kanat", "Yürümek"] },
+      { word: "EJDERHA", forbidden: ["Ateş", "Kanat", "Efsane", "Masal", "Uçmak"] },
+      { word: "KASET", forbidden: ["Eski", "Bant", "Kalem", "Müzik", "Çalar"] },
+      { word: "MİKROFON", forbidden: ["Ses", "Konuşmak", "Şarkı", "Sahne", "Kayıt"] },
+      { word: "KARAVAN", forbidden: ["Tekerlek", "Seyahat", "Ev", "Kamp", "Yol"] }
     ];
 
     const BASE_KEYS = [
@@ -1515,6 +1578,7 @@
       instrumentId: "grand_piano",
       reverseTake: false,
       currentTakeNotes: [],
+      pendingTakeByHoldKey: new Map(),
       activeHeldNotes: new Map(),
       sampleBuffers: new Map(),
       loadingSamples: new Set(),
@@ -1527,6 +1591,7 @@
       micEffect: "normal",
       micBpm: 110,
       isMicRecording: false,
+      micStopTimeout: null,
       mediaRecorder: null,
       micChunks: []
     };
@@ -1570,9 +1635,7 @@
                 midi: noteNameToMidi(noteName)
               });
               break;
-            } catch (_) {
-              // Ağ veya CORS durumunda sentez motoru devreye girer
-            }
+            } catch (_) {}
           }
           app.loadingSamples.delete(cacheKey);
         })
@@ -1596,21 +1659,27 @@
       return best;
     }
 
-    function createNoiseBuffer(ctx, duration = 0.4) {
-      const len = Math.max(1, Math.floor(ctx.sampleRate * duration));
+    function createNoiseBuffer(ctx, duration = 0.4, fadeMs = 6) {
+      const len = Math.max(2, Math.floor(ctx.sampleRate * duration));
       const buf = ctx.createBuffer(1, len, ctx.sampleRate);
       const data = buf.getChannelData(0);
-      for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+      const fadeSamples = Math.min(Math.floor(len / 3), Math.max(1, Math.floor((fadeMs / 1000) * ctx.sampleRate)));
+      for (let i = 0; i < len; i++) {
+        let s = Math.random() * 2 - 1;
+        if (i < fadeSamples) s *= i / fadeSamples;
+        if (i > len - fadeSamples) s *= (len - i) / fadeSamples;
+        data[i] = s;
+      }
       return buf;
     }
 
     function createDriveCurve(amount = 0) {
-      const k = Math.max(0, amount) * 1.4;
+      const k = Math.max(0, amount) * 1.3;
       const samples = 256;
       const curve = new Float32Array(samples);
       for (let i = 0; i < samples; ++i) {
         const x = (i * 2) / samples - 1;
-        curve[i] = k === 0 ? x : ((3 + k) * x * 20 * (Math.PI / 180)) / (Math.PI + k * Math.abs(x));
+        curve[i] = k === 0 ? x : ((3 + k) * x * 18 * (Math.PI / 180)) / (Math.PI + k * Math.abs(x));
       }
       return curve;
     }
@@ -1631,7 +1700,7 @@
       });
     }
 
-    function createImpulseReverb(ctx, seconds = 1.4, decay = 2.1) {
+    function createImpulseReverb(ctx, seconds = 1.35, decay = 2.2) {
       const rate = ctx.sampleRate;
       const length = Math.max(1, Math.floor(rate * seconds));
       const impulse = ctx.createBuffer(2, length, rate);
@@ -1651,7 +1720,7 @@
         const lp = ctx.createBiquadFilter();
         lp.type = "lowpass";
         lp.frequency.value = 390;
-        lp.Q.value = 1.8;
+        lp.Q.value = 1.6;
         lp.connect(destination);
         return lp;
       }
@@ -1659,15 +1728,15 @@
         const bp = ctx.createBiquadFilter();
         bp.type = "bandpass";
         bp.frequency.value = 1550;
-        bp.Q.value = 2.6;
+        bp.Q.value = 2.4;
         bp.connect(destination);
         return bp;
       }
       if (djEffect === "cave") {
         const sum = ctx.createGain();
-        const rev = createImpulseReverb(ctx, 1.5, 2.0);
+        const rev = createImpulseReverb(ctx, 1.45, 2.1);
         const wet = ctx.createGain();
-        wet.gain.value = 0.55;
+        wet.gain.value = 0.5;
         sum.connect(destination);
         sum.connect(rev);
         rev.connect(wet).connect(destination);
@@ -1677,12 +1746,12 @@
         const sum = ctx.createGain();
         const lp = ctx.createBiquadFilter();
         lp.type = "lowpass";
-        lp.frequency.value = 2800;
-        const rev = createImpulseReverb(ctx, 1.2, 2.5);
+        lp.frequency.value = 2750;
+        const rev = createImpulseReverb(ctx, 1.15, 2.4);
         const wet = ctx.createGain();
-        wet.gain.value = 0.32;
+        wet.gain.value = 0.28;
         sum.connect(lp).connect(destination);
-        lp.connect(rev);
+        sum.connect(rev);
         rev.connect(wet).connect(destination);
         return sum;
       }
@@ -1701,7 +1770,7 @@
     ) {
       const sp = cloneSynth(synthParams);
       const inst = INSTRUMENTS.find((i) => i.id === instrumentId) || INSTRUMENTS[0];
-      const now = startTime;
+      const now = Math.max(ctx.currentTime + 0.004, startTime);
       const pitchFactor = (djEffect === "slowed" ? 0.84 : 1.0) * Math.pow(2, sp.pitchSemi / 12);
       const durScale = (djEffect === "slowed" ? 1.25 : 1.0) * sp.decayScale;
       const f = (freq || 261.63) * pitchFactor;
@@ -1709,7 +1778,8 @@
       const isHoldMode = timedDuration === null;
 
       const stageOut = ctx.createGain();
-      stageOut.gain.value = 1.0;
+      stageOut.gain.setValueAtTime(0.0001, now);
+      stageOut.gain.linearRampToValueAtTime(0.95, now + 0.006);
 
       if (sp.drive > 2) {
         const shaper = ctx.createWaveShaper();
@@ -1725,13 +1795,14 @@
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = "sine";
-          osc.frequency.setValueAtTime(155 * pitchFactor, now);
-          osc.frequency.exponentialRampToValueAtTime(34 * pitchFactor, now + 0.24 * durScale);
-          gain.gain.setValueAtTime(0.85, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3 * durScale);
+          osc.frequency.setValueAtTime(150 * pitchFactor, now);
+          osc.frequency.exponentialRampToValueAtTime(36 * pitchFactor, now + 0.22 * durScale);
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.linearRampToValueAtTime(0.82, now + 0.005);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.29 * durScale);
           osc.connect(gain).connect(stageOut);
           osc.start(now);
-          osc.stop(now + 0.32 * durScale);
+          osc.stop(now + 0.31 * durScale);
           return { release: () => {} };
         }
 
@@ -1739,164 +1810,154 @@
           const shell = ctx.createOscillator();
           const sGain = ctx.createGain();
           shell.type = "triangle";
-          shell.frequency.setValueAtTime(195 * pitchFactor, now);
-          shell.frequency.exponentialRampToValueAtTime(105 * pitchFactor, now + 0.09 * durScale);
-          sGain.gain.setValueAtTime(0.55, now);
-          sGain.gain.exponentialRampToValueAtTime(0.001, now + 0.13 * durScale);
+          shell.frequency.setValueAtTime(205 * pitchFactor, now);
+          shell.frequency.exponentialRampToValueAtTime(112 * pitchFactor, now + 0.08 * durScale);
+          sGain.gain.setValueAtTime(0.0001, now);
+          sGain.gain.linearRampToValueAtTime(0.56, now + 0.004);
+          sGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.13 * durScale);
           shell.connect(sGain).connect(stageOut);
           shell.start(now);
           shell.stop(now + 0.15 * durScale);
 
           const wires = ctx.createBufferSource();
-          wires.buffer = createNoiseBuffer(ctx, 0.26 * durScale);
+          wires.buffer = createNoiseBuffer(ctx, 0.25 * durScale, 4);
           const bp = ctx.createBiquadFilter();
           bp.type = "bandpass";
-          bp.frequency.value = Math.min(5400, Math.max(1600, sp.cutoff * 0.65));
+          bp.frequency.value = Math.min(5400, Math.max(1650, sp.cutoff * 0.65));
           bp.Q.value = 0.85;
           const hp = ctx.createBiquadFilter();
           hp.type = "highpass";
-          hp.frequency.value = 1100;
+          hp.frequency.value = 1150;
           const wGain = ctx.createGain();
-          wGain.gain.setValueAtTime(0.62, now);
-          wGain.gain.exponentialRampToValueAtTime(0.001, now + 0.21 * durScale);
+          wGain.gain.setValueAtTime(0.0001, now);
+          wGain.gain.linearRampToValueAtTime(0.62, now + 0.004);
+          wGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2 * durScale);
           wires.connect(bp).connect(hp).connect(wGain).connect(stageOut);
           wires.start(now);
           return { release: () => {} };
         }
 
-        if (inst.type === "hihat") {
+        if (inst.type === "hihat" || inst.type === "open_hihat" || inst.type === "pedal_hihat") {
+          const hDur = (inst.type === "open_hihat" ? 0.42 : 0.12) * durScale;
           const noise = ctx.createBufferSource();
-          noise.buffer = createNoiseBuffer(ctx, 0.12 * durScale);
+          noise.buffer = createNoiseBuffer(ctx, hDur, 4);
           const hp = ctx.createBiquadFilter();
-          hp.type = "highpass";
-          hp.frequency.value = Math.max(5400, sp.cutoff);
+          hp.type = inst.type === "pedal_hihat" ? "bandpass" : "highpass";
+          hp.frequency.value = inst.type === "pedal_hihat" ? 5800 * pitchFactor : Math.max(5200, sp.cutoff);
+          if (inst.type === "pedal_hihat") hp.Q.value = 1.5;
           const gain = ctx.createGain();
-          gain.gain.setValueAtTime(0.36, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09 * durScale);
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.linearRampToValueAtTime(0.35, now + 0.004);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + hDur);
           noise.connect(hp).connect(gain).connect(stageOut);
           noise.start(now);
           return { release: () => {} };
         }
 
-        if (inst.type === "open_hihat") {
-          const hDur = 0.44 * durScale;
+        if (inst.type === "crash" || inst.type === "ride") {
+          const cDur = (inst.type === "crash" ? 0.85 : 0.56) * durScale;
           const noise = ctx.createBufferSource();
-          noise.buffer = createNoiseBuffer(ctx, hDur);
-          const hp = ctx.createBiquadFilter();
-          hp.type = "highpass";
-          hp.frequency.value = Math.max(4400, sp.cutoff * 0.85);
+          noise.buffer = createNoiseBuffer(ctx, cDur, 5);
+          const filt = ctx.createBiquadFilter();
+          filt.type = inst.type === "crash" ? "highpass" : "bandpass";
+          filt.frequency.value = inst.type === "crash" ? 2900 : 6600;
+          if (inst.type === "ride") filt.Q.value = 1.8;
           const gain = ctx.createGain();
-          gain.gain.setValueAtTime(0.36, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + hDur);
-          noise.connect(hp).connect(gain).connect(stageOut);
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.linearRampToValueAtTime(inst.type === "crash" ? 0.4 : 0.26, now + 0.006);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + cDur);
+          noise.connect(filt).connect(gain).connect(stageOut);
           noise.start(now);
-          return { release: () => {} };
-        }
 
-        if (inst.type === "pedal_hihat") {
-          const pDur = 0.14 * durScale;
-          const noise = ctx.createBufferSource();
-          noise.buffer = createNoiseBuffer(ctx, pDur);
-          const bp = ctx.createBiquadFilter();
-          bp.type = "bandpass";
-          bp.frequency.value = 6200 * pitchFactor;
-          bp.Q.value = 1.5;
-          const gain = ctx.createGain();
-          gain.gain.setValueAtTime(0.34, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + pDur);
-          noise.connect(bp).connect(gain).connect(stageOut);
-          noise.start(now);
-          return { release: () => {} };
-        }
-
-        if (inst.type === "crash") {
-          const cDur = 0.88 * durScale;
-          const noise = ctx.createBufferSource();
-          noise.buffer = createNoiseBuffer(ctx, cDur);
-          const hp = ctx.createBiquadFilter();
-          hp.type = "highpass";
-          hp.frequency.value = 2900;
-          const gain = ctx.createGain();
-          gain.gain.setValueAtTime(0.42, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + cDur);
-          noise.connect(hp).connect(gain).connect(stageOut);
-          noise.start(now);
-          return { release: () => {} };
-        }
-
-        if (inst.type === "ride") {
-          const rDur = 0.6 * durScale;
-          const noise = ctx.createBufferSource();
-          noise.buffer = createNoiseBuffer(ctx, rDur);
-          const bp = ctx.createBiquadFilter();
-          bp.type = "bandpass";
-          bp.frequency.value = 6800;
-          bp.Q.value = 1.8;
-          const ping = ctx.createOscillator();
-          const pGain = ctx.createGain();
-          ping.type = "triangle";
-          ping.frequency.setValueAtTime(1280 * pitchFactor, now);
-          pGain.gain.setValueAtTime(0.22, now);
-          pGain.gain.exponentialRampToValueAtTime(0.001, now + rDur * 0.65);
-          const gain = ctx.createGain();
-          gain.gain.setValueAtTime(0.26, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + rDur);
-          noise.connect(bp).connect(gain).connect(stageOut);
-          ping.connect(pGain).connect(stageOut);
-          noise.start(now);
-          ping.start(now);
-          ping.stop(now + rDur * 0.7);
+          if (inst.type === "ride") {
+            const ping = ctx.createOscillator();
+            const pGain = ctx.createGain();
+            ping.type = "triangle";
+            ping.frequency.setValueAtTime(1260 * pitchFactor, now);
+            pGain.gain.setValueAtTime(0.0001, now);
+            pGain.gain.linearRampToValueAtTime(0.2, now + 0.005);
+            pGain.gain.exponentialRampToValueAtTime(0.0001, now + cDur * 0.65);
+            ping.connect(pGain).connect(stageOut);
+            ping.start(now);
+            ping.stop(now + cDur * 0.7);
+          }
           return { release: () => {} };
         }
 
         if (inst.type === "rimshot") {
           const noise = ctx.createBufferSource();
-          noise.buffer = createNoiseBuffer(ctx, 0.06 * durScale);
+          noise.buffer = createNoiseBuffer(ctx, 0.06 * durScale, 3);
           const bp = ctx.createBiquadFilter();
           bp.type = "bandpass";
           bp.frequency.value = 2350 * pitchFactor;
           bp.Q.value = 4.2;
           const nGain = ctx.createGain();
-          nGain.gain.setValueAtTime(0.45, now);
-          nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05 * durScale);
+          nGain.gain.setValueAtTime(0.0001, now);
+          nGain.gain.linearRampToValueAtTime(0.45, now + 0.003);
+          nGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.055 * durScale);
           noise.connect(bp).connect(nGain).connect(stageOut);
           noise.start(now);
           return { release: () => {} };
         }
 
-        if (inst.type === "tom") {
-          const tDur = 0.34 * durScale;
+        if (inst.type === "tom" || inst.type === "bongo" || inst.type === "conga") {
+          const cfgMap = {
+            tom: { startF: 185, endF: 64, dur: 0.32, peak: 0.56 },
+            bongo: { startF: 390, endF: 230, dur: 0.16, peak: 0.48 },
+            conga: { startF: 255, endF: 130, dur: 0.28, peak: 0.54 }
+          };
+          const c = cfgMap[inst.type];
+          const tDur = c.dur * durScale;
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = "sine";
-          osc.frequency.setValueAtTime(185 * pitchFactor, now);
-          osc.frequency.exponentialRampToValueAtTime(62 * pitchFactor, now + tDur);
-          gain.gain.setValueAtTime(0.58, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + tDur);
+          osc.frequency.setValueAtTime(c.startF * pitchFactor, now);
+          osc.frequency.exponentialRampToValueAtTime(c.endF * pitchFactor, now + tDur);
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.linearRampToValueAtTime(c.peak, now + 0.005);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + tDur);
           osc.connect(gain).connect(stageOut);
           osc.start(now);
           osc.stop(now + tDur + 0.02);
           return { release: () => {} };
         }
 
-        if (inst.type === "shaker") {
-          const sDur = 0.15 * durScale;
+        if (inst.type === "shaker" || inst.type === "cabasa") {
+          const sDur = (inst.type === "cabasa" ? 0.22 : 0.15) * durScale;
           const noise = ctx.createBufferSource();
-          noise.buffer = createNoiseBuffer(ctx, sDur);
+          noise.buffer = createNoiseBuffer(ctx, sDur, 5);
           const bp = ctx.createBiquadFilter();
           bp.type = "bandpass";
-          bp.frequency.value = 5400 * pitchFactor;
+          bp.frequency.value = (inst.type === "cabasa" ? 4200 : 5400) * pitchFactor;
           bp.Q.value = 1.6;
           const gain = ctx.createGain();
-          gain.gain.setValueAtTime(0.28, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + sDur);
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.linearRampToValueAtTime(0.28, now + 0.008);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + sDur);
           noise.connect(bp).connect(gain).connect(stageOut);
           noise.start(now);
           return { release: () => {} };
         }
 
+        if (inst.type === "woodblock" || inst.type === "claves") {
+          const wDur = (inst.type === "claves" ? 0.08 : 0.12) * durScale;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "triangle";
+          const baseW = inst.type === "claves" ? 2150 : 940;
+          osc.frequency.setValueAtTime(baseW * pitchFactor, now);
+          osc.frequency.exponentialRampToValueAtTime(baseW * 0.72 * pitchFactor, now + wDur);
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.linearRampToValueAtTime(0.45, now + 0.003);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + wDur);
+          osc.connect(gain).connect(stageOut);
+          osc.start(now);
+          osc.stop(now + wDur + 0.02);
+          return { release: () => {} };
+        }
+
         if (inst.type === "cowbell") {
-          const cDur = 0.25 * durScale;
+          const cDur = 0.24 * durScale;
           [540, 810].forEach((baseF) => {
             const osc = ctx.createOscillator();
             const bp = ctx.createBiquadFilter();
@@ -1906,8 +1967,9 @@
             bp.type = "bandpass";
             bp.frequency.value = baseF * pitchFactor * 1.15;
             bp.Q.value = 5.0;
-            gain.gain.setValueAtTime(0.22, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + cDur);
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.linearRampToValueAtTime(0.22, now + 0.004);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + cDur);
             osc.connect(bp).connect(gain).connect(stageOut);
             osc.start(now);
             osc.stop(now + cDur + 0.02);
@@ -1915,20 +1977,34 @@
           return { release: () => {} };
         }
 
-        if (inst.type === "handshake") {
-          [0, 0.012, 0.025, 0.042].forEach((offset, idx) => {
-            const isTail = idx === 3;
-            const nDur = (isTail ? 0.2 : 0.048) * durScale;
+        if (inst.type === "clap" || inst.type === "snap" || inst.type === "tambourine" || inst.type === "handshake") {
+          const bursts =
+            inst.type === "snap"
+              ? [{ dt: 0, dur: 0.055, freq: 2450, q: 3.2, peak: 0.42 }]
+              : inst.type === "tambourine"
+              ? [
+                  { dt: 0, dur: 0.14, freq: 5900, q: 2.0, peak: 0.26 },
+                  { dt: 0.028, dur: 0.16, freq: 6800, q: 2.2, peak: 0.22 }
+                ]
+              : [
+                  { dt: 0, dur: 0.045, freq: 1320, q: 1.5, peak: 0.3 },
+                  { dt: 0.012, dur: 0.045, freq: 1380, q: 1.5, peak: 0.3 },
+                  { dt: 0.026, dur: 0.18, freq: 1260, q: 1.4, peak: 0.38 }
+                ];
+
+          bursts.forEach((b) => {
+            const bDur = b.dur * durScale;
             const noise = ctx.createBufferSource();
-            noise.buffer = createNoiseBuffer(ctx, nDur);
+            noise.buffer = createNoiseBuffer(ctx, bDur, 4);
             const bp = ctx.createBiquadFilter();
             bp.type = "bandpass";
-            bp.frequency.value = 1320 * pitchFactor;
-            bp.Q.value = Math.max(0.8, Math.min(6, sp.resonance));
+            bp.frequency.value = b.freq * pitchFactor;
+            bp.Q.value = b.q;
             const gain = ctx.createGain();
-            const t0 = now + offset * durScale;
-            gain.gain.setValueAtTime(isTail ? 0.38 : 0.32, t0);
-            gain.gain.exponentialRampToValueAtTime(0.001, t0 + nDur);
+            const t0 = now + b.dt * durScale;
+            gain.gain.setValueAtTime(0.0001, t0);
+            gain.gain.linearRampToValueAtTime(b.peak, t0 + 0.004);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t0 + bDur);
             noise.connect(bp).connect(gain).connect(stageOut);
             noise.start(t0);
           });
@@ -1955,13 +2031,14 @@
         src.playbackRate.setValueAtTime(Math.pow(2, semiDiff / 12), now);
         src.detune.setValueAtTime(detuneCents, now);
         master.gain.setValueAtTime(0.0001, now);
-        master.gain.linearRampToValueAtTime(0.45, now + 0.012);
+        master.gain.linearRampToValueAtTime(0.45, now + 0.014);
         if (!isHoldMode) {
-          const endT = now + Math.max(0.18, (timedDuration || 0.45) * durScale);
+          const endT = now + Math.max(0.16, timedDuration * durScale);
+          master.gain.setValueAtTime(0.35, Math.max(now + 0.02, endT - 0.05));
           master.gain.exponentialRampToValueAtTime(0.0001, endT);
           src.connect(filter);
           src.start(now);
-          src.stop(endT + 0.05);
+          src.stop(endT + 0.04);
           return { release: () => {} };
         }
         src.connect(filter);
@@ -1980,29 +2057,38 @@
         };
       }
 
-      let attack = 0.012;
+      let attack = 0.014;
       let peak = 0.34;
-      let partials = [{ ratio: 1, wave: "triangle", gain: 0.8, cents: -detuneCents * 0.25 }];
+      let partials = [
+        { ratio: 1, wave: "triangle", gain: 0.78, cents: -detuneCents * 0.25 },
+        { ratio: 2, wave: "sine", gain: 0.18, cents: detuneCents * 0.2 }
+      ];
 
       if (inst.type === "brass") {
-        attack = 0.025; peak = 0.4;
+        attack = 0.028; peak = 0.38;
         partials = [
-          { ratio: 1, wave: "sawtooth", gain: 0.75, cents: -6 - detuneCents * 0.3 },
-          { ratio: 1, wave: "square", gain: 0.32, cents: 6 + detuneCents * 0.3 },
-          { ratio: 2, wave: "sawtooth", gain: 0.42, cents: 0 }
+          { ratio: 1, wave: "sawtooth", gain: 0.72, cents: -6 - detuneCents * 0.3 },
+          { ratio: 1, wave: "square", gain: 0.3, cents: 6 + detuneCents * 0.3 },
+          { ratio: 2, wave: "sawtooth", gain: 0.38, cents: 0 }
         ];
       } else if (inst.type === "strings" || inst.type === "cello") {
-        attack = 0.08; peak = 0.34;
+        attack = 0.075; peak = 0.34;
         const ratioBase = inst.type === "cello" ? 0.5 : 1;
         partials = [
-          { ratio: ratioBase, wave: "sawtooth", gain: 0.65, cents: -10 - detuneCents * 0.4 },
-          { ratio: ratioBase, wave: "sawtooth", gain: 0.55, cents: 10 + detuneCents * 0.4 }
+          { ratio: ratioBase, wave: "sawtooth", gain: 0.62, cents: -10 - detuneCents * 0.4 },
+          { ratio: ratioBase, wave: "sawtooth", gain: 0.54, cents: 10 + detuneCents * 0.4 }
         ];
       } else if (inst.type === "flute" || inst.type === "clarinet" || inst.type === "sax") {
         attack = 0.035; peak = 0.34;
         partials = [
           { ratio: 1, wave: "sine", gain: 0.85, cents: 0 },
-          { ratio: 2, wave: "triangle", gain: 0.28, cents: detuneCents * 0.2 }
+          { ratio: 2, wave: "triangle", gain: 0.26, cents: detuneCents * 0.2 }
+        ];
+      } else if (inst.type === "bass") {
+        attack = 0.01; peak = 0.42;
+        partials = [
+          { ratio: 1, wave: "sine", gain: 0.85, cents: 0 },
+          { ratio: 1, wave: "triangle", gain: 0.35, cents: detuneCents * 0.2 }
         ];
       }
 
@@ -2022,9 +2108,10 @@
       });
 
       if (!isHoldMode) {
-        const endT = now + Math.max(0.18, (timedDuration || 0.45) * durScale);
+        const endT = now + Math.max(0.16, timedDuration * durScale);
+        master.gain.setValueAtTime(Math.max(0.001, peak * 0.72), Math.max(now + attack + 0.01, endT - 0.06));
         master.gain.exponentialRampToValueAtTime(0.0001, endT);
-        oscs.forEach((o) => o.stop(endT + 0.06));
+        oscs.forEach((o) => o.stop(endT + 0.05));
         return { release: () => {} };
       }
 
@@ -2133,14 +2220,14 @@
     }
 
     function getCycleDurationMs() {
-      const baseMs = app.beats * (60 / app.bpm) * 1000;
+      const baseMs = Math.max(1, app.beats) * (60 / Math.max(50, app.bpm)) * 1000;
       return app.djEffect === "slowed" ? baseMs * 1.2 : baseMs;
     }
 
-    function recordStudioNote({ slot, freq, label, instrumentId }) {
+    function beginStudioTakeNote({ holdKey, slot, freq, label, instrumentId, synthParams }) {
       const inst = INSTRUMENTS.find((i) => i.id === instrumentId) || INSTRUMENTS[0];
       const cycleMs = getCycleDurationMs();
-      const lockedSynth = cloneSynth(app.synth);
+      const lockedSynth = cloneSynth(synthParams);
       let offsetMs = 0;
 
       if (app.isPlaying) {
@@ -2152,19 +2239,35 @@
         offsetMs = (prev.offsetMs + Math.max(40, dt)) % cycleMs;
       }
 
-      app.currentTakeNotes.push({
+      const entry = {
         offsetMs,
+        holdDurationMs: 360,
         _rawPerf: performance.now(),
+        _pressPerf: performance.now(),
         slot: slot || "",
         freq: freq || 261.63,
         label: label || inst.name,
         instrumentId: inst.id,
         instrumentName: inst.name,
         synthParams: lockedSynth
-      });
+      };
+
+      app.currentTakeNotes.push(entry);
+      if (holdKey) {
+        app.pendingTakeByHoldKey.set(holdKey, entry);
+      }
 
       document.getElementById("takeStatus").textContent =
-        `${app.currentTakeNotes.length} vuruş/nota kaydedildi — "Atmadan Önce Loop'ta Dinle" ile kontrol edebilirsin.`;
+        `${app.currentTakeNotes.length} nota/vuruş kaydedildi — "Atmadan Önce Loop'ta Dinle" ile kontrol edebilirsin.`;
+    }
+
+    function finalizeStudioTakeNote(holdKey) {
+      if (!holdKey) return;
+      const entry = app.pendingTakeByHoldKey.get(holdKey);
+      if (!entry) return;
+      const heldMs = Math.max(120, Math.min(3500, performance.now() - (entry._pressPerf || performance.now())));
+      entry.holdDurationMs = heldMs;
+      app.pendingTakeByHoldKey.delete(holdKey);
     }
 
     function onPianoKeyPressDown(keyObj) {
@@ -2189,45 +2292,57 @@
       if (app.chordModeEnabled && mode !== "melody") {
         const chordNotes = getChordNotesForKey(keyObj, app.chordTypeId);
         chordNotes.forEach((cn, idx) => {
-          beginHoldVoice(`chord:${keyObj.slot}:${idx}`, cn.freq, app.instrumentId, true, lockedSynth);
+          const hk = `chord:${keyObj.slot}:${idx}`;
+          beginHoldVoice(hk, cn.freq, app.instrumentId, true, lockedSynth);
           sendWs({
             type: "live_note",
             slot: keyObj.slot,
             freq: cn.freq,
+            holdMs: 420,
             instrumentId: app.instrumentId,
             synthParams: lockedSynth
           });
-          recordStudioNote({
+          beginStudioTakeNote({
+            holdKey: hk,
             slot: keyObj.slot,
             freq: cn.freq,
             label: cn.label,
-            instrumentId: app.instrumentId
+            instrumentId: app.instrumentId,
+            synthParams: lockedSynth
           });
         });
         return;
       }
 
-      beginHoldVoice(`key:${keyObj.slot}`, keyObj.freq, app.instrumentId, true, lockedSynth);
+      const hk = `key:${keyObj.slot}`;
+      beginHoldVoice(hk, keyObj.freq, app.instrumentId, true, lockedSynth);
       sendWs({
         type: "live_note",
         slot: keyObj.slot,
         freq: keyObj.freq,
+        holdMs: 420,
         instrumentId: app.instrumentId,
         synthParams: lockedSynth
       });
-      recordStudioNote({
+      beginStudioTakeNote({
+        holdKey: hk,
         slot: keyObj.slot,
         freq: keyObj.freq,
         label: keyObj.label,
-        instrumentId: app.instrumentId
+        instrumentId: app.instrumentId,
+        synthParams: lockedSynth
       });
     }
 
     function onPianoKeyRelease(keyObj) {
       releaseHoldVoice(`melody:${keyObj.slot}`);
-      releaseHoldVoice(`key:${keyObj.slot}`);
+      const hk = `key:${keyObj.slot}`;
+      releaseHoldVoice(hk);
+      finalizeStudioTakeNote(hk);
       for (let i = 0; i < 6; i++) {
-        releaseHoldVoice(`chord:${keyObj.slot}:${i}`);
+        const chk = `chord:${keyObj.slot}:${i}`;
+        releaseHoldVoice(chk);
+        finalizeStudioTakeNote(chk);
       }
     }
 
@@ -2241,12 +2356,7 @@
 
     function buildChallengeForMode(mode) {
       if (mode === "rhythm") {
-        const soundPool = [
-          "handshake", "snare_drum", "kick_drum", "hihat_closed", "hihat_open",
-          "hihat_pedal", "crash_cymbal", "ride_cymbal", "rimshot", "tom_drum",
-          "shaker", "cowbell", "marimba", "kalimba"
-        ];
-        const chosenId = soundPool[Math.floor(Math.random() * soundPool.length)];
+        const chosenId = RHYTHM_CHALLENGE_SOUNDS[Math.floor(Math.random() * RHYTHM_CHALLENGE_SOUNDS.length)];
         const soundInst = INSTRUMENTS.find((i) => i.id === chosenId) || INSTRUMENTS[0];
         const totalHits = pickRhythmHitCount();
 
@@ -2394,7 +2504,7 @@
       const pool = avail.length ? avail : TABU_CARDS;
       const pick = pool[Math.floor(Math.random() * pool.length)];
       app.tabuHistory.push(pick.word);
-      if (app.tabuHistory.length > 15) app.tabuHistory.shift();
+      if (app.tabuHistory.length > 35) app.tabuHistory.shift();
       return pick;
     }
 
@@ -2437,7 +2547,8 @@
           renderRoomState();
         } else if (msg.type === "live_note") {
           getAudioCtx();
-          playFreqSound(msg.freq, msg.instrumentId, 0.35, true, msg.synthParams);
+          const durSec = Math.min(3.5, Math.max(0.14, (Number(msg.holdMs) || 380) / 1000));
+          playFreqSound(msg.freq, msg.instrumentId, durSec, true, msg.synthParams);
           flashPianoKey(msg.slot, true);
         }
       };
@@ -2581,7 +2692,7 @@
       const isHost = room.hostId === app.myId;
       const mode = room.settings.mode;
       app.bpm = Number(room.loopBpm || room.settings.bpm) || 110;
-      app.beats = Number(room.settings.beats) || 8;
+      app.beats = normalizeBeats(room.settings.beats);
       app.djEffect = room.djEffect || "normal";
 
       if (!room.started) {
@@ -2602,7 +2713,7 @@
         document.getElementById("lobbyRounds").value = room.settings.totalRounds || 2;
         document.getElementById("lobbyBpm").value = room.settings.bpm;
         document.getElementById("lobbyBpmVal").textContent = room.settings.bpm;
-        document.getElementById("lobbyBeats").value = room.settings.beats;
+        document.getElementById("lobbyBeats").value = String(app.beats);
         document.getElementById("lobbyTimer").value = room.settings.turnDuration;
         document.getElementById("lobbySecretToggle").checked = Boolean(room.settings.secretMode);
 
@@ -2913,9 +3024,10 @@
         app.currentTakeNotes.forEach((n) => {
           const rawPos = app.reverseTake ? Math.max(0, cycleMs - n.offsetMs) : n.offsetMs;
           const delay = rawPos >= clampedStart ? rawPos - clampedStart : (cycleMs - clampedStart) + rawPos;
+          const durSec = Math.min(3.5, Math.max(0.14, (Number(n.holdDurationMs) || 360) / 1000));
           const tid = setTimeout(() => {
             if (!app.isPlaying) return;
-            playFreqSound(n.freq, n.instrumentId, 0.38, true, n.synthParams);
+            playFreqSound(n.freq, n.instrumentId, durSec, true, n.synthParams);
             if (n.slot) flashPianoKey(n.slot, true);
           }, delay);
           app.scheduledTimers.push(tid);
@@ -2932,17 +3044,18 @@
           const pos = layer.reverse ? Math.max(0, cycleMs - rawOffset) : rawOffset;
           const delay = pos >= clampedStart ? pos - clampedStart : (cycleMs - clampedStart) + pos;
           const noteSynth = n.synthParams ? cloneSynth(n.synthParams) : layerLockedSynth;
+          const durSec = Math.min(3.5, Math.max(0.14, ((Number(n.holdDurationMs) || 380) * scale) / 1000));
           const tid = setTimeout(() => {
             if (!app.isPlaying) return;
             const ctx = getAudioCtx();
             const out = routeThroughDjBus(ctx, ctx.destination, app.djEffect);
-            startSustainedOrTimedVoice(ctx, out, n.freq, n.instrumentId, ctx.currentTime, 0.38, app.djEffect, noteSynth);
+            startSustainedOrTimedVoice(ctx, out, n.freq, n.instrumentId, ctx.currentTime, durSec, app.djEffect, noteSynth);
             pulseLights(0.75);
           }, delay);
           app.scheduledTimers.push(tid);
         });
 
-        if (layer.vocalData && clampedStart < 120) {
+        if (layer.vocalData && clampedStart < 140) {
           decodeAndPlayVocal(layer.vocalData, {
             reverse: layer.reverse,
             effect: layer.vocalEffect || "normal",
@@ -2953,7 +3066,7 @@
         }
       });
 
-      if (includeUnconfirmedTake && app.micBuffer && clampedStart < 120) {
+      if (includeUnconfirmedTake && app.micBuffer && clampedStart < 140) {
         playVocalBuffer(app.micBuffer, {
           reverse: app.micReverse,
           effect: app.micEffect,
@@ -2978,7 +3091,7 @@
       const paintBeat = (bIdx) => {
         const dots = document.querySelectorAll(".beat-dot");
         dots.forEach((d, idx) => d.classList.toggle("active", idx === bIdx));
-        pulseLights(bIdx === 0 ? 1 : 0.6);
+        pulseLights(bIdx === 0 ? 0.95 : 0.6);
       };
 
       paintBeat(initialBeat);
@@ -2999,7 +3112,7 @@
         };
         runBeatTick();
         app.loopTimer = setInterval(runBeatTick, stepMs);
-      }, Math.max(5, msToNextBeat));
+      }, Math.max(6, msToNextBeat));
 
       app.scheduledTimers.push(firstStepTimeout);
     }
@@ -3088,8 +3201,14 @@
       src.playbackRate.value = Math.min(2.2, Math.max(0.45, tempoRatio * djSpeed * (pitchMap[effect] || 1)));
 
       const outGain = ctx.createGain();
-      outGain.gain.value = 0.9;
-      const t0 = ctx.currentTime;
+      const t0 = ctx.currentTime + 0.005;
+      const estDur = Math.max(0.12, buf.duration / Math.max(0.45, src.playbackRate.value));
+      outGain.gain.setValueAtTime(0.0001, t0);
+      outGain.gain.linearRampToValueAtTime(0.88, t0 + 0.018);
+      if (estDur > 0.08) {
+        outGain.gain.setValueAtTime(0.88, t0 + estDur - 0.035);
+        outGain.gain.exponentialRampToValueAtTime(0.0001, t0 + estDur);
+      }
 
       if (effect === "robot") {
         const mod = ctx.createOscillator();
@@ -3158,9 +3277,13 @@
 
     async function bufferToBase64(buffer) {
       const ch = buffer.getChannelData(0);
+      const fadeSamples = Math.min(Math.floor(ch.length / 4), Math.max(1, Math.floor(0.015 * buffer.sampleRate)));
       const i16 = new Int16Array(ch.length);
       for (let i = 0; i < ch.length; i++) {
-        const s = Math.max(-1, Math.min(1, ch[i]));
+        let env = 1;
+        if (i < fadeSamples) env = i / fadeSamples;
+        if (i > ch.length - fadeSamples) env = (ch.length - i) / fadeSamples;
+        const s = Math.max(-1, Math.min(1, ch[i] * env));
         i16[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
       }
       const bytes = new Uint8Array(i16.buffer);
@@ -3187,54 +3310,88 @@
       if (buf) playVocalBuffer(buf, opts);
     }
 
+    function stopMicRecordingNow() {
+      clearTimeout(app.micStopTimeout);
+      app.micStopTimeout = null;
+      app.isMicRecording = false;
+      const btn = document.getElementById("micRecBtn");
+      btn.textContent = "⏺️ Kaydet (1 Döngü)";
+      if (app.mediaRecorder && app.mediaRecorder.state !== "inactive") {
+        app.mediaRecorder.stop();
+      }
+    }
+
     async function toggleMic() {
       getAudioCtx();
       const btn = document.getElementById("micRecBtn");
       const st = document.getElementById("micStatus");
-      if (!app.isMicRecording) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            audio: { echoCancellation: true, noiseSuppression: true, latency: 0.01 }
-          });
-          app.micChunks = [];
-          const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-            ? "audio/webm;codecs=opus"
-            : "";
-          app.mediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
-          app.mediaRecorder.ondataavailable = (e) => { if (e.data && e.data.size > 0) app.micChunks.push(e.data); };
-          app.mediaRecorder.onstop = async () => {
-            stream.getTracks().forEach((t) => t.stop());
-            try {
-              const blob = new Blob(app.micChunks, { type: app.mediaRecorder.mimeType || "audio/webm" });
-              const arrBuf = await blob.arrayBuffer();
-              if (!arrBuf.byteLength) {
-                st.textContent = "Kayıt boş geldi, tekrar dene.";
-                return;
-              }
-              const ctx = getAudioCtx();
-              app.micBuffer = await ctx.decodeAudioData(arrBuf);
-              app.micBpm = app.bpm;
-              app.micReverse = false;
-              document.getElementById("micRevBtn").classList.remove("active");
-              document.getElementById("micPlayBtn").disabled = false;
-              document.getElementById("micRevBtn").disabled = false;
-              document.getElementById("micDelBtn").disabled = false;
-              st.textContent = `Kayıt hazır (${app.micBuffer.duration.toFixed(1)} sn) — Göndermeden önce loop'ta dinleyebilirsin.`;
-            } catch (_) {
-              st.textContent = "Ses verisi çözümlenemedi, tekrar kaydet.";
+
+      if (app.isMicRecording) {
+        stopMicRecordingNow();
+        return;
+      }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: { echoCancellation: true, noiseSuppression: true, latency: 0.01 }
+        });
+        app.micChunks = [];
+        const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+          ? "audio/webm;codecs=opus"
+          : "";
+        app.mediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+        app.mediaRecorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) app.micChunks.push(e.data);
+        };
+        app.mediaRecorder.onstop = async () => {
+          stream.getTracks().forEach((t) => t.stop());
+          try {
+            const blob = new Blob(app.micChunks, { type: app.mediaRecorder.mimeType || "audio/webm" });
+            const arrBuf = await blob.arrayBuffer();
+            if (!arrBuf.byteLength) {
+              st.textContent = "Kayıt boş geldi, tekrar dene.";
+              return;
             }
-          };
-          app.mediaRecorder.start(100);
-          app.isMicRecording = true;
-          btn.textContent = "⏹️ Durdur";
-          st.textContent = "Kayıt alınıyor...";
-        } catch (_) {
-          st.textContent = "Mikrofon izni alınamadı.";
+            const ctx = getAudioCtx();
+            app.micBuffer = await ctx.decodeAudioData(arrBuf);
+            app.micBpm = app.bpm;
+            app.micReverse = false;
+            document.getElementById("micRevBtn").classList.remove("active");
+            document.getElementById("micPlayBtn").disabled = false;
+            document.getElementById("micRevBtn").disabled = false;
+            document.getElementById("micDelBtn").disabled = false;
+            st.textContent = `1 döngü kaydedildi (${app.micBuffer.duration.toFixed(1)} sn) — Loop'ta dinleyebilirsin.`;
+          } catch (_) {
+            st.textContent = "Ses verisi çözümlenemedi, tekrar kaydet.";
+          }
+        };
+
+        const cycleMs = getCycleDurationMs();
+        const nowServer = estimatedServerNow();
+        let cycleStartServerMs = nowServer;
+        let msUntilCycleEnd = cycleMs;
+
+        if (app.room && !app.room.loopPlaying) {
+          cycleStartServerMs = nowServer;
+          msUntilCycleEnd = cycleMs;
+          sendWs({ type: "set_loop_playing", playing: true, anchorServerMs: cycleStartServerMs });
+        } else {
+          const anchor = Number(app.room?.loopAnchorServerMs) || nowServer;
+          const elapsed = (((nowServer - anchor) % cycleMs) + cycleMs) % cycleMs;
+          msUntilCycleEnd = Math.max(250, cycleMs - elapsed);
         }
-      } else {
-        app.isMicRecording = false;
-        btn.textContent = "⏺️ Kaydet";
-        if (app.mediaRecorder && app.mediaRecorder.state !== "inactive") app.mediaRecorder.stop();
+
+        app.mediaRecorder.start(100);
+        app.isMicRecording = true;
+        btn.textContent = "⏹️ Kaydı Bitir";
+        st.textContent = `Loop başladı, tur bitince (${(msUntilCycleEnd / 1000).toFixed(1)} sn) kayıt otomatik duracak...`;
+
+        clearTimeout(app.micStopTimeout);
+        app.micStopTimeout = setTimeout(() => {
+          stopMicRecordingNow();
+        }, msUntilCycleEnd);
+      } catch (_) {
+        st.textContent = "Mikrofon izni alınamadı.";
       }
     }
 
@@ -3291,6 +3448,15 @@
     }
 
     (function init() {
+      const beatsSel = document.getElementById("lobbyBeats");
+      for (let b = 1; b <= 16; b++) {
+        const opt = document.createElement("option");
+        opt.value = String(b);
+        opt.textContent = `${b} Vuruş`;
+        if (b === 8) opt.selected = true;
+        beatsSel.appendChild(opt);
+      }
+
       const avGrid = document.getElementById("avatarGrid");
       AVATARS.forEach((av, idx) => {
         const btn = document.createElement("button");
@@ -3320,7 +3486,7 @@
               mode: m.id,
               totalRounds: Number(document.getElementById("lobbyRounds").value) || 2,
               bpm: Number(document.getElementById("lobbyBpm").value) || 110,
-              beats: Number(document.getElementById("lobbyBeats").value) || 8,
+              beats: normalizeBeats(document.getElementById("lobbyBeats").value),
               turnDuration: Number(document.getElementById("lobbyTimer").value) || 0,
               secretMode: document.getElementById("lobbySecretToggle").checked
             }
@@ -3391,16 +3557,34 @@
       };
 
       document.querySelectorAll(".perc-pad-btn").forEach((btn) => {
-        btn.onpointerdown = () => {
+        const hk = `perc:${btn.dataset.perc}`;
+        btn.onpointerdown = (e) => {
+          if (e) e.stopPropagation();
+          try { btn.setPointerCapture(e.pointerId); } catch (_) {}
           getAudioCtx();
           const percId = btn.dataset.perc;
           btn.classList.add("hit");
-          setTimeout(() => btn.classList.remove("hit"), 110);
           const lockedSynth = cloneSynth(app.synth);
-          playFreqSound(261.63, percId, 0.3, true, lockedSynth);
-          sendWs({ type: "live_note", slot: "", freq: 261.63, instrumentId: percId, synthParams: lockedSynth });
-          recordStudioNote({ slot: "", freq: 261.63, label: btn.textContent.trim(), instrumentId: percId });
+          beginHoldVoice(hk, 261.63, percId, true, lockedSynth);
+          sendWs({ type: "live_note", slot: "", freq: 261.63, holdMs: 320, instrumentId: percId, synthParams: lockedSynth });
+          beginStudioTakeNote({
+            holdKey: hk,
+            slot: "",
+            freq: 261.63,
+            label: btn.textContent.trim(),
+            instrumentId: percId,
+            synthParams: lockedSynth
+          });
         };
+        const onPercUp = (e) => {
+          if (e) e.stopPropagation();
+          btn.classList.remove("hit");
+          releaseHoldVoice(hk);
+          finalizeStudioTakeNote(hk);
+        };
+        btn.onpointerup = onPercUp;
+        btn.onpointercancel = onPercUp;
+        btn.onlostpointercapture = onPercUp;
       });
 
       document.querySelectorAll("#djButtonsWrap button").forEach((btn) => {
@@ -3463,7 +3647,7 @@
             settings: {
               totalRounds: Number(document.getElementById("lobbyRounds").value) || 2,
               bpm,
-              beats: Number(document.getElementById("lobbyBeats").value) || 8,
+              beats: normalizeBeats(document.getElementById("lobbyBeats").value),
               turnDuration: Number(document.getElementById("lobbyTimer").value) || 0,
               secretMode: document.getElementById("lobbySecretToggle").checked
             }
@@ -3477,6 +3661,7 @@
         app.rhythmTaps = [];
         app.melodyPlayed = [];
         app.currentTakeNotes = [];
+        app.pendingTakeByHoldKey.clear();
         app.micBuffer = null;
         app.previewTakeActive = false;
         clearInterval(app.challengeTimer);
@@ -3499,7 +3684,10 @@
       ["restartGameBtn", "resultsBackLobbyBtn"].forEach((id) => {
         document.getElementById(id).onclick = () => {
           releaseAllHeldVoices();
+          clearTimeout(app.micStopTimeout);
+          app.isMicRecording = false;
           app.currentTakeNotes = [];
+          app.pendingTakeByHoldKey.clear();
           app.micBuffer = null;
           app.rhythmTaps = [];
           app.melodyPlayed = [];
@@ -3612,7 +3800,11 @@
 
       document.getElementById("clearTakeBtn").onclick = () => {
         releaseAllHeldVoices();
+        clearTimeout(app.micStopTimeout);
+        app.isMicRecording = false;
+        document.getElementById("micRecBtn").textContent = "⏺️ Kaydet (1 Döngü)";
         app.currentTakeNotes = [];
+        app.pendingTakeByHoldKey.clear();
         app.micBuffer = null;
         app.reverseTake = false;
         app.micReverse = false;
@@ -3629,6 +3821,9 @@
       document.getElementById("saveTurnBtn").onclick = async () => {
         getAudioCtx();
         releaseAllHeldVoices();
+        clearTimeout(app.micStopTimeout);
+        app.isMicRecording = false;
+        document.getElementById("micRecBtn").textContent = "⏺️ Kaydet (1 Döngü)";
         app.previewTakeActive = false;
         stopLocalLoop();
 
@@ -3642,8 +3837,9 @@
         const lockedLayerSynth = cloneSynth(app.synth);
 
         if (app.currentTakeNotes.length || vocalData) {
-          const cleanNotes = app.currentTakeNotes.map(({ _rawPerf, ...rest }) => ({
+          const cleanNotes = app.currentTakeNotes.map(({ _rawPerf, _pressPerf, ...rest }) => ({
             ...rest,
+            holdDurationMs: Math.min(3500, Math.max(120, Number(rest.holdDurationMs) || 360)),
             synthParams: cloneSynth(rest.synthParams || lockedLayerSynth)
           }));
           const uniqueInsts = [...new Set(cleanNotes.map((n) => n.instrumentName))];
@@ -3670,6 +3866,7 @@
           });
 
           app.currentTakeNotes = [];
+          app.pendingTakeByHoldKey.clear();
           app.micBuffer = null;
           app.reverseTake = false;
           document.getElementById("reverseTakeBtn").classList.remove("active");
