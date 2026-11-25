@@ -10,10 +10,16 @@ const clients = new Map();
 
 const DEFAULT_MODES = ["collab", "theme", "rhythm", "melody", "tabu"];
 
+function normalizeBeats(raw) {
+  const num = Number(raw);
+  if (Number.isInteger(num) && num >= 1 && num <= 16) return num;
+  return 8;
+}
+
 function createDefaultSettings(override = {}) {
   const mode = DEFAULT_MODES.includes(override.mode) ? override.mode : "collab";
   const bpm = Math.min(180, Math.max(60, Number(override.bpm) || 110));
-  const beats = [4, 8, 12, 16].includes(Number(override.beats)) ? Number(override.beats) : 8;
+  const beats = normalizeBeats(override.beats);
   const totalRounds = Math.min(4, Math.max(1, Number(override.totalRounds) || 2));
   const turnDuration = [0, 20, 30, 45, 60].includes(Number(override.turnDuration))
     ? Number(override.turnDuration)
@@ -355,6 +361,7 @@ wss.on("connection", (ws) => {
               type: "live_note",
               slot: msg.slot || "",
               freq: Number(msg.freq) || 261.63,
+              holdMs: Math.min(4000, Math.max(90, Number(msg.holdMs) || 380)),
               instrumentId: String(msg.instrumentId || "grand_piano"),
               synthParams: msg.synthParams || null,
               serverNow: Date.now()
@@ -369,7 +376,7 @@ wss.on("connection", (ws) => {
       const playing = Boolean(msg.playing);
       room.loopPlaying = playing;
       if (playing) {
-        room.loopAnchorServerMs = Date.now();
+        room.loopAnchorServerMs = Number(msg.anchorServerMs) || Date.now();
       }
       broadcastRoom(room);
       return;
@@ -532,7 +539,6 @@ wss.on("connection", (ws) => {
       const targetId = String(msg.targetPlayerId || "");
       const validTarget = room.players.some((p) => p.id === targetId);
       if (!validTarget) return;
-      // Her oyuncu yalnızca tek bir oy verebilir; yeniden basarsa oyu o kişiye taşınır
       room.votes[playerId] = targetId;
       broadcastRoom(room);
     }
