@@ -63,6 +63,9 @@ function serializeRoomForClient(room, viewerId) {
     currentRound: room.currentRound,
     concept: room.concept,
     djEffect: room.djEffect,
+    loopPlaying: room.loopPlaying,
+    loopBpm: room.loopBpm,
+    loopAnchorServerMs: room.loopAnchorServerMs,
     layers: visibleLayers,
     challenge: room.challenge,
     submissions: room.submissions,
@@ -78,6 +81,7 @@ function broadcastRoom(room) {
       client.send(
         JSON.stringify({
           type: "room_state",
+          serverNow: Date.now(),
           room: serializeRoomForClient(room, client.playerId)
         })
       );
@@ -86,7 +90,7 @@ function broadcastRoom(room) {
 }
 
 function broadcastEvent(room, data, excludeWs = null) {
-  const payload = JSON.stringify(data);
+  const payload = JSON.stringify({ ...data, serverNow: Date.now() });
   room.clients.forEach((client) => {
     if (client !== excludeWs && client.readyState === WebSocket.OPEN) {
       client.send(payload);
@@ -103,6 +107,7 @@ function advanceStudioTurn(room, nextConcept) {
     room.turnIndex = 0;
     if (room.currentRound >= room.settings.totalRounds) {
       room.finished = true;
+      room.loopPlaying = false;
     } else {
       room.currentRound += 1;
     }
@@ -115,7 +120,7 @@ wss.on("connection", (ws) => {
   ws.playerId = "p_" + Math.random().toString(36).slice(2, 9);
   ws.roomCode = null;
 
-  ws.send(JSON.stringify({ type: "welcome", playerId: ws.playerId }));
+  ws.send(JSON.stringify({ type: "welcome", playerId: ws.playerId, serverNow: Date.now() }));
 
   ws.on("message", (raw) => {
     let msg;
@@ -127,6 +132,7 @@ wss.on("connection", (ws) => {
 
     if (msg.type === "create_room") {
       const code = generateRoomCode();
+      const startBpm = Number(msg.settings?.bpm) || 110;
       const room = {
         code,
         hostId: ws.playerId,
@@ -134,7 +140,7 @@ wss.on("connection", (ws) => {
         finished: false,
         settings: {
           mode: msg.settings?.mode || "collab",
-          bpm: Number(msg.settings?.bpm) || 110,
+          bpm: startBpm,
           beats: Number(msg.settings?.beats) || 8,
           totalRounds: Number(msg.settings?.totalRounds) || 2,
           turnDuration: Number(msg.settings?.turnDuration) || 0,
@@ -151,6 +157,9 @@ wss.on("connection", (ws) => {
         currentRound: 1,
         concept: "Gergin Robot",
         djEffect: "normal",
+        loopPlaying: false,
+        loopBpm: startBpm,
+        loopAnchorServerMs: Date.now(),
         layers: [],
         challenge: null,
         submissions: {},
@@ -189,6 +198,9 @@ wss.on("connection", (ws) => {
           avatar: msg.player?.avatar || "🐼"
         });
       }
+      if (room.tabu && typeof room.tabu.scores === "object" && room.tabu.scores[ws.playerId] === undefined) {
+        room.tabu.scores[ws.playerId] = 0;
+      }
       broadcastRoom(room);
       return;
     }
@@ -198,6 +210,9 @@ wss.on("connection", (ws) => {
 
     if (msg.type === "update_settings" && ws.playerId === room.hostId) {
       room.settings = { ...room.settings, ...msg.settings };
+      if (msg.settings?.bpm) {
+        room.loopBpm = Number(msg.settings.bpm) || room.loopBpm;
+      }
       broadcastRoom(room);
     } else if (msg.type === "start_game" && ws.playerId === room.hostId) {
       room.started = true;
@@ -205,6 +220,9 @@ wss.on("connection", (ws) => {
       room.turnIndex = 0;
       room.currentRound = 1;
       room.djEffect = "normal";
+      room.loopPlaying = false;
+      room.loopBpm = Number(room.settings.bpm) || 110;
+      room.loopAnchorServerMs = Date.now();
       room.layers = [];
       room.submissions = {};
       room.votes = {};
@@ -227,9 +245,26 @@ wss.on("connection", (ws) => {
       room.turnIndex = 0;
       room.currentRound = 1;
       room.djEffect = "normal";
+      room.loopPlaying = false;
+      room.loopBpm = Number(room.settings.bpm) || 110;
+      room.loopAnchorServerMs = Date.now();
       room.layers = [];
       room.submissions = {};
       room.votes = {};
+      broadcastRoom(room);
+    } else if (msg.type === "set_loop_playing") {
+      const nextPlaying = Boolean(msg.playing);
+      room.loopPlaying = nextPlaying;
+      if (nextPlaying) {
+        room.loopAnchorServerMs = Date.now();
+      }
+      broadcastRoom(room);
+    } else if (msg.type === "set_loop_bpm") {
+      const nextBpm = Math.max(50, Math.min(200, Number(msg.bpm) || room.loopBpm || 110));
+      room.loopBpm = nextBpm;
+      if (room.loopPlaying) {
+        room.loopAnchorServerMs = Date.now();
+      }
       broadcastRoom(room);
     } else if (msg.type === "set_dj_effect" && ws.playerId === room.hostId) {
       room.djEffect = String(msg.effect || "normal");
@@ -253,6 +288,7 @@ wss.on("connection", (ws) => {
       }
       if (room.players.every((p) => Boolean(room.submissions[p.id]))) {
         room.finished = true;
+        room.loopPlaying = false;
       }
       broadcastRoom(room);
     } else if (msg.type === "force_finish_challenge" && ws.playerId === room.hostId) {
@@ -268,6 +304,7 @@ wss.on("connection", (ws) => {
         }
       });
       room.finished = true;
+      room.loopPlaying = false;
       broadcastRoom(room);
     } else if (msg.type === "add_layer") {
       if (msg.layer) {
@@ -379,6 +416,7 @@ wss.on("connection", (ws) => {
     if (room.started && !room.finished && (room.settings.mode === "rhythm" || room.settings.mode === "melody")) {
       if (room.players.every((p) => Boolean(room.submissions[p.id]))) {
         room.finished = true;
+        room.loopPlaying = false;
       }
     }
     broadcastRoom(room);
