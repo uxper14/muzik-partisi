@@ -10,6 +10,8 @@ const clients = new Map();
 
 const DEFAULT_MODES = ["collab", "theme", "muzziko", "rhythm", "melody", "tabu"];
 const LOOP_MODES = ["collab", "theme", "muzziko"];
+const ALLOWED_TIMERS = [0, 10, 15, 20, 30, 45, 60, 90, 120];
+const ALLOWED_VOTE_TIMERS = [15, 20, 30, 45, 60, 90];
 
 function normalizeBeats(raw) {
   const num = Number(raw);
@@ -22,15 +24,19 @@ function createDefaultSettings(override = {}) {
   const bpm = Math.min(180, Math.max(60, Number(override.bpm) || 110));
   const beats = normalizeBeats(override.beats);
   const totalRounds = Math.min(4, Math.max(1, Number(override.totalRounds) || 2));
-  const turnDuration = [0, 20, 30, 45, 60].includes(Number(override.turnDuration))
+  const turnDuration = ALLOWED_TIMERS.includes(Number(override.turnDuration))
     ? Number(override.turnDuration)
     : 0;
+  const voteDuration = ALLOWED_VOTE_TIMERS.includes(Number(override.voteDuration))
+    ? Number(override.voteDuration)
+    : 30;
   return {
     mode,
     bpm,
     beats,
     totalRounds,
     turnDuration,
+    voteDuration,
     secretMode: Boolean(override.secretMode)
   };
 }
@@ -105,7 +111,11 @@ function serializeRoomForClient(room, viewerId) {
     submissions: room.submissions,
     tabu: room.tabu,
     votes: room.votes,
+    voteDone: room.voteDone || {},
+    votingClosed: Boolean(room.votingClosed),
+    votingEndsServerMs: room.votingEndsServerMs || null,
     myVotedFor: room.votes[viewerId] || null,
+    myVoteDone: Boolean(room.voteDone?.[viewerId]),
     serverNow: Date.now()
   };
 }
@@ -125,6 +135,41 @@ function broadcastRoom(room) {
   }
 }
 
+function clearRoomVoteTimer(room) {
+  if (room.voteTimeout) {
+    clearTimeout(room.voteTimeout);
+    room.voteTimeout = null;
+  }
+}
+
+function closeVotingForRoom(room) {
+  if (!room || room.votingClosed) return;
+  clearRoomVoteTimer(room);
+  room.votingClosed = true;
+  broadcastRoom(room);
+}
+
+function startVotingPhase(room) {
+  clearRoomVoteTimer(room);
+  room.votes = {};
+  room.voteDone = {};
+  room.votingClosed = false;
+  const durSec = Number(room.settings.voteDuration) || 30;
+  room.votingEndsServerMs = Date.now() + durSec * 1000;
+  room.voteTimeout = setTimeout(() => {
+    closeVotingForRoom(room);
+  }, durSec * 1000 + 200);
+}
+
+function checkAllVotesDone(room) {
+  if (!room.finished || room.votingClosed) return;
+  if (!room.players.length) return;
+  const allDone = room.players.every((p) => Boolean(room.voteDone?.[p.id]));
+  if (allDone) {
+    closeVotingForRoom(room);
+  }
+}
+
 function advanceStudioTurn(room, nextConcept) {
   if (!room.players.length) return;
   if (nextConcept) room.concept = nextConcept;
@@ -137,6 +182,7 @@ function advanceStudioTurn(room, nextConcept) {
       room.finished = true;
       room.loopPlaying = true;
       room.loopAnchorServerMs = Date.now();
+      startVotingPhase(room);
       return;
     }
     room.currentRound += 1;
@@ -158,6 +204,7 @@ function advanceTabuTurn(room, nextCard) {
 }
 
 function resetToLobby(room) {
+  clearRoomVoteTimer(room);
   room.started = false;
   room.finished = false;
   room.gameSessionId = (room.gameSessionId || 0) + 1;
@@ -172,6 +219,9 @@ function resetToLobby(room) {
   room.submissions = {};
   room.tabu = null;
   room.votes = {};
+  room.voteDone = {};
+  room.votingClosed = false;
+  room.votingEndsServerMs = null;
 }
 
 function removePlayerFromRoom(playerId) {
@@ -183,11 +233,13 @@ function removePlayerFromRoom(playerId) {
 
   room.players = room.players.filter((p) => p.id !== playerId);
   delete room.votes[playerId];
+  if (room.voteDone) delete room.voteDone[playerId];
   for (const [voterId, targetId] of Object.entries(room.votes)) {
     if (targetId === playerId) delete room.votes[voterId];
   }
 
   if (!room.players.length) {
+    clearRoomVoteTimer(room);
     rooms.delete(room.code);
     return;
   }
@@ -197,6 +249,9 @@ function removePlayerFromRoom(playerId) {
   }
   if (room.turnIndex >= room.players.length) {
     room.turnIndex = 0;
+  }
+  if (room.finished && !room.votingClosed) {
+    checkAllVotesDone(room);
   }
   broadcastRoom(room);
 }
@@ -277,7 +332,11 @@ wss.on("connection", (ws) => {
         challenge: null,
         submissions: {},
         tabu: null,
-        votes: {}
+        votes: {},
+        voteDone: {},
+        votingClosed: false,
+        votingEndsServerMs: null,
+        voteTimeout: null
       };
       rooms.set(code, room);
       meta.roomCode = code;
@@ -317,6 +376,7 @@ wss.on("connection", (ws) => {
 
     if (msg.type === "start_game") {
       if (!isHost) return;
+      clearRoomVoteTimer(room);
       const mode = room.settings.mode;
       room.started = true;
       room.finished = false;
@@ -328,6 +388,9 @@ wss.on("connection", (ws) => {
       room.layers = [];
       room.submissions = {};
       room.votes = {};
+      room.voteDone = {};
+      room.votingClosed = false;
+      room.votingEndsServerMs = null;
       room.djEffect = "normal";
       room.loopBpm = room.settings.bpm;
 
@@ -349,7 +412,6 @@ wss.on("connection", (ws) => {
       } else {
         room.challenge = null;
         room.tabu = null;
-        // Herkes önce kendi kaydını yapıp dinleyebilsin; gönderince loop başlar
         room.loopPlaying = false;
         room.loopAnchorServerMs = Date.now();
       }
@@ -373,7 +435,7 @@ wss.on("connection", (ws) => {
               type: "live_note",
               slot: msg.slot || "",
               freq: Number(msg.freq) || 261.63,
-              holdMs: Math.min(12000, Math.max(45, Number(msg.holdMs) || 140)),
+              holdMs: Math.min(12000, Math.max(60, Number(msg.holdMs) || 180)),
               instrumentId: String(msg.instrumentId || "grand_piano"),
               synthParams: msg.synthParams || null,
               serverNow: Date.now()
@@ -575,10 +637,23 @@ wss.on("connection", (ws) => {
     }
 
     if (msg.type === "cast_vote") {
+      if (!room.finished || room.votingClosed) return;
+      if (room.voteDone?.[playerId]) return;
       const targetId = String(msg.targetPlayerId || "");
+      // Kendine oy verme kapalı
+      if (!targetId || targetId === playerId) return;
       const validTarget = room.players.some((p) => p.id === targetId);
       if (!validTarget) return;
       room.votes[playerId] = targetId;
+      broadcastRoom(room);
+      return;
+    }
+
+    if (msg.type === "finish_voting") {
+      if (!room.finished || room.votingClosed) return;
+      if (!room.voteDone) room.voteDone = {};
+      room.voteDone[playerId] = true;
+      checkAllVotesDone(room);
       broadcastRoom(room);
     }
   });
