@@ -3,1927 +3,1181 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Müzik Partisi — Stüdyo & Yarışma</title>
+<title>LoopStudio Pro</title>
 <script src="/socket.io/socket.io.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/soundfont-player@0.12.0/dist/soundfont-player.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  color-scheme: dark;
-  --bg: #090b11;
-  --panel: rgba(19, 23, 36, 0.86);
-  --card: #171c2b;
-  --border: rgba(255, 255, 255, 0.08);
-  --text: #f4f6ff;
-  --muted: #949db8;
-  --accent: #8b5cf6;
-  --accent-glow: rgba(139, 92, 246, 0.35);
-  --accent2: #10b981;
-  --accent3: #f59e0b;
-  --accent4: #06b6d4;
-  --danger: #ef4444;
-}
+  :root {
+    --bg: #0b0e14;
+    --panel: #131822;
+    --card: #1a2130;
+    --border: #263044;
+    --accent: #6366f1;
+    --accent2: #06b6d4;
+    --pink: #ec4899;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; user-select: none; }
+  body { background: radial-gradient(circle at top, #151c2c 0%, var(--bg) 70%); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+  .hidden { display: none !important; }
+  .container { max-width: 1120px; margin: 0 auto; padding: 20px; }
 
-* { box-sizing: border-box; }
+  /* LOGO & HEADER */
+  .brand { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 16px 0 6px; }
+  .brand-icon { font-size: 2.2rem; filter: drop-shadow(0 0 14px rgba(236,72,153,0.6)); }
+  .brand h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(90deg, #fff, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .subtitle { text-align: center; color: var(--muted); font-size: 0.92rem; margin-bottom: 24px; }
 
-body {
-  margin: 0;
-  background-color: var(--bg);
-  background-image:
-    radial-gradient(circle at 18% 8%, rgba(139, 92, 246, 0.2), transparent 40%),
-    radial-gradient(circle at 82% 16%, rgba(16, 185, 129, 0.14), transparent 38%),
-    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
-  color: var(--text);
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  min-height: 100vh;
-}
+  /* SADE ANA MENÜ */
+  .menu-wrap { max-width: 780px; margin: 0 auto; background: var(--panel); border: 1px solid var(--border); border-radius: 20px; padding: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.45); }
+  .top-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 0.78rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  input, select { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 11px 14px; border-radius: 10px; font-size: 0.95rem; outline: none; transition: 0.2s; }
+  input:focus, select:focus { border-color: var(--accent); }
 
-main { width: min(1140px, 94%); margin: 28px auto 70px; }
+  .mode-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+  .mode-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 14px; cursor: pointer; transition: 0.2s; text-align: left; }
+  .mode-card:hover { border-color: #4f46e5; transform: translateY(-2px); }
+  .mode-card.active { border-color: var(--accent2); background: rgba(6, 182, 212, 0.08); box-shadow: 0 0 0 1px var(--accent2); }
+  .mode-card .m-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+  .mode-card .m-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.35; }
 
-.hero { text-align: center; margin-bottom: 24px; }
-.badge-top {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 6px 14px; border-radius: 999px;
-  background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.35);
-  color: #c4b5fd; font-size: 11.5px; font-weight: 700; letter-spacing: 0.7px; margin-bottom: 10px;
-}
-h1 {
-  font-size: clamp(32px, 5vw, 50px);
-  font-weight: 800;
-  margin: 0 0 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  letter-spacing: -0.5px;
-}
-.title-emoji {
-  -webkit-text-fill-color: initial;
-  font-size: 0.92em;
-  filter: drop-shadow(0 4px 12px rgba(139, 92, 246, 0.4));
-}
-.title-gradient {
-  background: linear-gradient(135deg, #ffffff 25%, #c4b5fd 72%, #6ee7b7 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.subtitle { color: var(--muted); font-size: 15px; margin: 0; }
+  .room-settings { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 12px; margin-bottom: 18px; border: 1px solid var(--border); }
+  .check-box { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.88rem; color: var(--text); padding-top: 18px; }
+  .check-box input { width: 17px; height: 17px; accent-color: var(--accent); }
 
-.panel {
-  background: var(--panel);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--border);
-  border-radius: 22px;
-  padding: 22px;
-  margin: 18px 0;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.42);
-}
+  .action-row { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; }
+  .join-box { display: flex; gap: 8px; }
+  .join-box input { width: 110px; text-transform: uppercase; text-align: center; font-weight: 700; letter-spacing: 2px; }
 
-h2 { margin: 0 0 12px; font-size: 19px; font-weight: 700; }
-h3 { margin: 0 0 10px; font-size: 15px; font-weight: 700; color: #e2e8f0; }
-label { display: block; color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 6px; }
+  button { border: none; border-radius: 10px; padding: 11px 16px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.15s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #fff; background: var(--card); border: 1px solid var(--border); }
+  button:hover:not(:disabled) { filter: brightness(1.12); transform: translateY(-1px); }
+  button:active:not(:disabled) { transform: translateY(0); }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), #4f46e5); border: none; }
+  .btn-cyan { background: linear-gradient(135deg, var(--accent2), #0284c7); border: none; }
+  .btn-green { background: linear-gradient(135deg, var(--green), #059669); border: none; }
+  .btn-red { background: linear-gradient(135deg, var(--red), #dc2626); border: none; }
+  .btn-amber { background: linear-gradient(135deg, var(--amber), #d97706); border: none; }
+  .btn-sm { padding: 6px 10px; font-size: 0.78rem; border-radius: 8px; }
 
-input, select {
-  width: 100%; background: #0d101b; color: var(--text); border: 1px solid rgba(255, 255, 255, 0.11);
-  border-radius: 12px; padding: 12px 14px; font-size: 14px; font-family: inherit; font-weight: 500;
-}
-input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  /* STÜDYO ÜST BAR */
+  .studio-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 12px 18px; margin-bottom: 14px; }
+  .badge { background: var(--card); border: 1px solid var(--border); padding: 6px 12px; border-radius: 99px; font-size: 0.82rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+  .badge.highlight { border-color: var(--accent2); color: #67e8f9; }
+  .bpm-ctrl { display: inline-flex; align-items: center; gap: 6px; background: var(--card); border: 1px solid var(--border); padding: 4px 10px; border-radius: 99px; font-size: 0.85rem; font-weight: 700; }
 
-button {
-  border: 0; border-radius: 12px; padding: 12px 16px;
-  background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white;
-  font-weight: 700; font-family: inherit; cursor: pointer; font-size: 13.5px;
-  transition: transform 0.12s, filter 0.18s, box-shadow 0.18s;
-  box-shadow: 0 6px 18px rgba(109, 40, 217, 0.25);
-}
-button:hover:not(:disabled) { filter: brightness(1.12); transform: translateY(-1px); }
-button:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
-button.secondary { background: #232a3e; box-shadow: none; border: 1px solid rgba(255, 255, 255, 0.08); }
-button.green { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 6px 18px rgba(16, 185, 129, 0.22); }
-button.amber { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 6px 18px rgba(245, 158, 11, 0.22); }
-button.cyan { background: linear-gradient(135deg, #06b6d4, #0284c7); box-shadow: 0 6px 18px rgba(6, 182, 212, 0.22); }
-button.red { background: linear-gradient(135deg, #ef4444, #b91c1c); box-shadow: 0 6px 18px rgba(239, 68, 68, 0.22); }
-button.small { padding: 8px 12px; font-size: 12.5px; }
+  /* SPEKTRUM & İLERLEME ÇUBUĞU */
+  .transport-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 14px 18px; margin-bottom: 14px; }
+  .transport-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+  #visualizer { width: 100%; height: 48px; background: #090c12; border-radius: 10px; display: block; margin-bottom: 10px; border: 1px solid #1e2638; }
+  .progress-wrap { position: relative; height: 22px; background: #090c12; border-radius: 11px; overflow: hidden; border: 1px solid var(--border); }
+  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent2), var(--pink)); transition: width 0.04s linear; }
+  .beat-ticks { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(8, 1fr); pointer-events: none; }
+  .beat-ticks span { border-right: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.65); }
 
-.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-.row > * { flex: 1; }
-.hidden { display: none !important; }
-.muted { color: var(--muted); font-size: 13px; }
+  /* BANNER / GÖREV / YARIŞMA */
+  .banner { background: linear-gradient(90deg, rgba(99,102,241,0.16), rgba(6,182,212,0.16)); border: 1px solid rgba(99,102,241,0.4); border-radius: 12px; padding: 10px 16px; margin-bottom: 14px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; font-size: 0.9rem; }
 
-.status {
-  padding: 13px 16px; background: rgba(13, 16, 27, 0.9);
-  border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 13px;
-  color: #e2dcff; margin: 12px 0; font-size: 13.5px;
-}
-#message { position: sticky; top: 10px; z-index: 30; backdrop-filter: blur(14px); }
+  /* ANA ÇALIŞMA ALANI */
+  .workspace { display: grid; grid-template-columns: 1.45fr 1fr; gap: 14px; }
+  .box { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .box-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
 
-/* Üst Stüdyo Kontrol Barı */
-.setup-bar {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr 1.3fr;
-  gap: 16px;
-  align-items: end;
-}
-.join-inline {
-  display: flex;
-  gap: 8px;
-}
-.join-inline input {
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 700;
-}
-.join-inline button {
-  white-space: nowrap;
-  flex-shrink: 0;
-}
+  /* ENSTRÜMAN & AKOR ARAÇLARI */
+  .tool-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; align-items: center; }
+  .chord-hint { font-size: 0.78rem; color: #a5b4fc; background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.25); padding: 7px 10px; border-radius: 8px; margin-bottom: 12px; }
 
-/* 2x2 Profesyonel Mod Kartları */
-.mode-grid-2x2 {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 14px;
-}
-.mode-card {
-  background: linear-gradient(180deg, rgba(28, 34, 52, 0.9) 0%, rgba(20, 25, 38, 0.95) 100%);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
-}
-.mode-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(139, 92, 246, 0.45);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
-}
-.mode-card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 12px;
-}
-.mode-icon {
-  width: 44px; height: 44px; border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
-}
-.mode-tag {
-  font-size: 10.5px; font-weight: 800; letter-spacing: 0.6px;
-  padding: 4px 10px; border-radius: 999px;
-  background: rgba(139, 92, 246, 0.16); color: #c4b5fd;
-  border: 1px solid rgba(139, 92, 246, 0.3);
-}
-.mode-tag.green-tag { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.3); }
-.mode-tag.amber-tag { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border-color: rgba(245, 158, 11, 0.3); }
-.mode-tag.cyan-tag { background: rgba(6, 182, 212, 0.15); color: #67e8f9; border-color: rgba(6, 182, 212, 0.3); }
+  /* PİYANO */
+  .piano-wrap { overflow-x: auto; padding-bottom: 6px; margin-bottom: 12px; }
+  .piano { position: relative; display: flex; height: 138px; min-width: 560px; background: #080a0f; padding: 6px; border-radius: 12px; border: 1px solid var(--border); }
+  .w-key { flex: 1; background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%); border: 1px solid #94a3b8; border-radius: 0 0 8px 8px; color: #1e293b; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 8px; cursor: pointer; position: relative; z-index: 1; transition: 0.06s; }
+  .w-key:active, .w-key.pressed { background: #a5f3fc; transform: translateY(2px); }
+  .w-key .note-lbl { font-weight: 800; font-size: 0.75rem; }
+  .w-key .kbd-lbl { font-size: 0.65rem; color: #64748b; background: rgba(0,0,0,0.08); padding: 1px 4px; border-radius: 4px; margin-top: 2px; }
+  .b-key { position: absolute; width: 26px; height: 84px; background: linear-gradient(180deg, #1e293b 0%, #090d16 100%); border: 1px solid #000; border-radius: 0 0 6px 6px; color: #cbd5e1; z-index: 2; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 6px; font-size: 0.65rem; cursor: pointer; }
+  .b-key:active, .b-key.pressed { background: var(--accent); color: #fff; }
 
-.mode-card strong { display: block; font-size: 17px; margin-bottom: 6px; }
-.mode-card p { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0 0 16px; }
-.mode-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  /* DAVUL PEDLERİ & MİKROFON */
+  .drum-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 12px; }
+  .pad { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 4px; text-align: center; cursor: pointer; font-size: 0.78rem; font-weight: 700; transition: 0.08s; }
+  .pad:active, .pad.pressed { background: var(--pink); border-color: #f472b6; transform: scale(0.96); }
+  .pad span { display: block; font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
 
-.player-list { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 10px; }
-.player {
-  background: #1f2538; border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 8px 13px; border-radius: 11px; font-size: 13px; font-weight: 600;
-}
-.player.active { outline: 2px solid var(--accent2); background: rgba(16, 185, 129, 0.16); }
+  .mic-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; background: rgba(0,0,0,0.25); padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px; }
 
-/* Loop İlerleme Göstergesi (8 Vuruş) */
-.loop-meter {
-  background: #0d101b;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 12px 14px;
-  margin-bottom: 14px;
-}
-.loop-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-.beat-dots {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 8px;
-}
-.beat-cell {
-  height: 10px;
-  border-radius: 99px;
-  background: rgba(255, 255, 255, 0.1);
-  transition: background 0.07s, transform 0.07s;
-}
-.beat-cell.bar-start {
-  background: rgba(139, 92, 246, 0.25);
-}
-.beat-cell.active {
-  background: #34d399;
-  box-shadow: 0 0 12px rgba(52, 211, 153, 0.7);
-  transform: scaleY(1.2);
-}
+  /* DJ FX & SOUNDBOARD */
+  .fx-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px; }
+  .sb-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
 
-.studio-toolbar {
-  display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 14px; padding: 12px 14px; margin-bottom: 14px;
-}
-.toggle-pill {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 10px 14px; border-radius: 12px; font-size: 13.5px; font-weight: 700;
-  cursor: pointer; user-select: none; border: 1px solid rgba(255,255,255,0.12);
-  background: #111522; color: var(--muted); transition: all 0.15s;
-}
-.toggle-pill.active {
-  background: rgba(139, 92, 246, 0.24);
-  border-color: #a78bfa;
-  color: #fff;
-  box-shadow: 0 0 16px rgba(139, 92, 246, 0.25);
-}
+  /* KATMAN LİSTESİ (MİKSER) */
+  .layer-list { display: flex; flex-direction: column; gap: 8px; max-height: 290px; overflow-y: auto; margin-bottom: 12px; }
+  .layer-item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .layer-item.muted { opacity: 0.45; }
+  .layer-info { display: flex; flex-direction: column; gap: 2px; }
+  .layer-title { font-size: 0.85rem; font-weight: 700; }
+  .layer-meta { font-size: 0.72rem; color: var(--muted); }
+  .layer-btns { display: flex; gap: 4px; flex-wrap: wrap; }
 
-.rec-box {
-  background: rgba(239, 68, 68, 0.09);
-  border: 1px solid rgba(239, 68, 68, 0.32);
-  border-radius: 14px;
-  padding: 14px;
-  margin-top: 14px;
-}
-.rec-box.armed {
-  background: rgba(245, 158, 11, 0.15);
-  border-color: #f59e0b;
-}
-.rec-box.recording {
-  background: rgba(239, 68, 68, 0.22);
-  border-color: #ef4444;
-  animation: pulseRec 1.1s infinite;
-}
-@keyframes pulseRec {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35); }
-  50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-}
+  /* EMOJİ TEPKİLER */
+  .emoji-bar { display: flex; gap: 6px; align-items: center; }
+  .floating-emoji { position: fixed; bottom: 70px; font-size: 2rem; pointer-events: none; animation: floatUp 2.2s ease-out forwards; z-index: 999; display: flex; flex-direction: column; align-items: center; }
+  .floating-emoji small { font-size: 0.68rem; background: rgba(0,0,0,0.7); padding: 2px 6px; border-radius: 6px; color: #fff; }
+  @keyframes floatUp {
+    0% { transform: translateY(0) scale(0.7); opacity: 1; }
+    100% { transform: translateY(-260px) scale(1.3); opacity: 0; }
+  }
 
-/* Ritim Taklit Et Büyük Vuruş Pedi */
-.rhythm-pad {
-  width: 100%;
-  height: 130px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(139, 92, 246, 0.22));
-  border: 2px solid rgba(6, 182, 212, 0.55);
-  color: #fff;
-  font-size: 20px;
-  font-weight: 800;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  cursor: pointer;
-  user-select: none;
-  margin: 14px 0;
-  transition: transform 0.06s, background 0.1s;
-}
-.rhythm-pad:active, .rhythm-pad.hit {
-  transform: scale(0.98);
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.45), rgba(139, 92, 246, 0.45));
-  border-color: #67e8f9;
-}
+  /* MODAL */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
+  .modal { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 22px; max-width: 440px; width: 100%; text-align: center; }
+  .modal h3 { margin-bottom: 10px; font-size: 1.25rem; }
+  .vote-list { display: flex; flex-direction: column; gap: 8px; margin: 14px 0; }
 
-.settings-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.control { background: var(--card); border: 1px solid var(--border); padding: 12px 14px; border-radius: 13px; }
-.control label { margin: 0 0 8px; color: #e4e7f5; text-transform: none; letter-spacing: 0; font-size: 13px; }
-.control input[type=range] { padding: 0; accent-color: var(--accent); border: none; background: transparent; box-shadow: none; }
-.value { color: #34d399; float: right; font-weight: 700; }
-
-.keyboard-wrap {
-  background: #0b0e17; border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px; padding: 14px; overflow-x: auto;
-}
-.keyboard { position: relative; height: 195px; min-width: 620px; user-select: none; touch-action: manipulation; }
-.key {
-  position: absolute; top: 0; border-radius: 0 0 8px 8px; cursor: pointer;
-  display: flex; justify-content: center; align-items: flex-end;
-  padding-bottom: 10px; font-size: 10px; font-weight: 700; box-shadow: none;
-}
-.key:hover:not(:disabled) { transform: none; }
-.key.white {
-  height: 190px; background: linear-gradient(180deg, #ffffff 0%, #e4e6ef 100%);
-  color: #1e2230; border: 1px solid #9ca3af; z-index: 1;
-}
-.key.black {
-  height: 116px; background: linear-gradient(180deg, #3b4054 0%, #0b0d14 100%);
-  color: #f8fafc; border: 1px solid #000; z-index: 2; padding-bottom: 8px; font-size: 9px;
-}
-.key.selected { background: linear-gradient(180deg, #a78bfa 0%, #6d28d9 100%); color: white; }
-.key.white.selected { background: linear-gradient(180deg, #ddd6fe 0%, #8b5cf6 100%); color: #140f24; }
-
-.note-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; min-height: 32px; }
-.note-chip {
-  background: rgba(139, 92, 246, 0.22); border: 1px solid rgba(139, 92, 246, 0.5);
-  border-radius: 20px; padding: 6px 12px; font-size: 12px; font-weight: 600;
-}
-
-.seq-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
-.seq-step {
-  background: var(--card); border: 2px solid var(--border); border-radius: 14px;
-  padding: 12px; cursor: pointer;
-}
-.seq-step.active-step { border-color: var(--accent3); background: rgba(245, 158, 11, 0.12); }
-.seq-step-title { font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
-.seq-step.active-step .seq-step-title { color: #fbbf24; }
-.seq-step-notes { font-size: 13px; font-weight: 700; color: var(--text); min-height: 20px; }
-
-.actions { display: flex; flex-direction: column; gap: 9px; }
-.action {
-  background: var(--card); border-left: 4px solid var(--accent);
-  border-radius: 11px; padding: 12px 14px; font-size: 13.5px;
-  display: flex; justify-content: space-between; align-items: center; gap: 10px;
-}
-.action.playing-now { background: rgba(16, 185, 129, 0.2); border-left-color: var(--accent2); }
-.action small { color: var(--muted); display: block; margin-top: 4px; }
-
-.score-card {
-  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-  padding: 14px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; gap: 12px;
-}
-.score-card.winner { border-color: #fbbf24; background: rgba(245, 158, 11, 0.12); }
-.score-badge { font-size: 20px; font-weight: 800; color: #34d399; }
-
-hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 18px 0; }
-
-@media (max-width: 860px) {
-  .setup-bar { grid-template-columns: 1fr; }
-  .mode-grid-2x2 { grid-template-columns: 1fr; }
-  .seq-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (max-width: 650px) {
-  main { width: 96%; margin-top: 14px; }
-  .panel { padding: 15px; }
-  .settings-grid { grid-template-columns: 1fr; }
-  .keyboard { height: 165px; }
-  .key.white { height: 160px; }
-  .key.black { height: 98px; }
-}
+  @media (max-width: 860px) {
+    .workspace { grid-template-columns: 1fr; }
+    .mode-grid { grid-template-columns: repeat(2, 1fr); }
+    .top-inputs, .room-settings, .action-row { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <div class="hero">
-    <div class="badge-top">CANLI LOOP STÜDYOSU & MÜZİK YARIŞMASI</div>
-    <h1><span class="title-emoji">🎹</span><span class="title-gradient">Müzik Partisi</span></h1>
-    <p class="subtitle">BPM hızını belirle, ritim altyapısını aç, arkadaşlarınla canlı döngüler kur veya kulak yarışmasına katıl.</p>
-  </div>
 
-  <div id="message" class="status">Hoş geldin! Sahne adını ve oda temposunu seçerek hemen başla.</div>
+<div class="container">
+  <div class="brand">
+    <span class="brand-icon">🎛️</span>
+    <h1>LoopStudio Pro</h1>
+  </div>
+  <p class="subtitle">Müzik bilgisi gerekmeden saniyeler içinde canlı döngüler, akorlar ve ortak şarkılar üret.</p>
 
   <!-- ANA MENÜ -->
-  <section id="home">
-    <div class="panel">
-      <div class="setup-bar">
-        <div>
-          <label>👤 Sahne Adın</label>
-          <input id="playerName" maxlength="18" placeholder="Örn. Maestro">
+  <div id="menuView" class="menu-wrap">
+    <div class="top-inputs">
+      <div class="field">
+        <label>Sahne Adın</label>
+        <input id="playerName" placeholder="Örn: DJ Kaan" maxlength="18">
+      </div>
+      <div class="field">
+        <label>Oda Kodu (Katılmak İçin)</label>
+        <div class="join-box">
+          <input id="joinCode" placeholder="ABCD" maxlength="4">
+          <button class="btn-cyan" style="flex:1" onclick="joinRoom()">Odaya Katıl</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="field" style="margin-bottom:8px;"><label>Oyun Modu Seç</label></div>
+    <div class="mode-grid" id="modeGrid">
+      <div class="mode-card active" data-mode="free" onclick="selectMode(this)">
+        <div class="m-title">🎉 Herkes Serbest</div>
+        <div class="m-desc">Tüm ekip aynı anda ortak 8 vuruşluk şarkıya katman ekler.</div>
+      </div>
+      <div class="mode-card" data-mode="turn" onclick="selectMode(this)">
+        <div class="m-title">🎼 Sıra Sende</div>
+        <div class="m-desc">Oyuncular sırayla tek katman ekleyerek besteyi büyütür.</div>
+      </div>
+      <div class="mode-card" data-mode="theme" onclick="selectMode(this)">
+        <div class="m-title">🎬 Temalı Beste</div>
+        <div class="m-desc">Verilen gizemli sahne atmosferine en uygun müziği yapın.</div>
+      </div>
+      <div class="mode-card" data-mode="chaos" onclick="selectMode(this)">
+        <div class="m-title">🎲 Sürpriz / Kaos</div>
+        <div class="m-desc">Her tur rastgele verilen enstrüman veya görevle çal!</div>
+      </div>
+      <div class="mode-card" data-mode="melody" onclick="selectMode(this)">
+        <div class="m-title">🎯 Melodiyi Taklit Et</div>
+        <div class="m-desc">Duyduğun notaları hafızanda tut ve doğru sırayla çal.</div>
+      </div>
+      <div class="mode-card" data-mode="rhythm" onclick="selectMode(this)">
+        <div class="m-title">🥁 Ritmi Taklit Et</div>
+        <div class="m-desc">Çalan ritim vuruşlarını aynı zamanlamayla tekrarla.</div>
+      </div>
+    </div>
+
+    <div class="room-settings">
+      <div class="field">
+        <label>Tempo (BPM)</label>
+        <select id="bpmSelect">
+          <option value="80">80 BPM (Yavaş / Lo-Fi)</option>
+          <option value="100" selected>100 BPM (Orta / Pop)</option>
+          <option value="120">120 BPM (Enerjik / Dance)</option>
+          <option value="135">135 BPM (Hızlı / Trap)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Tur Süresi</label>
+        <select id="timeSelect">
+          <option value="0" selected>♾️ Süresiz</option>
+          <option value="30">⏱️ 30 Saniye</option>
+          <option value="45">⏱️ 45 Saniye</option>
+          <option value="60">⏱️ 60 Saniye</option>
+        </select>
+      </div>
+      <label class="check-box">
+        <input type="checkbox" id="blindCheck">
+        <span>🙈 Kör Beste (Gizli Dinle)</span>
+      </label>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-primary" style="padding:14px; font-size:1rem;" onclick="createRoom(false)">🚀 Çok Oyunculu Oda Kur</button>
+      <button onclick="createRoom(true)">🎧 Tek Kişilik Stüdyo</button>
+    </div>
+  </div>
+
+  <!-- STÜDYO EKRANI -->
+  <div id="studioView" class="hidden">
+    <div class="studio-header">
+      <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+        <span class="badge highlight" id="roomCodeBadge">ODA: ----</span>
+        <span class="badge" id="modeBadge">Mod</span>
+        <span class="badge" id="playersBadge">👥 1 Oyuncu</span>
+        <span class="badge hidden" id="timerBadge">⏱️ 30s</span>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+        <div class="bpm-ctrl">
+          <button class="btn-sm" id="bpmDown" onclick="socket.emit('changeBpm', -5)">-</button>
+          <span id="bpmLabel">100 BPM</span>
+          <button class="btn-sm" id="bpmUp" onclick="socket.emit('changeBpm', 5)">+</button>
+        </div>
+        <button class="btn-sm btn-green" onclick="exportWav()">💾 WAV İndir</button>
+        <button class="btn-sm btn-red" onclick="location.reload()">Çıkış</button>
+      </div>
+    </div>
+
+    <!-- MOD BİLGİ & OYLAMA BANNER -->
+    <div id="modeBanner" class="banner">
+      <div id="bannerText">Stüdyo hazır!</div>
+      <div id="bannerActions" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
+    </div>
+
+    <!-- TRANSPORT & SPEKTRUM -->
+    <div class="transport-panel">
+      <div class="transport-top">
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button id="playBtn" class="btn-green" onclick="togglePlay()">▶ Başlat</button>
+          <button id="recBtn" class="btn-red" onclick="armRecording()">⏺ Canlı Loop Kaydet (8 Vuruş)</button>
+          <button id="placeAllBtn" class="btn-cyan" onclick="placeFullBarChord()">✨ Tüm 1–8 Vuruşlara Koy</button>
+        </div>
+        <div class="emoji-bar">
+          <button class="btn-sm" onclick="sendReaction('🔥')">🔥</button>
+          <button class="btn-sm" onclick="sendReaction('👏')">👏</button>
+          <button class="btn-sm" onclick="sendReaction('🤯')">🤯</button>
+          <button class="btn-sm" onclick="sendReaction('😂')">😂</button>
+        </div>
+      </div>
+      <canvas id="visualizer" width="900" height="48"></canvas>
+      <div class="progress-wrap">
+        <div id="progressFill" class="progress-fill"></div>
+        <div class="beat-ticks">
+          <span>1</span><span>2</span><span>3</span><span>4</span>
+          <span>5</span><span>6</span><span>7</span><span>8</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÇALIŞMA ALANI -->
+    <div class="workspace">
+      <!-- SOL PANEL: ENSTRÜMANLAR -->
+      <div class="box">
+        <div class="box-title">
+          <span>🎹 Enstrüman & Akor Stüdyosu</span>
+          <span id="recStatus" style="color:var(--accent2); font-size:0.75rem;">Hazır</span>
         </div>
 
-        <div>
-          <label>⏱️ Oda Temposu (BPM)</label>
-          <select id="bpmSelect">
-            <option value="75">75 BPM — Ağır / Chill</option>
-            <option value="85">85 BPM — Lo-Fi Groove</option>
-            <option value="90" selected>90 BPM — Hip-Hop / R&B</option>
-            <option value="100">100 BPM — Orta / Reggaeton</option>
-            <option value="110">110 BPM — Pop / Funk</option>
-            <option value="120">120 BPM — Dance / House</option>
-            <option value="130">130 BPM — Trap / Enerjik</option>
-            <option value="140">140 BPM — Hızlı / Club</option>
+        <div class="tool-row">
+          <select id="instSelect">
+            <option value="piano">🎹 Sıcak Piyano</option>
+            <option value="synth">🎛️ Neon Synth</option>
+            <option value="flute">🎶 Yumuşak Flüt</option>
+            <option value="guitar">🎸 Elektro Gitar</option>
+            <option value="bass">🔊 Derin Bas</option>
+          </select>
+
+          <select id="chordStyle" onchange="updateChordHint()">
+            <option value="off">🎵 Tek Nota Modu</option>
+            <option value="auto" selected>✨ Otomatik Uyumlu Akor (Önerilen)</option>
+            <option value="major">☀️ Neşeli Akor (Majör)</option>
+            <option value="minor">🌧️ Hüzünlü Akor (Minör)</option>
+            <option value="lofi">☕ Yumuşak Lo-Fi (7'li)</option>
+            <option value="power">⚡ Güçlü Rock (5'li)</option>
           </select>
         </div>
 
-        <div>
-          <label>🔑 Mevcut Odaya Katıl</label>
-          <div class="join-inline">
-            <input id="roomCode" maxlength="5" placeholder="ODA KODU">
-            <button class="green" onclick="joinRoom()">Katıl</button>
-          </div>
-        </div>
-      </div>
-
-      <hr>
-
-      <div class="mode-grid-2x2">
-        <div class="mode-card">
-          <div>
-            <div class="mode-card-top">
-              <div class="mode-icon">🎉</div>
-              <span class="mode-tag green-tag">LOOP STÜDYOSU</span>
-            </div>
-            <strong>Herkes Serbest</strong>
-            <p>Seçtiğin BPM hızında ritimler aç, mevcut müziği dinleyerek üzerine akor ve melodi döngüleri kaydet.</p>
-          </div>
-          <div class="mode-btn-row">
-            <button class="green" onclick="createRoom('free', false)">👥 Oda Kur</button>
-            <button class="secondary" onclick="createRoom('free', true)">🎧 Tek Kişilik</button>
-          </div>
+        <div id="chordHint" class="chord-hint">
+          ✨ <b>Otomatik Uyumlu Akor:</b> Hangi tuşa basarsan bas kulağa uyumlu 3'lü akor basar. Hiç müzik bilgisi gerekmez!
         </div>
 
-        <div class="mode-card">
-          <div>
-            <div class="mode-card-top">
-              <div class="mode-icon">🎼</div>
-              <span class="mode-tag">ORTAK BESTE</span>
-            </div>
-            <strong>Sıra Sende</strong>
-            <p>Oyuncular sırayla döngüye kendi enstrüman ve akor katmanlarını ekleyerek ortak şarkıyı büyütür.</p>
-          </div>
-          <div class="mode-btn-row">
-            <button onclick="createRoom('party', false)">👥 Oda Kur</button>
-            <button class="secondary" onclick="createRoom('party', true)">🎧 Tek Kişilik</button>
-          </div>
+        <!-- PİYANO KLAVYESİ -->
+        <div class="piano-wrap">
+          <div class="piano" id="pianoEl"></div>
         </div>
 
-        <div class="mode-card">
-          <div>
-            <div class="mode-card-top">
-              <div class="mode-icon">🎯</div>
-              <span class="mode-tag amber-tag">KULAK YARIŞMASI</span>
-            </div>
-            <strong>Melodiyi Taklit Et</strong>
-            <p>Sistem rastgele enstrümanla 4 adımlı bir melodi çalar. Enstrümanı ve ardışık notaları en çok benzeten kazanır.</p>
-          </div>
-          <div class="mode-btn-row">
-            <button class="amber" onclick="createRoom('mimic', false)">👥 Oda Kur</button>
-            <button class="secondary" onclick="createRoom('mimic', true)">🎧 Tek Kişilik</button>
-          </div>
-        </div>
-
-        <div class="mode-card">
-          <div>
-            <div class="mode-card-top">
-              <div class="mode-icon">🥁</div>
-              <span class="mode-tag cyan-tag">RİTİM YARIŞMASI</span>
-            </div>
-            <strong>Ritmi Taklit Et</strong>
-            <p>Rastgele bir enstrümanla çalınan ritim vuruşlarını dinle ve nota aramadan sadece vuruş zamanlamasını taklit et!</p>
-          </div>
-          <div class="mode-btn-row">
-            <button class="cyan" onclick="createRoom('rhythm', false)">👥 Oda Kur</button>
-            <button class="secondary" onclick="createRoom('rhythm', true)">🎧 Tek Kişilik</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- OYUN EKRANI -->
-  <section id="game" class="hidden">
-    <div class="panel">
-      <div class="row">
-        <div>
-          <h2>Oda: <span id="roomCodeText"></span></h2>
-          <div id="modeText" class="muted"></div>
-        </div>
-        <div class="row" style="justify-content:flex-end">
-          <button id="copyCodeBtn" class="secondary small" onclick="copyRoom()">📋 Kodu Kopyala</button>
-          <button class="secondary small" onclick="location.reload()">🚪 Ana Menüye Dön</button>
-        </div>
-      </div>
-
-      <div id="players" class="player-list"></div>
-      <div id="turnStatus" class="status">Oyun başlamayı bekliyor.</div>
-
-      <div class="row" id="roomActionRow">
-        <button id="startButton" class="green" onclick="startGame()">🚀 Oyunu Başlat</button>
-        <button id="clearButton" class="secondary" onclick="nextRound()">🔄 Yeni Tur / Sıfırla</button>
-      </div>
-    </div>
-
-    <!-- MELODİYİ TAKLİT ET PANELİ -->
-    <div id="mimicPanel" class="panel hidden">
-      <h2>🎯 Hedef Melodi Yarışması</h2>
-      <p class="muted">1. Hedef melodiyi dinle → 2. Doğru enstrümanı seç → 3. Piyanodan 4 adımı doldur → 4. Tahminini gönder!</p>
-
-      <div class="row" style="margin: 14px 0;">
-        <button class="amber" onclick="playTargetMelody()">🔊 Hedef Melodiyi Dinle</button>
-        <button class="secondary" onclick="previewMySequence()">🎹 Kendi Melodimi Dinle</button>
-        <button class="green" id="submitMimicBtn" onclick="submitMimic()">✅ Tahminimi Gönder</button>
-        <button id="revealMimicBtn" class="secondary" onclick="revealMimic()">🏆 Sonuçları Açıkla</button>
-      </div>
-
-      <label>Ardışık Notaların (Düzenlemek istediğin adıma tıkla ve piyanodan tuş seç)</label>
-      <div id="seqSteps" class="seq-grid"></div>
-      <div id="mimicResults" style="margin-top: 16px;"></div>
-    </div>
-
-    <!-- RİTMİ TAKLİT ET PANELİ -->
-    <div id="rhythmPanel" class="panel hidden">
-      <h2>🥁 Ritmi Taklit Et Yarışması</h2>
-      <p class="muted">Nota arama derdi yok! Sadece enstrümanın vuruş hızını ve aralıklarını dinle, aşağıdaki pedden (veya Boşluk tuşundan) aynı ritmi çal.</p>
-
-      <div class="row" style="margin: 14px 0;">
-        <button class="cyan" onclick="playTargetRhythm()">🔊 Hedef Ritmi Dinle</button>
-        <button class="secondary" onclick="previewMyRhythm()">🎧 Kendi Ritmimi Dinle</button>
-        <button class="secondary" onclick="clearMyRhythm()">🗑️ Vuruşları Sıfırla</button>
-        <button class="green" id="submitRhythmBtn" onclick="submitRhythm()">✅ Ritmimi Gönder</button>
-        <button id="revealRhythmBtn" class="secondary" onclick="revealRhythm()">🏆 Sonuçları Açıkla</button>
-      </div>
-
-      <button type="button" id="rhythmPad" class="rhythm-pad" onpointerdown="tapRhythmPad()">
-        <span>🥁 RİTİM VURUŞ PEDİ</span>
-        <small id="rhythmTapInfo" style="font-size:13px;font-weight:500;color:#cbd5e1;">Buraya tıkla veya klavyede BOŞLUK (Space) tuşuna bas (0 vuruş)</small>
-      </button>
-
-      <div id="rhythmResults" style="margin-top: 14px;"></div>
-    </div>
-
-    <!-- SES STÜDYOSU & PİYANO -->
-    <div id="studio" class="panel hidden">
-      <h2>🎹 Ses Stüdyosu</h2>
-
-      <!-- 8 VURUŞLUK DÖNGÜ METRESİ -->
-      <div id="loopMeterWrap" class="loop-meter">
-        <div class="loop-header">
-          <span id="loopTempoLabel">⏱️ Tempo: 90 BPM (8 Vuruşluk Döngü)</span>
-          <span id="loopStepLabel">Döngü Beklemede</span>
-        </div>
-        <div class="beat-dots" id="beatDots">
-          <div class="beat-cell bar-start" id="bcell-0"></div>
-          <div class="beat-cell" id="bcell-1"></div>
-          <div class="beat-cell" id="bcell-2"></div>
-          <div class="beat-cell" id="bcell-3"></div>
-          <div class="beat-cell bar-start" id="bcell-4"></div>
-          <div class="beat-cell" id="bcell-5"></div>
-          <div class="beat-cell" id="bcell-6"></div>
-          <div class="beat-cell" id="bcell-7"></div>
-        </div>
-      </div>
-
-      <!-- AKOR MODU VE BPM RİTİM KÜTÜPHANESİ -->
-      <div class="studio-toolbar">
-        <div id="chordToggle" class="toggle-pill active" onclick="toggleChordMode()">
-          ✨ Akor Modu: AÇIK <small style="font-weight:400;opacity:.85">(Tek tuşla 3'lü akor)</small>
-        </div>
-
-        <div id="beatControlWrap" style="flex:1; min-width:250px;">
-          <select id="beatSelect" onchange="changeBeat()">
-            <option value="none">🥁 Arka Plan Ritmi: Kapalı</option>
-            <option value="pop">🥁 Pop / Dance Groove</option>
-            <option value="lofi">🎧 Lo-Fi Boom Bap</option>
-            <option value="trap">🔥 Trap / 808 Hi-Hat</option>
-            <option value="house">⚡ House / Four-on-the-Floor</option>
-            <option value="rock">🎸 Rock / Acoustic Drum</option>
-            <option value="latin">🌴 Reggaeton / Dembow</option>
-            <option value="afro">🥁 Afrobeat Syncopation</option>
-            <option value="synth">🌌 Synthwave / Electro</option>
+        <!-- CANLI DAVUL PEDLERİ -->
+        <div class="box-title" style="margin-top:6px;">
+          <span>🥁 Canlı Davul Pedleri (Klavye: 1–6)</span>
+          <select id="beatPresetSelect" onchange="changeBeatPreset(this.value)" style="padding:4px 8px; font-size:0.78rem;">
+            <option value="none">Hazır Ritim: Yok</option>
+            <option value="pop">🥁 Pop Groove</option>
+            <option value="lofi">☕ Lo-Fi Chill</option>
+            <option value="trap">🔥 Trap 808</option>
+            <option value="house">⚡ Club House</option>
           </select>
         </div>
-      </div>
+        <div class="drum-grid" id="drumGrid">
+          <div class="pad" data-drum="kick" onclick="triggerDrum('kick', true)">KICK<span>[1]</span></div>
+          <div class="pad" data-drum="snare" onclick="triggerDrum('snare', true)">SNARE<span>[2]</span></div>
+          <div class="pad" data-drum="hihat" onclick="triggerDrum('hihat', true)">HI-HAT<span>[3]</span></div>
+          <div class="pad" data-drum="clap" onclick="triggerDrum('clap', true)">CLAP<span>[4]</span></div>
+          <div class="pad" data-drum="tom" onclick="triggerDrum('tom', true)">TOM<span>[5]</span></div>
+          <div class="pad" data-drum="rim" onclick="triggerDrum('rim', true)">RIM<span>[6]</span></div>
+        </div>
 
-      <p id="studioHint" class="muted">Akor Modu açık: Tek bir tuşa basman yeterli; otomatik uyumlu 3'lü akor basar!</p>
-
-      <div class="row">
-        <div>
-          <label>Enstrüman</label>
-          <select id="instrument">
-            <optgroup label="Piyano ve klavyeler">
-              <option value="acoustic_grand_piano">Kuyruklu piyano</option>
-              <option value="bright_acoustic_piano">Parlak piyano</option>
-              <option value="electric_piano_1">Elektrik piyano</option>
-              <option value="electric_piano_2">Yumuşak elektrik piyano</option>
-              <option value="honkytonk_piano">Honky-tonk piyano</option>
-              <option value="clavinet">Klavinet</option>
-              <option value="church_organ">Kilise orgu</option>
-              <option value="drawbar_organ">Hammond org</option>
-              <option value="music_box">Müzik kutusu</option>
-            </optgroup>
-            <optgroup label="Yaylı çalgılar">
-              <option value="violin">Keman</option>
-              <option value="viola">Viyola</option>
-              <option value="cello">Çello</option>
-              <option value="contrabass">Kontrbas</option>
-              <option value="string_ensemble_1">Yaylı orkestra</option>
-              <option value="slow_strings">Yumuşak yaylılar</option>
-              <option value="pizzicato_strings">Çekmeli yaylılar</option>
-              <option value="orchestral_harp">Arp</option>
-            </optgroup>
-            <optgroup label="Gitar ve bas">
-              <option value="acoustic_guitar_nylon">Klasik gitar</option>
-              <option value="acoustic_guitar_steel">Akustik gitar</option>
-              <option value="electric_guitar_clean">Temiz elektro gitar</option>
-              <option value="electric_guitar_jazz">Caz elektro gitar</option>
-              <option value="electric_guitar_muted">Sessiz elektro gitar</option>
-              <option value="overdriven_guitar">Kirli elektro gitar</option>
-              <option value="distortion_guitar">Distortion gitar</option>
-              <option value="acoustic_bass">Akustik bas gitar</option>
-              <option value="electric_bass_finger">Bas gitar</option>
-              <option value="electric_bass_pick">Penalı bas gitar</option>
-              <option value="synth_bass_1">Elektronik bas</option>
-            </optgroup>
-            <optgroup label="Üflemeliler">
-              <option value="flute">Flüt</option>
-              <option value="piccolo">Pikolo flüt</option>
-              <option value="recorder">Blok flüt</option>
-              <option value="pan_flute">Pan flüt</option>
-              <option value="clarinet">Klarnet</option>
-              <option value="oboe">Obua</option>
-              <option value="bassoon">Fagot</option>
-              <option value="soprano_sax">Soprano saksafon</option>
-              <option value="alto_sax">Alto saksafon</option>
-              <option value="tenor_sax">Tenor saksafon</option>
-              <option value="baritone_sax">Bariton saksafon</option>
-              <option value="trumpet">Trompet</option>
-              <option value="trombone">Trombon</option>
-              <option value="muted_trumpet">Susturuculu trompet</option>
-              <option value="french_horn">Korno</option>
-            </optgroup>
-            <optgroup label="Diğer enstrümanlar">
-              <option value="tinkle_bell">Çan</option>
-              <option value="glockenspiel">Glockenspiel</option>
-              <option value="vibraphone">Vibrafon</option>
-              <option value="marimba">Marimba</option>
-              <option value="xylophone">Ksilofon</option>
-              <option value="tubular_bells">Boru çanları</option>
-              <option value="steel_drums">Çelik davul</option>
-              <option value="voice_oohs">Koro sesi</option>
-              <option value="synth_strings_1">Elektronik yaylı</option>
-              <option value="synth_choir">Elektronik koro</option>
-              <option value="lead_2_sawtooth">Testere synth</option>
-              <option value="lead_8_bass_lead">Elektronik solo</option>
-              <option value="pad_2_warm">Sıcak elektronik pad</option>
-              <option value="pad_3_polysynth">Polisynth</option>
-              <option value="pad_7_halo">Uzay pad'i</option>
-            </optgroup>
+        <!-- MİKROFON KAYDI -->
+        <div class="mic-bar">
+          <button id="micRecBtn" class="btn-amber btn-sm" onclick="armMicRecording()">🎤 Mikrofon / Beatbox Kaydet</button>
+          <select id="voiceFx" style="padding:5px 8px; font-size:0.78rem;">
+            <option value="normal">🎙️ Normal Ses</option>
+            <option value="robot">🤖 Robot / Synth</option>
+            <option value="chipmunk">🐿️ İnce Ses (Chipmunk)</option>
+            <option value="deep">👹 Kalın Ses (Deep)</option>
           </select>
+          <span id="micStatus" style="font-size:0.75rem; color:var(--muted);">8 vuruşluk vokal/beatbox ekle</span>
         </div>
-        <div>
-          <label>Oktav</label>
-          <select id="octave" onchange="buildKeyboard()">
-            <option value="1">1 – Çok kalın</option>
-            <option value="2">2 – Kalın</option>
-            <option value="3">3</option>
-            <option value="4" selected>4 – Orta</option>
-            <option value="5">5</option>
-            <option value="6">6 – İnce</option>
-            <option value="7">7 – Çok ince</option>
-            <option value="8">8 – En ince</option>
-          </select>
+
+        <!-- DJ FX & SOUNDBOARD -->
+        <div class="box-title"><span>🎛️ Canlı DJ Efektleri & Ses Tahtası</span></div>
+        <div class="fx-grid">
+          <button id="fxFilterBtn" onmousedown="setDjFilter(true)" onmouseup="setDjFilter(false)" onmouseleave="setDjFilter(false)">🌊 Su Altı Filtresi (Basılı Tut)</button>
+          <button id="fxHalfBtn" onmousedown="setHalfTime(true)" onmouseup="setHalfTime(false)" onmouseleave="setHalfTime(false)">🐢 Ağır Çekim / Half-Time</button>
+        </div>
+        <div class="sb-grid">
+          <button class="btn-sm" onclick="emitFx('scratch')">💿 Plak</button>
+          <button class="btn-sm" onclick="emitFx('airhorn')">📯 Horn</button>
+          <button class="btn-sm" onclick="emitFx('drop')">💥 Drop</button>
+          <button class="btn-sm" onclick="emitFx('applause')">👏 Alkış</button>
+          <button class="btn-sm" onclick="emitFx('yeah')">🗣️ Yeah!</button>
         </div>
       </div>
 
-      <label>Piyano klavyesi</label>
-      <div class="keyboard-wrap">
-        <div id="keyboard" class="keyboard"></div>
-      </div>
-
-      <!-- BESTE MODLARI KONTROLLERİ (TEK AKOR VEYA LOOP OVERDUB KAYDI) -->
-      <div id="normalNoteControls">
-        <div class="note-list" id="selectedNotes">
-          <span class="muted">Henüz nota/akor seçilmedi.</span>
-        </div>
-        <div class="row" style="margin-top:12px">
-          <div style="max-width:210px;">
-            <select id="beatSlotSelect" title="Tek akorun hangi vuruşta çalacağını seç">
-              <option value="0">1. Vuruşa Yerleştir</option>
-              <option value="2">3. Vuruşa Yerleştir</option>
-              <option value="4">5. Vuruşa Yerleştir</option>
-              <option value="6">7. Vuruşa Yerleştir</option>
-            </select>
-          </div>
-          <button class="secondary" onclick="clearSelected()">Temizle</button>
-          <button class="green" id="addButton" onclick="addSound()">🎵 Tek Akor Ekle</button>
+      <!-- SAĞ PANEL: ORTAK DÖNGÜ & MİKSER -->
+      <div class="box">
+        <div class="box-title">
+          <span>🎚️ Ortak Döngü Katmanları</span>
+          <span id="songTitleDisplay" style="color:var(--amber); font-size:0.8rem;"></span>
         </div>
 
-        <!-- GERÇEK LOOP STATION OVERDUB KAYDI -->
-        <div id="recBox" class="rec-box">
-          <div class="row">
-            <div>
-              <strong id="recStatusTitle">🔴 Loop Üzerine Kayıt (Overdub)</strong>
-              <div id="recStatusDesc" class="muted">Kayda bas: Tam döngü başında (1. vuruşta) başlar, 8. vuruş bitip yeni loop başlarken otomatik kaydolup üstüne biner!</div>
-            </div>
-            <div class="row" style="justify-content:flex-end;">
-              <button class="red" id="recStartBtn" onclick="armOrStartLoopRecord()">🔴 Döngü Kaydını Başlat</button>
-              <button class="secondary hidden" id="recCancelBtn" onclick="cancelLoopRecord()">✖ İptal Et</button>
-            </div>
+        <div id="layerList" class="layer-list">
+          <div style="color:var(--muted); font-size:0.85rem; text-align:center; padding:30px 10px;">
+            Henüz katman yok. Bir tuşa bas, kayıt al veya hazır ritim seç!
           </div>
         </div>
-      </div>
 
-      <!-- MELODİYİ TAKLİT ET KONTROLLERİ -->
-      <div id="mimicNoteControls" class="hidden" style="margin-top:12px">
-        <div class="row">
-          <button class="secondary" onclick="clearCurrentStep()">Bu adımı temizle</button>
-          <button class="secondary" onclick="clearAllSteps()">Tüm adımları temizle</button>
-        </div>
-      </div>
-
-      <div id="effectsSection">
-        <hr>
-        <h3>🎛️ Ses Efektleri & Ayarlar</h3>
-        <div class="settings-grid">
-          <div class="control">
-            <label>Ses seviyesi <span class="value" id="volumeValue">70%</span></label>
-            <input id="volume" type="range" min="0" max="100" value="70">
-          </div>
-          <div class="control">
-            <label>Ses inceliği / kalınlığı <span class="value" id="pitchValue">0</span></label>
-            <input id="pitch" type="range" min="-12" max="12" value="0">
-          </div>
-          <div class="control">
-            <label>Nota süresi <span class="value" id="durationValue">0.8 sn</span></label>
-            <input id="duration" type="range" min="1" max="50" value="8">
-          </div>
-          <div class="control">
-            <label>Başlangıç yumuşaklığı <span class="value" id="attackValue">0.02 sn</span></label>
-            <input id="attack" type="range" min="0" max="200" value="2">
-          </div>
-          <div class="control">
-            <label>Ses bitiş yumuşaklığı <span class="value" id="releaseValue">0.2 sn</span></label>
-            <input id="release" type="range" min="0" max="300" value="20">
-          </div>
-          <div class="control">
-            <label>Ses devamlılığı <span class="value" id="sustainValue">80%</span></label>
-            <input id="sustain" type="range" min="0" max="100" value="80">
-          </div>
-          <div class="control">
-            <label>Oda efekti <span class="value" id="reverbValue">15%</span></label>
-            <input id="reverb" type="range" min="0" max="100" value="15">
-          </div>
-          <div class="control">
-            <label>Yankı <span class="value" id="echoValue">0%</span></label>
-            <input id="echo" type="range" min="0" max="100" value="0">
-          </div>
-          <div class="control">
-            <label>Ses bozulması <span class="value" id="distortionValue">0%</span></label>
-            <input id="distortion" type="range" min="0" max="100" value="0">
-          </div>
-          <div class="control">
-            <label>Ses filtresi <span class="value" id="filterValue">12000 Hz</span></label>
-            <input id="filter" type="range" min="200" max="12000" value="12000">
-          </div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; border-top:1px solid var(--border); padding-top:12px;">
+          <button id="finalDropBtn" class="btn-amber btn-sm" onclick="emitFx('finaldrop')">🚀 Final Drop</button>
+          <button id="revealBlindBtn" class="btn-cyan btn-sm hidden" onclick="socket.emit('revealBlind')">👀 Kör Besteyi Aç</button>
+          <button id="voteStartBtn" class="btn-primary btn-sm" onclick="socket.emit('startVoting')">🏆 Prodüktör Oylaması</button>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- ORTAK MÜZİK KATMANLARI & DÖNGÜ PANELİ -->
-    <div id="sharedMusicPanel" class="panel hidden">
-      <div class="row" style="margin-bottom: 12px;">
-        <div>
-          <h2 style="margin:0;">🎧 Ortak Döngü Katmanları (Loop)</h2>
-          <div id="playbackOwnerHint" class="muted">Tüm katmanlar ve seçili BPM ritmi kesintisiz döngüde üst üste akar.</div>
-        </div>
-        <div id="hostPlaybackControls" class="row hidden" style="justify-content:flex-end;">
-          <button class="green" id="playSongBtn" onclick="requestPlaySong()">▶ Döngüyü Başlat</button>
-          <button class="red" id="stopSongBtn" onclick="requestStopSong()">⏹ Durdur</button>
-        </div>
-      </div>
-      <div id="actions" class="actions">
-        <div class="muted">Henüz müzik katmanı eklenmedi.</div>
-      </div>
-    </div>
-  </section>
-</main>
+<!-- OYLAMA & KAZANAN MODALI -->
+<div id="voteModal" class="modal-bg hidden">
+  <div class="modal">
+    <h3 id="voteTitle">🏆 Gecenin Prodüktörünü Seç!</h3>
+    <p id="voteSub" style="color:var(--muted); font-size:0.88rem;">En iyi veya en yaratıcı katmanı yapan arkadaşına oy ver.</p>
+    <div id="voteBody" class="vote-list"></div>
+    <div id="voteFooter"></div>
+  </div>
+</div>
 
 <script>
 const socket = io();
-
-let roomCode = null;
+let selectedMode = 'free';
 let roomState = null;
-let selected = new Set();
-let audioContext = null;
-let masterGain = null;
-let instrumentCache = new Map();
+let isSolo = false;
 
-let chordMode = true;
+// SES MOTORU (WEB AUDIO API)
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let ctx = null;
+let masterGain, filterNode, analyser;
+let halfTimeActive = false;
 
-// Loop & Overdub Kayıt Durumu
-let isLoopRunning = false;
-let currentCycleStartMs = 0;
-let loopCycleTimer = null;
-let loopScheduledTimers = [];
-let beatStepTimer = null;
-let currentBeatStep = 0;
+function initAudio() {
+  if (ctx) { if (ctx.state === 'suspended') ctx.resume(); return; }
+  ctx = new AudioCtx();
+  filterNode = ctx.createBiquadFilter();
+  filterNode.type = 'lowpass';
+  filterNode.frequency.value = 20000;
 
-let recordState = "idle"; // "idle" | "armed" | "recording"
-let recordedEvents = [];
+  masterGain = ctx.createGain();
+  masterGain.gain.value = 0.85;
 
-// Melodi yarışması
-let mimicSequence = [new Set(), new Set(), new Set(), new Set()];
-let activeStepIndex = 0;
+  analyser = ctx.createAnalyser();
+  analyser.fftSize = 64;
 
-// Ritim yarışması
-let myRhythmTimes = [];
-let rhythmStartTime = 0;
-
-const $ = id => document.getElementById(id);
-
-function message(text) {
-  $("message").textContent = text;
+  filterNode.connect(masterGain);
+  masterGain.connect(analyser);
+  analyser.connect(ctx.destination);
+  drawVisualizer();
 }
 
-function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  })[c]);
+function setDjFilter(on) {
+  initAudio();
+  filterNode.frequency.setTargetAtTime(on ? 420 : 20000, ctx.currentTime, 0.06);
+  document.getElementById('fxFilterBtn').classList.toggle('btn-cyan', on);
 }
 
-function playerName() {
-  return $("playerName").value.trim() || "Oyuncu";
+function setHalfTime(on) {
+  halfTimeActive = on;
+  document.getElementById('fxHalfBtn').classList.toggle('btn-cyan', on);
 }
 
-function getRoomBpm() {
-  return Number(roomState?.bpm || $("bpmSelect").value || 90);
+// NOTA & AKOR FREKANSLARI
+const NOTE_FREQS = {
+  'C3':130.81,'C#3':138.59,'D3':146.83,'D#3':155.56,'E3':164.81,'F3':174.61,'F#3':185.00,'G3':196.00,'G#3':207.65,'A3':220.00,'A#3':233.08,'B3':246.94,
+  'C4':261.63,'C#4':277.18,'D4':293.66,'D#4':311.13,'E4':329.63,'F4':349.23,'F#4':369.99,'G4':392.00,'G#4':415.30,'A4':440.00,'A#4':466.16,'B4':493.88,
+  'C5':523.25,'C#5':554.37,'D5':587.33,'D#5':622.25,'E5':659.25,'F5':698.46,'F#5':739.99,'G5':783.99,'G#5':830.61,'A5':880.00,'A#5':932.33,'B5':987.77
+};
+const ALL_NOTES = Object.keys(NOTE_FREQS);
+
+function getChordNotes(rootNote, style) {
+  const idx = ALL_NOTES.indexOf(rootNote);
+  if (idx === -1 || style === 'off') return [rootNote];
+  const pick = (semi) => ALL_NOTES[Math.min(ALL_NOTES.length - 1, idx + semi)];
+  if (style === 'major') return [rootNote, pick(4), pick(7)];
+  if (style === 'minor') return [rootNote, pick(3), pick(7)];
+  if (style === 'lofi') return [rootNote, pick(3), pick(7), pick(10)];
+  if (style === 'power') return [rootNote, pick(7), pick(12)];
+  // auto (C Majör / A Minör doğal uyumlu akorlar)
+  const name = rootNote.replace(/\d/, '');
+  const minors = ['D', 'E', 'A', 'B'];
+  return minors.includes(name) ? [rootNote, pick(3), pick(7)] : [rootNote, pick(4), pick(7)];
 }
 
-function getBeatDurationMs() {
-  return (60 / getRoomBpm()) * 1000;
+const CHORD_HINTS = {
+  off: "🎵 <b>Tek Nota Modu:</b> Bastığın her tuş tek başına net bir melodi notası çalar.",
+  auto: "✨ <b>Otomatik Uyumlu Akor:</b> Hangi tuşa basarsan bas kulağa uyumlu 3'lü akor basar. Müzik bilgisi gerekmez!",
+  major: "☀️ <b>Neşeli Akor (Majör):</b> Parlak, enerjik ve pozitif pop/yaz havası verir.",
+  minor: "🌧️ <b>Hüzünlü Akor (Minör):</b> Duygusal, derin ve dramatik bir atmosfer oluşturur.",
+  lofi: "☕ <b>Yumuşak Lo-Fi (7'li):</b> Caz ve Lo-Fi chill müziklerdeki o sıcak, rüya gibi akorları basar.",
+  power: "⚡ <b>Güçlü Rock (5'li):</b> Bas ve elektro gitarla birleştiğinde çok dolgun ve sert duyulur."
+};
+function updateChordHint() {
+  document.getElementById('chordHint').innerHTML = CHORD_HINTS[document.getElementById('chordStyle').value];
 }
 
-function getLoopDurationMs() {
-  return getBeatDurationMs() * 8; // Tam 8 vuruş (2 ölçü)
-}
+function playNotes(notes, inst = 'piano', duration = 0.45, dest = null) {
+  initAudio();
+  const target = dest || filterNode;
+  const now = ctx.currentTime;
+  notes.forEach(n => {
+    const freq = NOTE_FREQS[n];
+    if (!freq) return;
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    if (inst === 'piano') { osc.type = 'triangle'; g.gain.setValueAtTime(0.24, now); }
+    else if (inst === 'synth') { osc.type = 'sawtooth'; g.gain.setValueAtTime(0.14, now); }
+    else if (inst === 'flute') { osc.type = 'sine'; g.gain.setValueAtTime(0.26, now); }
+    else if (inst === 'guitar') { osc.type = 'square'; g.gain.setValueAtTime(0.11, now); }
+    else if (inst === 'bass') { osc.type = 'sawtooth'; osc.frequency.value = freq / 2; g.gain.setValueAtTime(0.28, now); }
+    if (inst !== 'bass') osc.frequency.value = freq;
 
-/* Akor Modu */
-function getChordNotes(rootMidi) {
-  if (!chordMode) return [rootMidi];
-  const semitone = rootMidi % 12;
-  const minorRoots = new Set([2, 4, 9, 11]);
-  const third = minorRoots.has(semitone) ? 3 : 4;
-  return [rootMidi, Math.min(127, rootMidi + third), Math.min(127, rootMidi + 7)];
-}
-
-function toggleChordMode() {
-  chordMode = !chordMode;
-  const pill = $("chordToggle");
-  pill.classList.toggle("active", chordMode);
-  pill.innerHTML = chordMode
-    ? `✨ Akor Modu: AÇIK <small style="font-weight:400;opacity:.85">(Tek tuşla 3'lü akor)</small>`
-    : `🎹 Akor Modu: KAPALI <small style="font-weight:400;opacity:.85">(Tekli nota)</small>`;
-  $("studioHint").textContent = chordMode
-    ? "Akor Modu açık: Tek bir tuşa basman yeterli; otomatik uyumlu 3'lü akor basar!"
-    : "Akor Modu kapalı: Piyano tuşlarına tek tek dokunarak kendi notalarını seç.";
-}
-
-function changeBeat() {
-  if (!roomCode) return;
-  socket.emit("set-beat", { code: roomCode, beat: $("beatSelect").value }, res => {
-    if (!res?.ok) message(res?.message || "Ritim değiştirilemedi.");
+    g.gain.exponentialRampToValueAtTime(0.001, now + duration);
+    osc.connect(g);
+    g.connect(target);
+    osc.start(now);
+    osc.stop(now + duration + 0.02);
   });
 }
 
-function createRoom(mode, solo = false) {
-  const bpm = Number($("bpmSelect").value) || 90;
-  socket.emit("create-room", { name: playerName(), mode, solo, bpm }, result => {
-    if (!result?.ok) return message(result?.message || "Oda oluşturulamadı.");
-    enterRoom(result.room);
+// DAVUL SENTEZLEYİCİ
+function triggerDrum(type, recordable = false, dest = null) {
+  initAudio();
+  const target = dest || filterNode;
+  const now = ctx.currentTime;
+  const padEl = document.querySelector(`.pad[data-drum="${type}"]`);
+  if (padEl) { padEl.classList.add('pressed'); setTimeout(() => padEl.classList.remove('pressed'), 110); }
+
+  if (type === 'kick') {
+    const osc = ctx.createOscillator(); const g = ctx.createGain();
+    osc.frequency.setValueAtTime(140, now);
+    osc.frequency.exponentialRampToValueAtTime(38, now + 0.16);
+    g.gain.setValueAtTime(0.7, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+    osc.connect(g); g.connect(target); osc.start(now); osc.stop(now + 0.23);
+  } else if (type === 'snare' || type === 'clap') {
+    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.16, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    const noise = ctx.createBufferSource(); noise.buffer = buf;
+    const f = ctx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = type === 'clap' ? 1200 : 700;
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.42, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+    noise.connect(f); f.connect(g); g.connect(target); noise.start(now);
+  } else if (type === 'hihat') {
+    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.06, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    const noise = ctx.createBufferSource(); noise.buffer = buf;
+    const f = ctx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 5000;
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.25, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+    noise.connect(f); f.connect(g); g.connect(target); noise.start(now);
+  } else {
+    const osc = ctx.createOscillator(); const g = ctx.createGain();
+    osc.frequency.setValueAtTime(type === 'tom' ? 210 : 620, now);
+    osc.frequency.exponentialRampToValueAtTime(90, now + 0.12);
+    g.gain.setValueAtTime(0.35, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
+    osc.connect(g); g.connect(target); osc.start(now); osc.stop(now + 0.14);
+  }
+
+  if (recordable) {
+    if (isRecording && recType === 'note') {
+      recEvents.push({ exact: currentBeatFloat, drum: type, step: Math.floor(currentBeatFloat) });
+    }
+    if (roomState?.mode === 'rhythm' && userChallengeInput) {
+      userChallengeInput.push(Math.round(currentBeatFloat) % 8);
+    }
+  }
+}
+
+// STÜDYO FX SES TAHTASI
+function emitFx(fx) { socket.emit('triggerFx', fx); }
+socket.on('playFx', (fx) => {
+  initAudio();
+  const now = ctx.currentTime;
+  if (fx === 'airhorn') {
+    [480, 600].forEach(f => {
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.type = 'sawtooth'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.22, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+      o.connect(g); g.connect(filterNode); o.start(now); o.stop(now + 0.46);
+    });
+  } else if (fx === 'drop') {
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.frequency.setValueAtTime(160, now); o.frequency.exponentialRampToValueAtTime(28, now + 0.7);
+    g.gain.setValueAtTime(0.7, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.75);
+    o.connect(g); g.connect(filterNode); o.start(now); o.stop(now + 0.76);
+  } else if (fx === 'scratch') {
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.type = 'sawtooth'; o.frequency.setValueAtTime(900, now); o.frequency.linearRampToValueAtTime(180, now + 0.12); o.frequency.linearRampToValueAtTime(750, now + 0.24);
+    g.gain.setValueAtTime(0.2, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    o.connect(g); g.connect(filterNode); o.start(now); o.stop(now + 0.26);
+  } else if (fx === 'applause' || fx === 'finaldrop') {
+    if (fx === 'finaldrop') {
+      [0, 0.12, 0.24, 0.36].forEach(t => setTimeout(() => triggerDrum('snare'), t * 1000));
+      setTimeout(() => emitFx('drop'), 480);
+    }
+    const buf = ctx.createBuffer(1, ctx.sampleRate * 1.1, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.sin((i / d.length) * Math.PI);
+    const n = ctx.createBufferSource(); n.buffer = buf;
+    const g = ctx.createGain(); g.gain.value = 0.28;
+    n.connect(g); g.connect(filterNode); n.start(now);
+  } else if (fx === 'yeah') {
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.type = 'triangle'; o.frequency.setValueAtTime(320, now); o.frequency.linearRampToValueAtTime(480, now + 0.18);
+    g.gain.setValueAtTime(0.28, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+    o.connect(g); g.connect(filterNode); o.start(now); o.stop(now + 0.33);
+  }
+});
+
+// PİYANO OLUŞTURMA & ETKİLEŞİM
+const WHITE_NOTES = ['C4','D4','E4','F4','G4','A4','B4','C5','D5','E5','F5','G5','A5','B5'];
+const BLACK_MAP = { 0:'C#4', 1:'D#4', 3:'F#4', 4:'G#4', 5:'A#4', 7:'C#5', 8:'D#5', 10:'F#5', 11:'G#5', 12:'A#5' };
+const KBD_WHITE = ['Z','X','C','V','B','N','M','Q','W','E','R','T','Y','U'];
+let lastSelectedNotes = ['C4', 'E4', 'G4'];
+
+function buildPiano() {
+  const el = document.getElementById('pianoEl');
+  el.innerHTML = '';
+  WHITE_NOTES.forEach((n, i) => {
+    const key = document.createElement('div');
+    key.className = 'w-key';
+    key.dataset.note = n;
+    key.innerHTML = `<span class="note-lbl">${n}</span><span class="kbd-lbl">${KBD_WHITE[i]}</span>`;
+    key.onmousedown = () => handleKeyPress(n, key);
+    el.appendChild(key);
   });
+  Object.entries(BLACK_MAP).forEach(([idx, n]) => {
+    const key = document.createElement('div');
+    key.className = 'b-key';
+    key.dataset.note = n;
+    key.textContent = n.replace(/\d/, '');
+    key.style.left = `calc(${(Number(idx) + 1) * (100 / WHITE_NOTES.length)}% - 13px)`;
+    key.onmousedown = (e) => { e.stopPropagation(); handleKeyPress(n, key); };
+    el.appendChild(key);
+  });
+}
+buildPiano();
+
+function handleKeyPress(rootNote, keyEl) {
+  if (roomState?.mode === 'chaos') {
+    const task = roomState.chaosTasks?.[socket.id];
+    if (task && ['drums', 'mic'].includes(task.id)) {
+      alert(`🎲 Kaos Görevin: ${task.text}`);
+      return;
+    }
+  }
+  const style = document.getElementById('chordStyle').value;
+  const inst = document.getElementById('instSelect').value;
+  const notes = getChordNotes(rootNote, style);
+  lastSelectedNotes = notes;
+  playNotes(notes, inst, 0.5);
+
+  if (keyEl) {
+    keyEl.classList.add('pressed');
+    setTimeout(() => keyEl.classList.remove('pressed'), 140);
+  }
+
+  if (isRecording && recType === 'note') {
+    recEvents.push({ exact: currentBeatFloat, notes, inst, step: Math.floor(currentBeatFloat) });
+  }
+  if (roomState?.mode === 'melody' && userChallengeInput) {
+    userChallengeInput.push(rootNote);
+  }
+}
+
+// KLAVYE KONTROLLERİ
+window.addEventListener('keydown', (e) => {
+  if (e.repeat || ['INPUT', 'SELECT'].includes(document.activeElement.tagName)) return;
+  const k = e.key.toUpperCase();
+  const wIdx = KBD_WHITE.indexOf(k);
+  if (wIdx !== -1) {
+    const note = WHITE_NOTES[wIdx];
+    const el = document.querySelector(`.w-key[data-note="${note}"]`);
+    handleKeyPress(note, el);
+  }
+  const drumKeys = { '1':'kick', '2':'snare', '3':'hihat', '4':'clap', '5':'tom', '6':'rim' };
+  if (drumKeys[k]) triggerDrum(drumKeys[k], true);
+});
+
+// LOOP ENGINE & KAYIT (OVERDUB)
+let isPlaying = false;
+let currentBeatFloat = 0;
+let lastStepTriggered = -1;
+let animFrame = null;
+let lastTime = 0;
+
+let recArmed = false;
+let isRecording = false;
+let recType = 'note'; // 'note' veya 'mic'
+let recEvents = [];
+let mediaRecorder = null;
+let micChunks = [];
+
+const BEAT_PATTERNS = {
+  pop:   { 0:['kick'], 1:['hihat'], 2:['snare','hihat'], 3:['hihat'], 4:['kick'], 5:['hihat'], 6:['snare','hihat'], 7:['hihat'] },
+  lofi:  { 0:['kick','hihat'], 2:['rim'], 3:['kick'], 4:['snare','hihat'], 6:['hihat'], 7:['rim'] },
+  trap:  { 0:['kick','hihat'], 1:['hihat'], 2:['hihat'], 3:['snare'], 4:['hihat'], 5:['kick'], 6:['hihat'], 7:['snare','clap'] },
+  house: { 0:['kick'], 1:['hihat'], 2:['kick','clap'], 3:['hihat'], 4:['kick'], 5:['hihat'], 6:['kick','clap'], 7:['hihat'] }
+};
+
+let mutedLayers = new Set();
+let soloLayerId = null;
+const audioCache = {};
+
+function togglePlay() {
+  initAudio();
+  isPlaying = !isPlaying;
+  document.getElementById('playBtn').textContent = isPlaying ? '⏸ Durdur' : '▶ Başlat';
+  if (isPlaying) {
+    lastTime = performance.now();
+    lastStepTriggered = -1;
+    loopTick(lastTime);
+  } else {
+    cancelAnimationFrame(animFrame);
+    isRecording = false; recArmed = false;
+    updateRecUI();
+  }
+}
+
+function armRecording() {
+  if (!canEditLoop()) return;
+  recType = 'note';
+  recArmed = true;
+  recEvents = [];
+  if (!isPlaying) togglePlay();
+  updateRecUI();
+}
+
+async function armMicRecording() {
+  if (!canEditLoop()) return;
+  if (roomState?.mode === 'chaos' && roomState.chaosTasks?.[socket.id]?.id !== 'mic') {
+    alert(`🎲 Kaos Görevin: ${roomState.chaosTasks[socket.id].text}`);
+    return;
+  }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    micChunks = [];
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) micChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      const blob = new Blob(micChunks, { type: 'audio/webm' });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const fx = document.getElementById('voiceFx').value;
+        socket.emit('addLayer', {
+          type: 'audio',
+          label: `🎤 Mikrofon (${fx})`,
+          audioData: reader.result,
+          voiceFx: fx
+        });
+      };
+      reader.readAsDataURL(blob);
+    };
+    recType = 'mic';
+    recArmed = true;
+    if (!isPlaying) togglePlay();
+    updateRecUI();
+  } catch (err) {
+    alert('Mikrofon izni verilmedi veya bulunamadı.');
+  }
+}
+
+function updateRecUI() {
+  const st = document.getElementById('recStatus');
+  if (isRecording) { st.textContent = '🔴 KAYITTA (1–8 Vuruş)...'; st.style.color = '#ef4444'; }
+  else if (recArmed) { st.textContent = '⏳ Döngü başı (1. vuruş) bekleniyor...'; st.style.color = '#f59e0b'; }
+  else { st.textContent = 'Hazır'; st.style.color = '#06b6d4'; }
+}
+
+function placeFullBarChord() {
+  if (!canEditLoop()) return;
+  const inst = document.getElementById('instSelect').value;
+  const events = [0, 2, 4, 6].map(step => ({ step, exact: step, notes: lastSelectedNotes, inst }));
+  socket.emit('addLayer', {
+    type: 'notes',
+    label: `✨ ${lastSelectedNotes[0]} Akor Yürüyüşü (${inst})`,
+    events
+  });
+}
+
+function canEditLoop() {
+  if (!roomState) return false;
+  if (roomState.mode === 'turn') {
+    const cur = roomState.players[roomState.turnIndex % roomState.players.length];
+    if (cur && cur.id !== socket.id) {
+      alert(`Sıra şu an ${cur.name} adlı oyuncuda!`);
+      return false;
+    }
+  }
+  return true;
+}
+
+function loopTick(now) {
+  if (!isPlaying) return;
+  const dt = (now - lastTime) / 1000;
+  lastTime = now;
+
+  const effectiveBpm = (roomState?.bpm || 100) * (halfTimeActive ? 0.5 : 1);
+  const beatsPerSec = effectiveBpm / 60;
+  const prevBeat = currentBeatFloat;
+  currentBeatFloat = (currentBeatFloat + dt * beatsPerSec) % 8;
+
+  // DÖNGÜ BAŞA SARDIĞINDA
+  if (currentBeatFloat < prevBeat) {
+    if (isRecording) {
+      isRecording = false;
+      if (recType === 'note' && recEvents.length > 0) {
+        const inst = document.getElementById('instSelect').value;
+        socket.emit('addLayer', {
+          type: 'notes',
+          label: `🎹 Canlı Kayıt (${inst})`,
+          events: recEvents
+        });
+      } else if (recType === 'mic' && mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+      }
+      updateRecUI();
+    }
+    if (recArmed) {
+      recArmed = false;
+      isRecording = true;
+      if (recType === 'mic' && mediaRecorder) mediaRecorder.start();
+      updateRecUI();
+    }
+    triggerLoopAudioLayers();
+  }
+
+  const step = Math.floor(currentBeatFloat);
+  if (step !== lastStepTriggered) {
+    lastStepTriggered = step;
+    onBeatStep(step);
+  }
+
+  document.getElementById('progressFill').style.width = `${(currentBeatFloat / 8) * 100}%`;
+  animFrame = requestAnimationFrame(loopTick);
+}
+
+function onBeatStep(step) {
+  if (!roomState) return;
+  // Hazır Ritim
+  if (roomState.beatPreset && roomState.beatPreset !== 'none') {
+    const pat = BEAT_PATTERNS[roomState.beatPreset]?.[step] || [];
+    pat.forEach(d => triggerDrum(d, false));
+  }
+  // Nota / Davul Katmanları
+  roomState.layers.forEach(layer => {
+    if (!isLayerAudible(layer)) return;
+    if (layer.type === 'notes' && layer.events) {
+      layer.events.forEach(ev => {
+        if (ev.step === step) {
+          if (ev.drum) triggerDrum(ev.drum, false);
+          else if (ev.notes) playNotes(ev.notes, ev.inst || 'piano', 0.42);
+        }
+      });
+    }
+  });
+}
+
+function triggerLoopAudioLayers() {
+  if (!roomState) return;
+  roomState.layers.forEach(layer => {
+    if (layer.type !== 'audio' || !isLayerAudible(layer)) return;
+    if (!audioCache[layer.id]) {
+      const a = new Audio(layer.audioData);
+      if (layer.voiceFx === 'chipmunk') { a.preservesPitch = false; a.playbackRate = 1.38; }
+      else if (layer.voiceFx === 'deep') { a.preservesPitch = false; a.playbackRate = 0.76; }
+      audioCache[layer.id] = a;
+    }
+    const audioEl = audioCache[layer.id];
+    audioEl.currentTime = 0;
+    audioEl.play().catch(() => {});
+  });
+}
+
+function isLayerAudible(layer) {
+  if (roomState?.blindMode && !roomState.blindRevealed && layer.authorId !== socket.id) return false;
+  if (soloLayerId) return layer.id === soloLayerId;
+  return !mutedLayers.has(layer.id);
+}
+
+// SPEKTRUM GÖRSELLEŞTİRİCİ
+function drawVisualizer() {
+  const canvas = document.getElementById('visualizer');
+  const c = canvas.getContext('2d');
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  function render() {
+    requestAnimationFrame(render);
+    analyser.getByteFrequencyData(data);
+    c.fillStyle = '#090c12';
+    c.fillRect(0, 0, canvas.width, canvas.height);
+    const barW = (canvas.width / data.length) - 3;
+    data.forEach((v, i) => {
+      const h = (v / 255) * canvas.height;
+      c.fillStyle = i % 2 === 0 ? '#6366f1' : '#06b6d4';
+      c.fillRect(i * (barW + 3), canvas.height - h, barW, h);
+    });
+  }
+  render();
+}
+
+// YARIŞMA MODLARI (MELODİ & RİTİM TAKLİT ET)
+let userChallengeInput = null;
+function playChallengeDemo() {
+  if (!roomState?.challenge) return;
+  initAudio();
+  const ch = roomState.challenge;
+  if (roomState.mode === 'melody') {
+    ch.notes.forEach((n, i) => setTimeout(() => playNotes([n], 'piano', 0.4), i * 500));
+    userChallengeInput = [];
+  } else if (roomState.mode === 'rhythm') {
+    const stepMs = (60 / roomState.bpm) * 1000;
+    ch.rhythm.forEach(s => setTimeout(() => triggerDrum('clap', false), s * stepMs));
+    userChallengeInput = [];
+  }
+}
+
+function checkChallengeResult() {
+  if (!roomState?.challenge || !userChallengeInput) return;
+  const ch = roomState.challenge;
+  let score = 0;
+  if (roomState.mode === 'melody') {
+    ch.notes.forEach((n, i) => { if (userChallengeInput[i] === n) score += 25; });
+  } else if (roomState.mode === 'rhythm') {
+    ch.rhythm.forEach(s => { if (userChallengeInput.includes(s)) score += 20; });
+  }
+  socket.emit('submitChallenge', { score });
+  alert(`🎯 Doğruluk Puanın: +${score} Puan!`);
+  userChallengeInput = null;
+}
+
+// WAV DIŞA AKTARMA (OFFLINE RENDER)
+async function exportWav() {
+  if (!roomState) return;
+  const bpm = roomState.bpm || 100;
+  const loopSec = (60 / bpm) * 8;
+  const sr = 44100;
+  const offCtx = new OfflineAudioContext(1, Math.ceil(sr * loopSec), sr);
+
+  for (let step = 0; step < 8; step++) {
+    const t = step * (60 / bpm);
+    if (roomState.beatPreset && roomState.beatPreset !== 'none') {
+      (BEAT_PATTERNS[roomState.beatPreset]?.[step] || []).forEach(d => renderOfflineDrum(offCtx, d, t));
+    }
+    roomState.layers.forEach(layer => {
+      if (!isLayerAudible(layer) || layer.type !== 'notes') return;
+      (layer.events || []).forEach(ev => {
+        if (ev.step === step) {
+          if (ev.drum) renderOfflineDrum(offCtx, ev.drum, t);
+          else if (ev.notes) renderOfflineNotes(offCtx, ev.notes, ev.inst, t);
+        }
+      });
+    });
+  }
+
+  const rendered = await offCtx.startRendering();
+  const wavBlob = audioBufferToWav(rendered);
+  const url = URL.createObjectURL(wavBlob);
+  const a = document.createElement('a');
+  const fileName = (roomState.songTitle || `LoopStudio_${roomState.code}`).replace(/[^a-zA-Z0-9ğüşöçıİĞÜŞÖÇ_-]/g, '_');
+  a.href = url;
+  a.download = `${fileName}.wav`;
+  a.click();
+}
+
+function renderOfflineNotes(oCtx, notes, inst, t) {
+  notes.forEach(n => {
+    const f = NOTE_FREQS[n]; if (!f) return;
+    const osc = oCtx.createOscillator(); const g = oCtx.createGain();
+    osc.type = inst === 'synth' ? 'sawtooth' : 'triangle';
+    osc.frequency.value = inst === 'bass' ? f / 2 : f;
+    g.gain.setValueAtTime(0.22, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+    osc.connect(g); g.connect(oCtx.destination); osc.start(t); osc.stop(t + 0.46);
+  });
+}
+
+function renderOfflineDrum(oCtx, type, t) {
+  const osc = oCtx.createOscillator(); const g = oCtx.createGain();
+  osc.frequency.setValueAtTime(type === 'kick' ? 130 : 420, t);
+  osc.frequency.exponentialRampToValueAtTime(40, t + 0.14);
+  g.gain.setValueAtTime(0.35, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+  osc.connect(g); g.connect(oCtx.destination); osc.start(t); osc.stop(t + 0.16);
+}
+
+function audioBufferToWav(buffer) {
+  const numOfChan = buffer.numberOfChannels, length = buffer.length * numOfChan * 2 + 44;
+  const out = new ArrayBuffer(length), view = new DataView(out), data = buffer.getChannelData(0);
+  let pos = 0;
+  const setU32 = d => { view.setUint32(pos, d, true); pos += 4; };
+  const setU16 = d => { view.setUint16(pos, d, true); pos += 2; };
+  setU32(0x46464952); setU32(length - 8); setU32(0x45564157);
+  setU32(0x20746d66); setU32(16); setU16(1); setU16(numOfChan);
+  setU32(buffer.sampleRate); setU32(buffer.sampleRate * 2 * numOfChan);
+  setU16(numOfChan * 2); setU16(16); setU32(0x61746164); setU32(length - pos - 4);
+  for (let i = 0; i < data.length; i++) {
+    const s = Math.max(-1, Math.min(1, data[i]));
+    view.setInt16(pos, s < 0 ? s * 0x8000 : s * 0x7FFF, true); pos += 2;
+  }
+  return new Blob([out], { type: 'audio/wav' });
+}
+
+// ODA & ARAYÜZ GÜNCELLEME
+function selectMode(el) {
+  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  selectedMode = el.dataset.mode;
+}
+
+function createRoom(solo) {
+  isSolo = solo;
+  const name = document.getElementById('playerName').value.trim() || 'Prodüktör';
+  const bpm = document.getElementById('bpmSelect').value;
+  const timeLimit = document.getElementById('timeSelect').value;
+  const blindMode = document.getElementById('blindCheck').checked;
+  socket.emit('createRoom', { name, mode: selectedMode, bpm, timeLimit, blindMode });
 }
 
 function joinRoom() {
-  const code = $("roomCode").value.trim().toUpperCase();
-  socket.emit("join-room", { code, name: playerName() }, result => {
-    if (!result?.ok) return message(result?.message || "Odaya katılınamadı.");
-    enterRoom(result.room);
-  });
+  const code = document.getElementById('joinCode').value.trim();
+  const name = document.getElementById('playerName').value.trim() || 'Misafir';
+  if (!code) return alert('Oda kodunu gir!');
+  socket.emit('joinRoom', { code, name });
 }
 
-function enterRoom(room) {
-  roomCode = room.code;
-  roomState = room;
-  clearAllSteps();
-  clearMyRhythm();
-  $("home").classList.add("hidden");
-  $("game").classList.remove("hidden");
-  $("roomCodeText").textContent = room.solo ? "TEK KİŞİLİK" : room.code;
-  $("copyCodeBtn").classList.toggle("hidden", room.solo);
-  buildKeyboard();
-  updateRoom(room);
-  enableAudio();
-}
+function changeBeatPreset(val) { socket.emit('setBeatPreset', val); }
+function sendReaction(emoji) { socket.emit('sendReaction', emoji); }
 
-function copyRoom() {
-  navigator.clipboard?.writeText(roomCode)
-    .then(() => message("Oda kodu kopyalandı: " + roomCode))
-    .catch(() => message("Oda kodun: " + roomCode));
-}
+socket.on('errorMsg', msg => alert(msg));
 
-function startGame() {
-  socket.emit("start-game", { code: roomCode }, result => {
-    if (!result?.ok) message(result?.message || "Oyun başlatılamadı.");
-  });
-}
+let timerInterval = null;
+socket.on('roomJoined', (state) => {
+  document.getElementById('menuView').classList.add('hidden');
+  document.getElementById('studioView').classList.remove('hidden');
+  updateUI(state);
+  if (state.timeLimit > 0) startRoomTimer(state.timeLimit);
+});
 
-function nextRound() {
-  socket.emit("next-round", { code: roomCode }, result => {
-    if (!result?.ok) message(result?.message || "Sıfırlanamadı.");
-  });
-}
+socket.on('stateUpdate', (state) => updateUI(state));
 
-function updateRoom(room) {
-  roomState = room;
-  $("roomCodeText").textContent = room.solo ? "TEK KİŞİLİK" : room.code;
+socket.on('reaction', ({ emoji, name }) => {
+  const div = document.createElement('div');
+  div.className = 'floating-emoji';
+  div.style.left = (15 + Math.random() * 70) + '%';
+  div.innerHTML = `<span>${emoji}</span><small>${name}</small>`;
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 2200);
+});
 
-  const modeNames = {
-    party: "🎼 Sıra Sende",
-    free: "🎉 Herkes Serbest",
-    mimic: "🎯 Melodiyi Taklit Et",
-    rhythm: "🥁 Ritmi Taklit Et"
-  };
-  $("modeText").textContent = `${modeNames[room.mode] || room.mode} • ${room.bpm} BPM`;
-  $("loopTempoLabel").textContent = `⏱️ Tempo: ${room.bpm} BPM (8 Vuruşluk Döngü)`;
-
-  const isHost = room.host === socket.id;
-  $("startButton").classList.toggle("hidden", !isHost || room.started);
-  $("clearButton").classList.toggle("hidden", !isHost || !room.started);
-
-  $("hostPlaybackControls").classList.toggle("hidden", !isHost);
-  $("beatSelect").value = room.beat || "none";
-  $("beatSelect").disabled = !isHost;
-
-  $("players").innerHTML = room.players.map((p, i) => {
-    const active = room.mode === "party" && room.started && i === room.currentTurn;
-    return `<div class="player ${active ? "active" : ""}">
-      ${escapeHTML(p.name)} ${p.id === room.host ? "👑" : ""}
-      ${active ? " 🎵 Sıra onda" : ""}
-    </div>`;
-  }).join("");
-
-  const isMimic = room.mode === "mimic";
-  const isRhythm = room.mode === "rhythm";
-  const isCompose = !isMimic && !isRhythm;
-
-  $("sharedMusicPanel").classList.toggle("hidden", !isCompose || !room.started);
-  $("mimicPanel").classList.toggle("hidden", !isMimic || !room.started);
-  $("rhythmPanel").classList.toggle("hidden", !isRhythm || !room.started);
-
-  $("studio").classList.toggle("hidden", !room.started || isRhythm);
-  $("loopMeterWrap").classList.toggle("hidden", !isCompose);
-  $("normalNoteControls").classList.toggle("hidden", !isCompose);
-  $("mimicNoteControls").classList.toggle("hidden", !isMimic);
-  $("effectsSection").classList.toggle("hidden", !isCompose);
-  $("beatControlWrap").classList.toggle("hidden", !isCompose);
-
-  if (!room.started) {
-    $("turnStatus").textContent = `Oyun başlamayı bekliyor (${room.bpm} BPM). Oda sahibi oyunu başlatabilir.`;
-  } else if (isMimic) {
-    $("turnStatus").textContent = "🎯 Hedef melodiyi dinle ve 4 adımlık kendi melodini oluştur!";
-    $("revealMimicBtn").classList.toggle("hidden", !isHost || Boolean(room.challenge?.revealed));
-    $("submitMimicBtn").disabled = Boolean(room.challenge?.revealed);
-    renderMimicPanel(room.challenge);
-  } else if (isRhythm) {
-    $("turnStatus").textContent = "🥁 Hedef ritmi dinle ve vuruş pedinden aynı zamanlamayla ritmi çal!";
-    $("revealRhythmBtn").classList.toggle("hidden", !isHost || Boolean(room.rhythmChallenge?.revealed));
-    $("submitRhythmBtn").disabled = Boolean(room.rhythmChallenge?.revealed);
-    renderRhythmPanel(room.rhythmChallenge);
-  } else if (room.mode === "party") {
-    const current = room.players[room.currentTurn];
-    const myTurn = current?.id === socket.id;
-    $("turnStatus").textContent = myTurn
-      ? `🎵 Sıra sende (${room.bpm} BPM)! İster tek akor ekle, ister 'Döngü Kaydını Başlat' ile üzerine çal.`
-      : `🎧 Şimdi ${current?.name || "başka bir oyuncu"} katman ekliyor.`;
-    $("addButton").disabled = !myTurn;
-    $("recStartBtn").disabled = !myTurn;
-  } else {
-    $("turnStatus").textContent = `🎉 Herkes serbest (${room.bpm} BPM)! Döngü kaydını başlat, yeni loop başında otomatik kaydolup üstüne binsin!`;
-    $("addButton").disabled = false;
-    $("recStartBtn").disabled = false;
-  }
-
-  renderActions(room.actions || [], isHost);
-}
-
-function renderActions(actions, isHost = false) {
-  if (!actions.length) {
-    $("actions").innerHTML = '<div class="muted">Henüz müzik katmanı eklenmedi.</div>';
-    return;
-  }
-
-  $("actions").innerHTML = actions.map((a, i) => {
-    const notes = a.notes.map(n => noteName(n)).join(" + ");
-    const tag = a.isRhythm
-      ? `🎶 Döngü Melodisi (${a.events.length} vuruş)`
-      : `🎹 Akor / Nota (${notes} • ${(a.beatIndex || 0) + 1}. vuruş)`;
-    const delBtn = isHost
-      ? `<button class="red small" style="flex:0;" onclick="removeAction('${a.id}')">🗑️</button>`
-      : "";
-    return `<div class="action" id="action-row-${i}">
-      <div>
-        <b>${i + 1}. ${escapeHTML(a.playerName)}</b> — ${escapeHTML(instrumentName(a.instrument))}
-        <small>${escapeHTML(tag)}</small>
-      </div>
-      ${delBtn}
-    </div>`;
-  }).join("");
-}
-
-function removeAction(actionId) {
-  socket.emit("remove-action", { code: roomCode, actionId });
-}
-
-/* ============================================================================
-   GERÇEK LOOP STATION & SENKRONİZE OVERDUB KAYDI (Döngü başında başlar/biter)
-============================================================================ */
-
-function updateBeatDotsUI(stepIdx) {
-  for (let i = 0; i < 8; i++) {
-    const cell = $("bcell-" + i);
-    if (cell) cell.classList.toggle("active", i === stepIdx);
-  }
-  if (stepIdx >= 0) {
-    $("loopStepLabel").textContent = `Vuruş: ${stepIdx + 1} / 8`;
-  } else {
-    $("loopStepLabel").textContent = "Döngü Beklemede";
-  }
-}
-
-async function armOrStartLoopRecord() {
-  if (recordState !== "idle") return;
-  await enableAudio();
-  recordedEvents = [];
-
-  if (isLoopRunning) {
-    // Döngü zaten akıyorsa tam sonraki loop başında (1. vuruşta) kayda gir
-    recordState = "armed";
-    $("recBox").classList.add("armed");
-    $("recStartBtn").classList.add("hidden");
-    $("recCancelBtn").classList.remove("hidden");
-    $("recStatusTitle").textContent = "⏳ Yeni döngü bekleniyor... Hazırlan!";
-    $("recStatusDesc").textContent = "Mevcut 8 vuruşluk tur bitip 1. vuruş başladığı an kayıt otomatik devreye girecek.";
-  } else {
-    // Döngü çalışmıyorsa hemen 1. vuruştan başlat ve kayda gir
-    recordState = "recording";
-    startLocalLoopEngine();
-  }
-}
-
-function cancelLoopRecord() {
-  recordState = "idle";
-  recordedEvents = [];
-  $("recBox").className = "rec-box";
-  $("recStartBtn").classList.remove("hidden");
-  $("recCancelBtn").classList.add("hidden");
-  $("recStatusTitle").textContent = "🔴 Loop Üzerine Kayıt (Overdub)";
-  $("recStatusDesc").textContent = "Kayda bas: Tam döngü başında (1. vuruşta) başlar, 8. vuruş bitip yeni loop başlarken otomatik kaydolup üstüne biner!";
-}
-
-function finishLoopRecordAndSend() {
-  const eventsToSend = [...recordedEvents];
-  recordedEvents = [];
-  recordState = "idle";
-
-  $("recBox").className = "rec-box";
-  $("recStartBtn").classList.remove("hidden");
-  $("recCancelBtn").classList.add("hidden");
-  $("recStatusTitle").textContent = "🔴 Loop Üzerine Kayıt (Overdub)";
-  $("recStatusDesc").textContent = "Kayda bas: Tam döngü başında (1. vuruşta) başlar, 8. vuruş bitip yeni loop başlarken otomatik kaydolup üstüne biner!";
-
-  if (eventsToSend.length === 0) {
-    message("⚠️ Döngü süresince hiçbir tuşa basmadın.");
-    return;
-  }
-
-  socket.emit("add-sound", {
-    code: roomCode,
-    events: eventsToSend,
-    instrument: $("instrument").value,
-    settings: getSettings()
-  }, res => {
-    if (!res?.ok) {
-      message(res?.message || "Katman eklenemedi.");
-    } else {
-      message(`🎶 ${eventsToSend.length} vuruşluk katmanın döngünün üzerine eklendi!`);
+function startRoomTimer(sec) {
+  clearInterval(timerInterval);
+  let left = sec;
+  const badge = document.getElementById('timerBadge');
+  badge.classList.remove('hidden');
+  badge.textContent = `⏱️ ${left}s`;
+  timerInterval = setInterval(() => {
+    left--;
+    badge.textContent = `⏱️ ${Math.max(0, left)}s`;
+    if (left <= 0) {
+      clearInterval(timerInterval);
+      if (isRecording) { isRecording = false; updateRecUI(); }
     }
-  });
+  }, 1000);
 }
 
-/* BPM Uyumlu 8 Farklı Davul & Ritim Motoru */
-function playDrumSound(type) {
-  if (!audioContext || !masterGain) return;
-  const now = audioContext.currentTime;
-
-  if (type === "kick") {
-    const osc = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(145, now);
-    osc.frequency.exponentialRampToValueAtTime(38, now + 0.16);
-    gain.gain.setValueAtTime(0.58, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-    osc.connect(gain);
-    gain.connect(masterGain);
-    osc.start(now);
-    osc.stop(now + 0.23);
-  } else if (type === "snare") {
-    const osc = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    osc.type = "triangle";
-    osc.frequency.setValueAtTime(195, now);
-    osc.frequency.exponentialRampToValueAtTime(75, now + 0.12);
-    gain.gain.setValueAtTime(0.34, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-    osc.connect(gain);
-    gain.connect(masterGain);
-    osc.start(now);
-    osc.stop(now + 0.16);
-  } else if (type === "hat") {
-    const osc = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    osc.type = "square";
-    osc.frequency.setValueAtTime(6800, now);
-    gain.gain.setValueAtTime(0.065, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
-    osc.connect(gain);
-    gain.connect(masterGain);
-    osc.start(now);
-    osc.stop(now + 0.05);
-  } else if (type === "perc") {
-    const osc = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(520, now);
-    osc.frequency.exponentialRampToValueAtTime(260, now + 0.08);
-    gain.gain.setValueAtTime(0.22, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
-    osc.connect(gain);
-    gain.connect(masterGain);
-    osc.start(now);
-    osc.stop(now + 0.1);
-  }
-}
-
-// 16 adım (8 vuruş x 2 yarım vuruş) üzerinden 8 farklı ritim kalıbı
-const BEAT_PATTERNS = {
-  pop:   { kicks: [0, 4, 8, 12], snares: [4, 12], hats: [0, 2, 4, 6, 8, 10, 12, 14], percs: [] },
-  lofi:  { kicks: [0, 7, 10], snares: [4, 12], hats: [0, 2, 4, 6, 8, 10, 12, 14], percs: [15] },
-  trap:  { kicks: [0, 6, 11], snares: [4, 12], hats: [0, 1, 2, 3, 4, 6, 8, 9, 10, 12, 14, 15], percs: [14] },
-  house: { kicks: [0, 4, 8, 12], snares: [4, 12], hats: [2, 6, 10, 14], percs: [7, 15] },
-  rock:  { kicks: [0, 2, 8, 10], snares: [4, 12], hats: [0, 2, 4, 6, 8, 10, 12, 14], percs: [] },
-  latin: { kicks: [0, 4, 8, 12], snares: [3, 6, 11, 14], hats: [0, 2, 4, 6, 8, 10, 12, 14], percs: [6, 14] },
-  afro:  { kicks: [0, 6, 8, 14], snares: [4, 12], hats: [0, 3, 6, 8, 11, 14], percs: [3, 11] },
-  synth: { kicks: [0, 4, 8, 12], snares: [4, 12], hats: [1, 3, 5, 7, 9, 11, 13, 15], percs: [2, 10] }
+const MODE_NAMES = {
+  free: '🎉 Herkes Serbest', turn: '🎼 Sıra Sende', theme: '🎬 Temalı Beste',
+  chaos: '🎲 Sürpriz / Kaos', melody: '🎯 Melodiyi Taklit Et', rhythm: '🥁 Ritmi Taklit Et'
 };
 
-function requestPlaySong() {
-  socket.emit("play-song", { code: roomCode }, res => {
-    if (!res?.ok) message(res?.message || "Döngü başlatılamadı.");
-  });
-}
+function updateUI(state) {
+  roomState = state;
+  const isHost = state.hostId === socket.id;
 
-function requestStopSong() {
-  socket.emit("stop-song", { code: roomCode }, res => {
-    if (!res?.ok) message(res?.message || "Döngü durdurulamadı.");
-  });
-}
+  document.getElementById('roomCodeBadge').textContent = isSolo ? '🎧 TEK KİŞİLİK' : `ODA: ${state.code}`;
+  document.getElementById('modeBadge').textContent = MODE_NAMES[state.mode] || state.mode;
+  document.getElementById('playersBadge').textContent = `👥 ${state.players.length} Oyuncu`;
+  document.getElementById('bpmLabel').textContent = `${state.bpm} BPM`;
+  document.getElementById('beatPresetSelect').value = state.beatPreset;
+  document.getElementById('bpmDown').disabled = !isHost;
+  document.getElementById('bpmUp').disabled = !isHost;
+  document.getElementById('finalDropBtn').classList.toggle('hidden', !isHost);
+  document.getElementById('voteStartBtn').classList.toggle('hidden', !isHost || isSolo);
+  document.getElementById('revealBlindBtn').classList.toggle('hidden', !(state.blindMode && !state.blindRevealed && isHost));
 
-function stopLocalLoopEngine() {
-  isLoopRunning = false;
-  if (loopCycleTimer) clearTimeout(loopCycleTimer);
-  if (beatStepTimer) clearInterval(beatStepTimer);
-  loopScheduledTimers.forEach(t => clearTimeout(t));
-  loopScheduledTimers = [];
-  updateBeatDotsUI(-1);
-  document.querySelectorAll(".action.playing-now").forEach(el => el.classList.remove("playing-now"));
-  if (recordState !== "idle") cancelLoopRecord();
-}
+  if (state.songTitle) document.getElementById('songTitleDisplay').textContent = `💿 "${state.songTitle}"`;
 
-async function startLocalLoopEngine() {
-  if (isLoopRunning) return;
-  await enableAudio();
-  isLoopRunning = true;
+  // BANNER GÜNCELLEME
+  const bText = document.getElementById('bannerText');
+  const bAct = document.getElementById('bannerActions');
+  bAct.innerHTML = '';
 
-  function runOneLoopCycle() {
-    if (!isLoopRunning) return;
-
-    // 1. Önceki döngüde kayıt aktifse tam yeni loop başlarken bitir ve sunucuya ekle!
-    if (recordState === "recording") {
-      finishLoopRecordAndSend();
-    } else if (recordState === "armed") {
-      // Bekleyen kayıt varsa tam 1. vuruş başında kaydı aktif et!
-      recordState = "recording";
-      recordedEvents = [];
-      $("recBox").className = "rec-box recording";
-      $("recStatusTitle").textContent = "🔴 KAYIT AKTİF! Piyanoya ritimle bas!";
-      $("recStatusDesc").textContent = "8. vuruş bitip yeni döngü başladığında kaydın otomatik eklenip üstüne binecek.";
-    }
-
-    const beatMs = getBeatDurationMs();
-    const loopMs = beatMs * 8;
-    const sixteenthMs = beatMs / 2; // 16 adım = 8 vuruş
-    currentCycleStartMs = performance.now();
-
-    // 2. 16 adımlı davul ve görsel vuruş çubuğu
-    if (beatStepTimer) clearInterval(beatStepTimer);
-    currentBeatStep = 0;
-
-    const triggerSixteenth = () => {
-      if (!isLoopRunning) return;
-      const step = currentBeatStep % 16;
-      if (step % 2 === 0) {
-        updateBeatDotsUI(step / 2);
-      }
-
-      const style = roomState?.beat || "none";
-      if (style !== "none" && BEAT_PATTERNS[style]) {
-        const pat = BEAT_PATTERNS[style];
-        if (pat.kicks.includes(step)) playDrumSound("kick");
-        if (pat.snares.includes(step)) playDrumSound("snare");
-        if (pat.hats.includes(step)) playDrumSound("hat");
-        if (pat.percs.includes(step)) playDrumSound("perc");
-      } else if (recordState === "recording" && step % 2 === 0) {
-        // Ritim kapalıysa kayıt sırasında hafif metronom tıkı ver
-        playDrumSound("hat");
-      }
-
-      currentBeatStep++;
-    };
-
-    triggerSixteenth();
-    beatStepTimer = setInterval(triggerSixteenth, sixteenthMs);
-
-    // 3. Odadaki tüm katmanları bu 8 vuruşluk döngüye zamanla
-    loopScheduledTimers.forEach(t => clearTimeout(t));
-    loopScheduledTimers = [];
-
-    const actions = roomState?.actions || [];
-    actions.forEach((act, index) => {
-      const events = act.events && act.events.length ? act.events : [{ time: 0, notes: act.notes }];
-      events.forEach(ev => {
-        const offset = Math.min(loopMs - 50, Math.max(0, ev.time || 0));
-        const t = setTimeout(() => {
-          if (!isLoopRunning) return;
-          const row = $("action-row-" + index);
-          if (row) {
-            row.classList.add("playing-now");
-            setTimeout(() => row.classList.remove("playing-now"), 200);
-          }
-          playNotes(ev.notes, act.instrument, act.settings);
-        }, offset);
-        loopScheduledTimers.push(t);
-      });
-    });
-
-    // 4. Tam 8 vuruş sonra yeni döngüyü başlat
-    loopCycleTimer = setTimeout(runOneLoopCycle, loopMs);
-  }
-
-  runOneLoopCycle();
-}
-
-/* ============================================================================
-   RİTMİ TAKLİT ET MODU FONKSİYONLARI
-============================================================================ */
-
-function renderRhythmPanel(rChallenge) {
-  const resultsBox = $("rhythmResults");
-  const subs = rChallenge?.submissions || [];
-
-  if (!rChallenge?.revealed) {
-    if (subs.length === 0) {
-      resultsBox.innerHTML = '<div class="muted">Henüz kimse ritim tahminini göndermedi.</div>';
-    } else {
-      resultsBox.innerHTML = `<div class="status">📩 Tahminini gönderenler (${subs.length}/${roomState.players.length}): <b>${subs.map(s => escapeHTML(s.playerName)).join(", ")}</b></div>`;
-    }
-    return;
-  }
-
-  let html = `<div class="status">
-    🥁 <b>Hedef Ritim:</b> ${escapeHTML(instrumentName(rChallenge.instrument))} • <b>${rChallenge.pattern.length} vuruşluk</b> ritim kalıbı
-  </div>`;
-
-  if (subs.length === 0) {
-    html += '<div class="muted">Bu turda kimse tahmin göndermedi.</div>';
+  if (state.mode === 'turn') {
+    const cur = state.players[state.turnIndex % state.players.length];
+    bText.innerHTML = cur?.id === socket.id
+      ? `🟢 <b>SIRA SENDE!</b> Ortak döngüye 1 katman ekle.`
+      : `⏳ Sıra <b>${cur?.name}</b> adlı oyuncuda...`;
+  } else if (state.mode === 'theme') {
+    bText.innerHTML = `🎬 <b>Sahne Teması:</b> ${state.theme}`;
+    if (isHost) bAct.innerHTML = `<button class="btn-sm" onclick="socket.emit('newTheme')">🔄 Yeni Tema</button>`;
+  } else if (state.mode === 'chaos') {
+    const myTask = state.chaosTasks?.[socket.id];
+    bText.innerHTML = `🎲 <b>Senin Kaos Görevin:</b> ${myTask ? myTask.text : 'Serbest çal!'}`;
+  } else if (state.mode === 'melody' || state.mode === 'rhythm') {
+    const myScore = state.scores?.[socket.id] || 0;
+    bText.innerHTML = `🏆 <b>Puanın: ${myScore}</b> — Örneği dinle ve aynısını çal!`;
+    bAct.innerHTML = `
+      <button class="btn-sm btn-cyan" onclick="playChallengeDemo()">🔊 Örneği Dinle</button>
+      <button class="btn-sm btn-green" onclick="checkChallengeResult()">✅ Cevabı Gönder</button>
+      ${isHost ? `<button class="btn-sm" onclick="socket.emit('nextChallenge')">⏭ Sonraki</button>` : ''}
+    `;
   } else {
-    html += subs.map((s, idx) => {
-      const isWinner = idx === 0;
-      return `<div class="score-card ${isWinner ? "winner" : ""}">
-        <div>
-          <strong>${isWinner ? "🏆 " : `${idx + 1}. `}${escapeHTML(s.playerName)}</strong>
-          <div class="muted">${s.times.length} vuruş yaptı</div>
+    bText.innerHTML = state.blindMode && !state.blindRevealed
+      ? `🙈 <b>Kör Beste Aktif!</b> Herkes kendi katmanını ekliyor, kilit açılınca hep birlikte dinlenecek.`
+      : `🎛️ Ortak stüdyo aktif. Katmanlarını ekle, mikserden düzenle!`;
+  }
+
+  // KATMAN LİSTESİ (MİKSER)
+  const listEl = document.getElementById('layerList');
+  if (state.layers.length === 0) {
+    listEl.innerHTML = `<div style="color:var(--muted); font-size:0.85rem; text-align:center; padding:30px 10px;">Henüz katman yok. Bir tuşa bas, kayıt al veya hazır ritim seç!</div>`;
+  } else {
+    listEl.innerHTML = state.layers.map(l => {
+      const isHiddenBlind = state.blindMode && !state.blindRevealed && l.authorId !== socket.id;
+      const isMuted = mutedLayers.has(l.id);
+      const isSoloThis = soloLayerId === l.id;
+      return `
+        <div class="layer-item ${isMuted ? 'muted' : ''}">
+          <div class="layer-info">
+            <div class="layer-title">${isHiddenBlind ? '🙈 Gizli Katman' : l.label}</div>
+            <div class="layer-meta">Prodüktör: ${l.author}</div>
+          </div>
+          <div class="layer-btns">
+            <button class="btn-sm ${isMuted ? 'btn-red' : ''}" title="Sustur" onclick="toggleMute('${l.id}')">${isMuted ? '🔇' : '🔊'}</button>
+            <button class="btn-sm ${isSoloThis ? 'btn-cyan' : ''}" title="Sadece Bunu Çal" onclick="toggleSolo('${l.id}')">🎧</button>
+            ${l.type === 'notes' && !isHiddenBlind ? `
+              <button class="btn-sm" title="+1 Oktav Kopyala" onclick="socket.emit('duplicateLayer',{layerId:'${l.id}',type:'octave'})">+1 Okt</button>
+              <button class="btn-sm" title="Ters Çevir" onclick="socket.emit('duplicateLayer',{layerId:'${l.id}',type:'reverse'})">⏪</button>
+            ` : ''}
+            <button class="btn-sm btn-red" title="Sil" onclick="socket.emit('removeLayer','${l.id}')">✕</button>
+          </div>
         </div>
-        <div class="score-badge">%${s.score}</div>
-      </div>`;
-    }).join("");
+      `;
+    }).join('');
   }
 
-  resultsBox.innerHTML = html;
-}
+  // OYLAMA & KAZANAN MODALI
+  const modal = document.getElementById('voteModal');
+  if (state.votingActive || state.winnerId) {
+    modal.classList.remove('hidden');
+    const body = document.getElementById('voteBody');
+    const foot = document.getElementById('voteFooter');
 
-async function playTargetRhythm() {
-  const rch = roomState?.rhythmChallenge;
-  if (!rch) return;
-  await enableAudio();
-  message(`🔊 Hedef ritim (${instrumentName(rch.instrument)}) çalınıyor, vuruş aralıklarını dinle...`);
-
-  const settings = {
-    volume: 0.9, pitch: 0, duration: 0.35,
-    attack: 0.01, release: 0.1, sustain: 0.85,
-    reverb: 0.1, echo: 0, distortion: 0, filter: 12000
-  };
-
-  rch.pattern.forEach(ms => {
-    setTimeout(() => playNotes([rch.note], rch.instrument, settings), ms);
-  });
-}
-
-async function tapRhythmPad() {
-  const rch = roomState?.rhythmChallenge;
-  if (!rch || rch.revealed) return;
-  await enableAudio();
-
-  const now = performance.now();
-  if (myRhythmTimes.length === 0) {
-    rhythmStartTime = now;
-    myRhythmTimes.push(0);
+    if (state.votingActive) {
+      document.getElementById('voteTitle').textContent = '🏆 Gecenin Prodüktörünü Seç!';
+      document.getElementById('voteSub').textContent = 'En iyi katmanı yapan arkadaşına oy ver.';
+      const myVote = state.votes?.[socket.id];
+      body.innerHTML = state.players.map(p => {
+        if (p.id === socket.id) return '';
+        return `<button class="${myVote === p.id ? 'btn-green' : ''}" onclick="socket.emit('castVote','${p.id}')">
+          ${myVote === p.id ? '✅ ' : '🎵 '}${p.name}
+        </button>`;
+      }).join('');
+      foot.innerHTML = isHost
+        ? `<button class="btn-amber" onclick="socket.emit('finishVoting')">🎉 Oylamayı Bitir & Kazananı Açıkla</button>`
+        : `<small style="color:var(--muted)">Oda sahibinin oylamayı bitirmesi bekleniyor...</small>`;
+    } else if (state.winnerId) {
+      const winner = state.players.find(p => p.id === state.winnerId);
+      document.getElementById('voteTitle').textContent = `👑 Gecenin Prodüktörü: ${winner?.name || 'Kazanan'}!`;
+      document.getElementById('voteSub').textContent = state.songTitle
+        ? `Şarkının Resmi Adı: "${state.songTitle}"`
+        : 'Kazanan bu ortak esere bir albüm/şarkı adı verebilir!';
+      body.innerHTML = (state.winnerId === socket.id && !state.songTitle)
+        ? `<input id="titleInput" placeholder="Şarkıya havalı bir isim ver..."><button class="btn-green" onclick="saveSongTitle()">💾 İsmi Kaydet</button>`
+        : '';
+      foot.innerHTML = `<button class="btn-primary" onclick="closeModal()">Stüdyoya Dön</button>`;
+    }
   } else {
-    myRhythmTimes.push(Math.round(now - rhythmStartTime));
-  }
-
-  const pad = $("rhythmPad");
-  pad.classList.add("hit");
-  setTimeout(() => pad.classList.remove("hit"), 110);
-
-  $("rhythmTapInfo").textContent = `${myRhythmTimes.length} vuruş kaydedildi (Sıfırlamak için 'Vuruşları Sıfırla'ya bas)`;
-
-  const settings = {
-    volume: 0.9, pitch: 0, duration: 0.35,
-    attack: 0.01, release: 0.1, sustain: 0.85,
-    reverb: 0.1, echo: 0, distortion: 0, filter: 12000
-  };
-  playNotes([rch.note], rch.instrument, settings);
-}
-
-function clearMyRhythm() {
-  myRhythmTimes = [];
-  rhythmStartTime = 0;
-  if ($("rhythmTapInfo")) {
-    $("rhythmTapInfo").textContent = "Buraya tıkla veya klavyede BOŞLUK (Space) tuşuna bas (0 vuruş)";
+    modal.classList.add('hidden');
   }
 }
 
-async function previewMyRhythm() {
-  const rch = roomState?.rhythmChallenge;
-  if (!rch || myRhythmTimes.length === 0) return message("Önce ritim pedine basarak vuruş yap.");
-  await enableAudio();
-
-  const settings = {
-    volume: 0.9, pitch: 0, duration: 0.35,
-    attack: 0.01, release: 0.1, sustain: 0.85,
-    reverb: 0.1, echo: 0, distortion: 0, filter: 12000
-  };
-  myRhythmTimes.forEach(ms => {
-    setTimeout(() => playNotes([rch.note], rch.instrument, settings), ms);
-  });
+function toggleMute(id) {
+  if (mutedLayers.has(id)) mutedLayers.delete(id);
+  else mutedLayers.add(id);
+  updateUI(roomState);
 }
 
-function submitRhythm() {
-  if (!roomCode) return;
-  if (myRhythmTimes.length === 0) return message("⚠️ Önce ritim pedine basarak vuruşlarını yap!");
-
-  socket.emit("submit-rhythm", { code: roomCode, times: myRhythmTimes }, res => {
-    if (!res?.ok) return message(res?.message || "Ritim gönderilemedi.");
-    if (res.room) updateRoom(res.room);
-    message("✅ Ritim tahminin gönderildi!");
-  });
+function toggleSolo(id) {
+  soloLayerId = (soloLayerId === id) ? null : id;
+  updateUI(roomState);
 }
 
-function revealRhythm() {
-  if (!roomCode) return;
-  socket.emit("reveal-rhythm", { code: roomCode }, res => {
-    if (!res?.ok) return message(res?.message || "Sonuçlar açıklanamadı.");
-    if (res.room) updateRoom(res.room);
-    message("🏆 Ritim yarışması sonuçları açıklandı!");
-  });
+function saveSongTitle() {
+  const val = document.getElementById('titleInput')?.value.trim();
+  if (val) socket.emit('setSongTitle', val);
 }
 
-// Space (Boşluk) tuşuyla Ritim Pedine basma desteği
-document.addEventListener("keydown", e => {
-  if (e.code === "Space" && roomState?.mode === "rhythm" && roomState?.started) {
-    if (document.activeElement?.tagName !== "INPUT") {
-      e.preventDefault();
-      tapRhythmPad();
-    }
-  }
-});
-
-/* ============================================================================
-   MELODİYİ TAKLİT ET MODU FONKSİYONLARI
-============================================================================ */
-
-function renderMimicPanel(challenge) {
-  const stepsCount = challenge?.sequence?.length || 4;
-  while (mimicSequence.length < stepsCount) mimicSequence.push(new Set());
-  if (mimicSequence.length > stepsCount) mimicSequence = mimicSequence.slice(0, stepsCount);
-
-  $("seqSteps").innerHTML = mimicSequence.map((noteSet, idx) => {
-    const arr = [...noteSet].sort((a, b) => a - b);
-    const label = arr.length ? arr.map(n => noteName(n)).join(" + ") : "Boş (Tuşa bas)";
-    const isActive = idx === activeStepIndex;
-    return `<div class="seq-step ${isActive ? "active-step" : ""}" onclick="selectStep(${idx})">
-      <div class="seq-step-title">${idx + 1}. Adım ${isActive ? "✏️" : ""}</div>
-      <div class="seq-step-notes">${escapeHTML(label)}</div>
-    </div>`;
-  }).join("");
-
-  const resultsBox = $("mimicResults");
-  const subs = challenge?.submissions || [];
-
-  if (!challenge?.revealed) {
-    if (subs.length === 0) {
-      resultsBox.innerHTML = '<div class="muted">Henüz kimse tahminini göndermedi.</div>';
-    } else {
-      resultsBox.innerHTML = `<div class="status">📩 Tahminini gönderenler (${subs.length}/${roomState.players.length}): <b>${subs.map(s => escapeHTML(s.playerName)).join(", ")}</b></div>`;
-    }
-    return;
-  }
-
-  const targetStr = challenge.sequence
-    .map((step, i) => `${i + 1}. [${step.map(n => noteName(n)).join("+")}]`)
-    .join(" → ");
-
-  let html = `<div class="status">
-    🎼 <b>Orijinal Hedef Melodi:</b> ${escapeHTML(instrumentName(challenge.instrument))}<br>
-    <small style="color:#c4b5fd;">${escapeHTML(targetStr)}</small>
-  </div>`;
-
-  if (subs.length === 0) {
-    html += '<div class="muted">Bu turda kimse tahmin göndermedi.</div>';
-  } else {
-    html += subs.map((s, idx) => {
-      const userStr = s.sequence
-        .map((step, i) => `${i + 1}. [${step.map(n => noteName(n)).join("+")}]`)
-        .join(" → ");
-      const isWinner = idx === 0;
-      return `<div class="score-card ${isWinner ? "winner" : ""}">
-        <div>
-          <strong>${isWinner ? "🏆 " : `${idx + 1}. `}${escapeHTML(s.playerName)}</strong>
-          <div class="muted">${escapeHTML(instrumentName(s.instrument))} • ${escapeHTML(userStr)}</div>
-        </div>
-        <div class="score-badge">%${s.score}</div>
-      </div>`;
-    }).join("");
-  }
-
-  resultsBox.innerHTML = html;
+function closeModal() {
+  document.getElementById('voteModal').classList.add('hidden');
+  roomState.winnerId = null;
 }
-
-function selectStep(idx) {
-  activeStepIndex = idx;
-  syncKeyboardToCurrentStep();
-  renderMimicPanel(roomState?.challenge);
-}
-
-function syncKeyboardToCurrentStep() {
-  const stepSet = mimicSequence[activeStepIndex] || new Set();
-  document.querySelectorAll(".key").forEach(k => {
-    const midi = Number(k.dataset.midi);
-    k.classList.toggle("selected", stepSet.has(midi));
-  });
-}
-
-function clearCurrentStep() {
-  if (mimicSequence[activeStepIndex]) {
-    mimicSequence[activeStepIndex].clear();
-    syncKeyboardToCurrentStep();
-    renderMimicPanel(roomState?.challenge);
-  }
-}
-
-function clearAllSteps() {
-  mimicSequence.forEach(s => s.clear());
-  activeStepIndex = 0;
-  syncKeyboardToCurrentStep();
-  renderMimicPanel(roomState?.challenge);
-}
-
-async function playSequenceArray(sequence, instrumentVal, tempoSec = 0.55) {
-  await enableAudio();
-  const baseSettings = {
-    volume: 0.85, pitch: 0, duration: tempoSec * 0.9,
-    attack: 0.02, release: 0.15, sustain: 0.85,
-    reverb: 0.15, echo: 0, distortion: 0, filter: 12000
-  };
-
-  sequence.forEach((notesArr, idx) => {
-    if (!notesArr || !notesArr.length) return;
-    setTimeout(() => playNotes(notesArr, instrumentVal, baseSettings), idx * tempoSec * 1000);
-  });
-}
-
-function playTargetMelody() {
-  const ch = roomState?.challenge;
-  if (!ch) return;
-  message("🔊 Hedef melodi çalınıyor, dikkatle dinle...");
-  playSequenceArray(ch.sequence, ch.instrument, ch.tempo || 0.55);
-}
-
-function previewMySequence() {
-  const seq = mimicSequence.map(s => [...s].sort((a, b) => a - b));
-  if (seq.every(s => s.length === 0)) return message("Önce adımlara nota ekle.");
-  const tempo = roomState?.challenge?.tempo || 0.55;
-  message("🎹 Kendi oluşturduğun melodi çalınıyor...");
-  playSequenceArray(seq, $("instrument").value, tempo);
-}
-
-function submitMimic() {
-  if (!roomCode) return message("Oda bağlantısı bulunamadı.");
-  const sequence = mimicSequence.map(s => [...s].sort((a, b) => a - b));
-  if (sequence.some(step => step.length === 0)) {
-    return message("⚠️ Lütfen 4 adımın tamamına piyano tuşlarından nota seç!");
-  }
-
-  socket.emit("submit-mimic", {
-    code: roomCode,
-    instrument: $("instrument").value,
-    sequence
-  }, res => {
-    if (!res?.ok) return message(res?.message || "Tahmin gönderilemedi.");
-    if (res.room) updateRoom(res.room);
-    message("✅ Melodi tahminin gönderildi!");
-  });
-}
-
-function revealMimic() {
-  if (!roomCode) return message("Oda bağlantısı bulunamadı.");
-  socket.emit("reveal-mimic", { code: roomCode }, res => {
-    if (!res?.ok) return message(res?.message || "Sonuçlar açıklanamadı.");
-    if (res.room) updateRoom(res.room);
-    message("🏆 Tur sonuçları açıklandı!");
-  });
-}
-
-/* ============================================================================
-   PİYANO KLAVYESİ & SES MOTORU
-============================================================================ */
-
-function instrumentName(value) {
-  const select = $("instrument");
-  const option = [...select.options].find(o => o.value === value);
-  return option ? option.textContent : value;
-}
-
-function noteName(midi) {
-  const names = ["Do","Do♯","Re","Re♯","Mi","Fa",
-    "Fa♯","Sol","Sol♯","La","La♯","Si"];
-  const octave = Math.floor(midi / 12) - 1;
-  return `${names[midi % 12]}${octave}`;
-}
-
-const noteNames = ["Do","Do♯","Re","Re♯","Mi","Fa","Fa♯","Sol","Sol♯","La","La♯","Si"];
-const blackNotes = new Set([1,3,6,8,10]);
-
-function buildKeyboard() {
-  selected.clear();
-  renderSelected();
-
-  const octave = Number($("octave").value);
-  const count = octave === 8 ? 12 : 24;
-  const keyboard = $("keyboard");
-  keyboard.innerHTML = "";
-
-  const whiteSemitones = [0,2,4,5,7,9,11];
-  const whiteCount = octave === 8 ? 7 : 14;
-  const whiteWidth = 100 / whiteCount;
-
-  for (let i = 0; i < count; i++) {
-    const semitone = i % 12;
-    if (blackNotes.has(semitone)) continue;
-
-    const octaveOffset = Math.floor(i / 12);
-    const whiteIndex = octaveOffset * 7 + whiteSemitones.indexOf(semitone);
-    const midi = 12 * (octave + 1) + i;
-    const key = document.createElement("button");
-
-    key.className = "key white";
-    key.style.left = `${whiteIndex * whiteWidth}%`;
-    key.style.width = `${whiteWidth}%`;
-    key.textContent = noteNames[semitone];
-    key.dataset.midi = midi;
-    key.onclick = () => selectNote(midi, key);
-    keyboard.appendChild(key);
-  }
-
-  for (let i = 0; i < count; i++) {
-    const semitone = i % 12;
-    if (!blackNotes.has(semitone)) continue;
-
-    const octaveOffset = Math.floor(i / 12);
-    const previousWhite = [0,2,4,5,7,9,11].filter(n => n < semitone).length - 1;
-    const whiteIndex = octaveOffset * 7 + previousWhite;
-    const midi = 12 * (octave + 1) + i;
-    const key = document.createElement("button");
-
-    key.className = "key black";
-    key.style.left = `${(whiteIndex + 0.68) * whiteWidth}%`;
-    key.style.width = `${whiteWidth * 0.64}%`;
-    key.textContent = noteNames[semitone];
-    key.dataset.midi = midi;
-    key.onclick = () => selectNote(midi, key);
-    keyboard.appendChild(key);
-  }
-
-  if (roomState?.mode === "mimic") {
-    syncKeyboardToCurrentStep();
-  }
-}
-
-function syncKeyboardToSelectedSet() {
-  document.querySelectorAll(".key").forEach(k => {
-    const midi = Number(k.dataset.midi);
-    k.classList.toggle("selected", selected.has(midi));
-  });
-}
-
-function selectNote(midi, element) {
-  const notesToPlay = getChordNotes(midi);
-
-  // Melodiyi Taklit Et Modu
-  if (roomState?.mode === "mimic") {
-    const stepSet = mimicSequence[activeStepIndex];
-    if (!stepSet) return;
-
-    stepSet.clear();
-    notesToPlay.forEach(n => stepSet.add(n));
-    syncKeyboardToCurrentStep();
-
-    if (activeStepIndex < mimicSequence.length - 1) {
-      activeStepIndex++;
-      setTimeout(() => {
-        syncKeyboardToCurrentStep();
-        renderMimicPanel(roomState?.challenge);
-      }, 180);
-    }
-    renderMimicPanel(roomState?.challenge);
-    playNotes(notesToPlay, $("instrument").value, getSettings());
-    return;
-  }
-
-  // Loop Overdub Kaydı aktifse: BPM'in 1/16'lık (yarım vuruş) ızgarasına otomatik hizala!
-  if (recordState === "recording") {
-    const rawElapsed = Math.max(0, performance.now() - currentCycleStartMs);
-    const gridUnit = getBeatDurationMs() / 2; // Yarım vuruşluk (1/8'lik nota) hassas ritim ızgarası
-    const snappedTime = Math.round(rawElapsed / gridUnit) * gridUnit;
-    const maxTime = getLoopDurationMs() - 60;
-
-    recordedEvents.push({
-      time: Math.min(maxTime, Math.round(snappedTime)),
-      notes: notesToPlay
-    });
-
-    element.classList.add("selected");
-    setTimeout(() => element.classList.remove("selected"), 150);
-    playNotes(notesToPlay, $("instrument").value, getSettings());
-    return;
-  }
-
-  // Normal Akor / Nota Seçimi
-  if (chordMode) {
-    selected.clear();
-    notesToPlay.forEach(n => selected.add(n));
-  } else {
-    if (selected.has(midi)) selected.delete(midi);
-    else selected.add(midi);
-  }
-
-  syncKeyboardToSelectedSet();
-  renderSelected();
-  playNotes(notesToPlay, $("instrument").value, getSettings());
-}
-
-function renderSelected() {
-  const notes = [...selected].sort((a,b) => a-b);
-  $("selectedNotes").innerHTML = notes.length
-    ? notes.map(n => `<span class="note-chip">${escapeHTML(noteName(n))}</span>`).join("")
-    : '<span class="muted">Henüz nota/akor seçilmedi.</span>';
-}
-
-function clearSelected() {
-  selected.clear();
-  syncKeyboardToSelectedSet();
-  renderSelected();
-}
-
-function getSettings() {
-  return {
-    volume: Number($("volume").value) / 100,
-    pitch: Number($("pitch").value),
-    duration: Number($("duration").value) / 10,
-    attack: Number($("attack").value) / 100,
-    release: Number($("release").value) / 100,
-    sustain: Number($("sustain").value) / 100,
-    reverb: Number($("reverb").value) / 100,
-    echo: Number($("echo").value) / 100,
-    distortion: Number($("distortion").value) / 100,
-    filter: Number($("filter").value)
-  };
-}
-
-function addSound() {
-  const notes = [...selected].sort((a,b) => a-b);
-  if (!notes.length) return message("Önce piyano tuşlarından nota veya akor seç.");
-
-  socket.emit("add-sound", {
-    code: roomCode,
-    notes,
-    beatIndex: Number($("beatSlotSelect").value) || 0,
-    instrument: $("instrument").value,
-    settings: getSettings()
-  }, result => {
-    if (!result?.ok) {
-      message(result?.message || "Ses eklenemedi.");
-    } else {
-      message("🎵 Katmanın döngüye eklendi!");
-      clearSelected();
-    }
-  });
-}
-
-async function enableAudio() {
-  try {
-    if (!audioContext) {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      audioContext = new AudioCtx();
-      masterGain = audioContext.createGain();
-      masterGain.gain.value = 0.9;
-      masterGain.connect(audioContext.destination);
-    }
-    if (audioContext.state === "suspended") await audioContext.resume();
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-function makeDistortion(amount) {
-  const curve = new Float32Array(44100);
-  const k = amount * 180;
-  for (let i = 0; i < curve.length; i++) {
-    const x = i * 2 / curve.length - 1;
-    curve[i] = k === 0 ? x : ((3 + k) * x * 20 * Math.PI / 180) /
-      (Math.PI + k * Math.abs(x));
-  }
-  return curve;
-}
-
-async function getInstrument(name, settings) {
-  await enableAudio();
-  if (!window.Soundfont) throw new Error("Enstrüman ses kütüphanesi yüklenemedi.");
-
-  const key = [
-    name,
-    Math.round(settings.filter),
-    Math.round(settings.echo * 10),
-    Math.round(settings.reverb * 10),
-    Math.round(settings.distortion * 10)
-  ].join("|");
-
-  if (instrumentCache.has(key)) return instrumentCache.get(key);
-
-  const filter = audioContext.createBiquadFilter();
-  filter.type = "lowpass";
-  filter.frequency.value = settings.filter;
-
-  const distortion = audioContext.createWaveShaper();
-  distortion.curve = makeDistortion(settings.distortion);
-  distortion.oversample = "4x";
-
-  const delay = audioContext.createDelay(2);
-  delay.delayTime.value = 0.28;
-
-  const dry = audioContext.createGain();
-  dry.gain.value = 1;
-
-  const wet = audioContext.createGain();
-  wet.gain.value = Math.min(0.75, settings.echo * 0.7 + settings.reverb * 0.35);
-
-  const feedback = audioContext.createGain();
-  feedback.gain.value = Math.min(0.55, settings.echo * 0.5 + settings.reverb * 0.2);
-
-  const input = audioContext.createGain();
-
-  input.connect(filter);
-  filter.connect(distortion);
-  distortion.connect(dry);
-  dry.connect(masterGain);
-
-  distortion.connect(delay);
-  delay.connect(wet);
-  wet.connect(masterGain);
-  delay.connect(feedback);
-  feedback.connect(delay);
-
-  const promise = Soundfont.instrument(audioContext, name, {
-    soundfont: "FluidR3_GM",
-    destination: input
-  });
-
-  instrumentCache.set(key, promise);
-  return promise;
-}
-
-async function playNotes(notes, instrumentNameValue, settings) {
-  try {
-    await enableAudio();
-    const instrument = await getInstrument(instrumentNameValue, settings);
-    const now = audioContext.currentTime;
-
-    notes.forEach(midi => {
-      const shifted = Math.max(0, Math.min(127, midi + settings.pitch));
-      instrument.play(shifted, now, {
-        duration: settings.duration + settings.release,
-        gain: settings.volume * settings.sustain
-      });
-    });
-  } catch (e) {
-    console.error(e);
-    message("Ses yüklenemedi. İnternet bağlantını kontrol et ve tekrar dene.");
-  }
-}
-
-const rangeLabels = {
-  volume: v => v + "%",
-  pitch: v => (v > 0 ? "+" : "") + v + " yarım ses",
-  duration: v => (v / 10).toFixed(1) + " sn",
-  attack: v => (v / 100).toFixed(2) + " sn",
-  release: v => (v / 100).toFixed(2) + " sn",
-  sustain: v => v + "%",
-  reverb: v => v + "%",
-  echo: v => v + "%",
-  distortion: v => v + "%",
-  filter: v => v + " Hz"
-};
-
-Object.keys(rangeLabels).forEach(id => {
-  $(id).addEventListener("input", () => {
-    $(id + "Value").textContent = rangeLabels[id]($(id).value);
-  });
-});
-
-socket.on("room-state", room => {
-  if (roomCode && room.code === roomCode) updateRoom(room);
-});
-
-socket.on("beat-changed", data => {
-  if (data.beat !== "none" && !isLoopRunning) {
-    startLocalLoopEngine();
-  }
-});
-
-socket.on("game-started", () => {
-  stopLocalLoopEngine();
-  clearAllSteps();
-  clearMyRhythm();
-  buildKeyboard();
-
-  if (roomState?.mode === "mimic") {
-    message("🎯 Melodi yarışması başladı! Hedef melodiyi dinle ve 4 adımı doldur.");
-  } else if (roomState?.mode === "rhythm") {
-    message("🥁 Ritim yarışması başladı! Hedef ritmi dinle ve vuruş pedinden aynı zamanlamayla çal.");
-  } else {
-    message(`🎉 Stüdyo hazır (${getRoomBpm()} BPM)! Arka plan ritmi seçebilir veya Döngü Kaydını Başlat ile üzerine çalabilirsin.`);
-  }
-});
-
-socket.on("sound-added", action => {
-  if (!isLoopRunning) {
-    const firstNotes = action.events?.[0]?.notes || action.notes;
-    playNotes(firstNotes, action.instrument, action.settings);
-  }
-});
-
-socket.on("song-playback", data => {
-  if (data.action === "play") {
-    startLocalLoopEngine();
-    message("▶ Döngü başladı! Tüm katmanlar ve ritim üst üste akıyor.");
-  }
-  if (data.action === "stop") {
-    stopLocalLoopEngine();
-    message("⏹ Döngü durduruldu.");
-  }
-});
-
-socket.on("round-cleared", () => {
-  stopLocalLoopEngine();
-  clearAllSteps();
-  clearMyRhythm();
-  message("🔄 Yeni tur başladı!");
-});
-
-socket.on("connect", () => {
-  message("Sunucuya bağlandın. Sahne adını ve BPM hızını seçip oyuna başla!");
-});
-
-socket.on("disconnect", () => {
-  message("Bağlantı kesildi. Yeniden bağlanmaya çalışılıyor...");
-});
-
-buildKeyboard();
 </script>
 </body>
 </html>
