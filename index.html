@@ -1,0 +1,961 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Müzik Partisi</title>
+<script src="/socket.io/socket.io.js"></script>
+
+<style>
+:root {
+  --bg:#101020;
+  --panel:#1b1b35;
+  --pink:#ff5db1;
+  --cyan:#57e4e8;
+  --yellow:#ffd166;
+  --muted:#aaa8c7;
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  min-height:100vh;
+  font-family:Arial, sans-serif;
+  color:white;
+  background:
+    radial-gradient(circle at 15% 10%,#30204c,transparent 35%),
+    radial-gradient(circle at 90% 80%,#123e50,transparent 30%),
+    var(--bg);
+}
+
+button,input { font:inherit; }
+
+button {
+  cursor:pointer;
+  border:0;
+  border-radius:13px;
+  padding:12px 16px;
+  font-weight:bold;
+  background:var(--cyan);
+  color:#171329;
+}
+
+button:hover { filter:brightness(1.12); }
+button:disabled { opacity:.35; cursor:not-allowed; }
+
+.secondary { background:#39395f;color:white; }
+.pink { background:var(--pink);color:#210d20; }
+.yellow { background:var(--yellow); }
+
+.wrap {
+  max-width:1100px;
+  margin:auto;
+  padding:28px 18px 60px;
+}
+
+header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:25px;
+}
+
+.brand { display:flex;align-items:center;gap:12px; }
+
+.logo {
+  width:52px;
+  height:52px;
+  border-radius:17px;
+  display:grid;
+  place-items:center;
+  font-size:28px;
+  background:linear-gradient(135deg,var(--pink),var(--yellow));
+}
+
+h1 { margin:0;font-size:clamp(25px,4vw,38px); }
+h2 { margin:0 0 14px; }
+
+.tag,.hint { color:var(--muted);font-size:13px; }
+
+.pill {
+  border:1px solid #454568;
+  border-radius:30px;
+  padding:8px 12px;
+  color:var(--cyan);
+  font-size:13px;
+}
+
+.panel {
+  background:rgba(27,27,53,.95);
+  border:1px solid #343456;
+  border-radius:22px;
+  padding:22px;
+  box-shadow:0 18px 50px #0003;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+p { color:var(--muted);line-height:1.5; }
+
+label {
+  display:block;
+  color:var(--muted);
+  font-size:13px;
+  margin:12px 0 7px;
+}
+
+input {
+  width:100%;
+  background:#111128;
+  border:1px solid #454568;
+  border-radius:12px;
+  padding:13px;
+  color:white;
+  outline:none;
+}
+
+input:focus { border-color:var(--cyan); }
+
+.mode-row { display:flex;gap:10px;margin:14px 0; }
+
+.mode-btn {
+  flex:1;
+  background:#303052;
+  color:white;
+  border:2px solid transparent;
+}
+
+.mode-btn.active {
+  border-color:var(--cyan);
+  background:#24454e;
+  color:var(--cyan);
+}
+
+.actions { display:flex;flex-wrap:wrap;gap:9px; }
+
+.hidden { display:none !important; }
+
+.room-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+}
+
+.room-code {
+  font-size:26px;
+  letter-spacing:4px;
+  color:var(--yellow);
+  font-weight:900;
+}
+
+.players {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:16px;
+}
+
+.player {
+  background:#292949;
+  border:1px solid #414168;
+  border-radius:14px;
+  padding:11px;
+  min-width:110px;
+}
+
+.player.current { border-color:var(--yellow); }
+
+.player strong { display:block;margin-top:5px; }
+
+.status {
+  color:var(--cyan);
+  font-weight:bold;
+  margin:14px 0;
+}
+
+.sound-grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-top:15px;
+}
+
+.sound-btn {
+  min-height:85px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:5px;
+  background:#303052;
+  color:white;
+  border:1px solid #49496e;
+}
+
+.sound-btn span { font-size:25px; }
+.sound-btn small { color:#c5c2e2;font-size:12px; }
+
+.feed {
+  max-height:330px;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.feed-item {
+  background:#252542;
+  border-radius:12px;
+  padding:12px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.feed-item small { color:var(--muted); }
+
+.bottom-row {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+  margin-top:15px;
+}
+
+.tempo { width:120px; }
+
+.toast {
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:white;
+  color:#171329;
+  padding:12px 18px;
+  border-radius:12px;
+  font-weight:bold;
+  z-index:5;
+}
+
+@media(max-width:720px) {
+  .grid { grid-template-columns:1fr; }
+  .sound-grid { grid-template-columns:repeat(2,1fr); }
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<header>
+  <div class="brand">
+    <div class="logo">🎶</div>
+    <div>
+      <h1>Müzik Partisi</h1>
+      <div class="tag">Arkadaşlarınla acayip müzikler yap!</div>
+    </div>
+  </div>
+  <div class="pill">2–8 OYUNCU</div>
+</header>
+
+<section id="home" class="grid">
+
+  <div class="panel">
+    <h2>🎉 Yeni oda oluştur</h2>
+    <p>Bir oda aç, arkadaşlarını davet et ve müzik partisini başlat.</p>
+
+    <label>Oyuncu adın</label>
+    <input id="nameCreate" maxlength="18" placeholder="Oyuncu adın">
+
+    <label>Oyun modu</label>
+    <div class="mode-row">
+      <button id="partyMode" class="mode-btn active" type="button">
+        🎤 Sıra Sende
+      </button>
+      <button id="freeMode" class="mode-btn" type="button">
+        🎹 Herkes Serbest
+      </button>
+    </div>
+
+    <button id="createBtn" class="pink" style="width:100%">
+      ODA OLUŞTUR
+    </button>
+
+    <p class="hint">
+      Sıra Sende: herkes sırayla ses ekler.<br>
+      Herkes Serbest: herkes istediği zaman ses ekler.
+    </p>
+  </div>
+
+  <div class="panel">
+    <h2>🚪 Odaya katıl</h2>
+    <p>Arkadaşının gönderdiği oda kodunu gir.</p>
+
+    <label>Oyuncu adın</label>
+    <input id="nameJoin" maxlength="18" placeholder="Oyuncu adın">
+
+    <label>Oda kodu</label>
+    <input id="roomCodeInput" maxlength="6" placeholder="Örn. A1B2C3">
+
+    <button id="joinBtn" style="width:100%;margin-top:14px">
+      ODAYA KATIL
+    </button>
+  </div>
+
+</section>
+
+<section id="game" class="hidden">
+
+  <div class="panel" style="margin-bottom:18px">
+
+    <div class="room-head">
+      <div>
+        <div class="hint">ODA KODU</div>
+        <div class="room-code" id="roomCode">------</div>
+      </div>
+
+      <div class="actions">
+        <button id="copyCode" class="secondary">KODU KOPYALA</button>
+        <button id="leaveBtn" class="secondary">ANA MENÜ</button>
+      </div>
+    </div>
+
+    <div class="players" id="players"></div>
+    <div class="status" id="status">Oda hazırlanıyor...</div>
+
+    <div id="hostControls">
+      <button id="startBtn" class="pink">OYUNU BAŞLAT</button>
+    </div>
+
+  </div>
+
+  <div id="playArea" class="grid hidden">
+
+    <div class="panel">
+      <h2>🎛️ Ses ekle</h2>
+      <p id="turnHint">Bir ses seç ve parçaya ekle.</p>
+
+      <div class="sound-grid">
+
+        <button class="sound-btn" data-kind="note" data-label="Piyano notası" data-note="C4">
+          <span>🎹</span>Piyano<small>Nota ekle</small>
+        </button>
+
+        <button class="sound-btn" data-kind="note" data-label="Yüksek nota" data-note="G5">
+          <span>✨</span>Parıltı<small>İnce ses</small>
+        </button>
+
+        <button class="sound-btn" data-kind="chord" data-label="Neşeli akor" data-chord="happy">
+          <span>🌈</span>Neşeli akor<small>Birlikte çal</small>
+        </button>
+
+        <button class="sound-btn" data-kind="chord" data-label="Gizemli akor" data-chord="mystery">
+          <span>🛸</span>Gizemli akor<small>Uzay havası</small>
+        </button>
+
+        <button class="sound-btn" data-kind="drums" data-label="Davul ritmi">
+          <span>🥁</span>Davul<small>Ritim</small>
+        </button>
+
+        <button class="sound-btn" data-kind="bass" data-label="Bas gitar">
+          <span>🎸</span>Bas gitar<small>Tok ses</small>
+        </button>
+
+        <button class="sound-btn" data-kind="effect" data-label="Lazer efekti">
+          <span>🔫</span>Lazer<small>Bilim kurgu</small>
+        </button>
+
+        <button class="sound-btn" data-kind="funny" data-label="Kurbağa">
+          <span>🐸</span>Kurbağa<small>Vırak!</small>
+        </button>
+
+        <button class="sound-btn" data-kind="funny" data-label="Korna">
+          <span>📣</span>Korna<small>Gürültü zamanı</small>
+        </button>
+
+        <button class="sound-btn" data-kind="instrument" data-label="Zil">
+          <span>🔔</span>Zil<small>Çın çın</small>
+        </button>
+
+        <button class="sound-btn" data-kind="style" data-label="Robot sesi">
+          <span>🤖</span>Robot<small>Elektronik</small>
+        </button>
+
+        <button class="sound-btn" data-kind="melody" data-label="Mini melodi">
+          <span>🎼</span>Mini melodi<small>Üç nota</small>
+        </button>
+
+      </div>
+
+      <div class="bottom-row">
+        <span class="hint">Tempo</span>
+        <input id="tempoControl" class="tempo" type="range" min="60" max="180" value="115">
+        <strong id="tempoValue">115 BPM</strong>
+        <button id="applyTempo" class="secondary">Hızı ayarla</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>🎧 Oluşan müzik</h2>
+      <p>Herkesin eklediği sesler burada birikir.</p>
+
+      <div class="actions" style="margin-bottom:14px">
+        <button id="playMusic" class="yellow">▶ MÜZİĞİ ÇAL</button>
+        <button id="stopMusic" class="secondary">■ DURDUR</button>
+      </div>
+
+      <div class="feed" id="feed">
+        <div class="hint">Henüz ses eklenmedi.</div>
+      </div>
+
+      <div class="bottom-row">
+        <button id="nextRound" class="pink hidden">YENİ TURA GEÇ</button>
+        <span class="hint" id="roundLabel"></span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script>
+(() => {
+
+const socket = io();
+const $ = id => document.getElementById(id);
+
+let selectedMode = "party";
+let currentRoom = null;
+let audioContext = null;
+let activeOscillators = [];
+
+function toast(message) {
+  $("toast").textContent = message;
+  $("toast").classList.remove("hidden");
+
+  clearTimeout(window.toastTimer);
+
+  window.toastTimer = setTimeout(() => {
+    $("toast").classList.add("hidden");
+  }, 2500);
+}
+
+function call(event, data = {}) {
+  return new Promise(resolve => {
+    socket.emit(event, data, response => {
+      resolve(response || {
+        ok:false,
+        error:"Sunucudan yanıt alınamadı."
+      });
+    });
+  });
+}
+
+/* OYUN MODU */
+
+function setMode(mode) {
+  selectedMode = mode;
+
+  $("partyMode").classList.toggle("active", mode === "party");
+  $("freeMode").classList.toggle("active", mode === "free");
+}
+
+$("partyMode").addEventListener("click", () => setMode("party"));
+$("freeMode").addEventListener("click", () => setMode("free"));
+
+/* SES SİSTEMİ */
+
+async function ensureAudio() {
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+
+  if (!AudioCtx) {
+    toast("Tarayıcın ses üretimini desteklemiyor.");
+    return null;
+  }
+
+  if (!audioContext) {
+    audioContext = new AudioCtx();
+  }
+
+  if (audioContext.state === "suspended") {
+    await audioContext.resume();
+  }
+
+  return audioContext;
+}
+
+function stopMusic() {
+  activeOscillators.forEach(o => {
+    try { o.stop(); } catch(e) {}
+  });
+
+  activeOscillators = [];
+}
+
+function tone(freq, start, duration, wave = "sine", volume = 0.12) {
+  if (!audioContext) return;
+
+  const osc = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+
+  osc.type = wave;
+  osc.frequency.setValueAtTime(freq, start);
+
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.exponentialRampToValueAtTime(volume, start + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+  osc.connect(gain);
+  gain.connect(audioContext.destination);
+
+  osc.start(start);
+  osc.stop(start + duration + 0.03);
+
+  activeOscillators.push(osc);
+}
+
+const notes = {
+  C4:261.63,
+  D4:293.66,
+  E4:329.63,
+  F4:349.23,
+  G4:392,
+  A4:440,
+  B4:493.88,
+  C5:523.25,
+  D5:587.33,
+  E5:659.25,
+  G5:783.99
+};
+
+async function previewSound(kind, data = {}) {
+  const ctx = await ensureAudio();
+  if (!ctx) return;
+
+  const now = ctx.currentTime + 0.03;
+
+  if (kind === "note") {
+    tone(notes[data.note] || 440, now, .45, "triangle", .15);
+  }
+
+  else if (kind === "chord") {
+    const frequencies = data.chord === "mystery"
+      ? [220,261.63,311.13]
+      : [261.63,329.63,392];
+
+    frequencies.forEach(f => tone(f, now, .8, "sine", .09));
+  }
+
+  else if (kind === "drums") {
+    tone(90, now, .16, "sine", .3);
+    tone(180, now + .22, .12, "triangle", .16);
+    tone(90, now + .44, .16, "sine", .3);
+  }
+
+  else if (kind === "bass") {
+    tone(82.4, now, .55, "sawtooth", .16);
+  }
+
+  else if (kind === "effect" || kind === "style") {
+    tone(900, now, .12, "square", .08);
+    tone(420, now + .13, .22, "sawtooth", .07);
+  }
+
+  else if (kind === "funny") {
+    tone(180, now, .18, "square", .15);
+    tone(260, now + .18, .18, "square", .15);
+    tone(140, now + .36, .28, "triangle", .15);
+  }
+
+  else if (kind === "instrument") {
+    tone(1046.5, now, .65, "sine", .13);
+    tone(1318.5, now + .02, .55, "sine", .07);
+  }
+
+  else if (kind === "melody") {
+    [notes.C4,notes.E4,notes.G4].forEach((f,i) => {
+      tone(f, now + i*.18, .25, "triangle", .13);
+    });
+  }
+}
+
+async function addAction(kind, label, data = {}) {
+  const result = await call("add-action", {
+    type:kind,
+    label,
+    data
+  });
+
+  if (!result.ok) {
+    toast(result.error);
+    return;
+  }
+
+  await previewSound(kind, data);
+}
+
+/* ODA OLUŞTURMA */
+
+$("createBtn").addEventListener("click", async () => {
+  const name = $("nameCreate").value.trim() || "Oyuncu";
+
+  const result = await call("create-room", {
+    name,
+    mode:selectedMode
+  });
+
+  if (!result.ok) {
+    toast(result.error);
+    return;
+  }
+
+  currentRoom = result.room;
+  showGame();
+});
+
+/* ODAYA KATILMA */
+
+$("joinBtn").addEventListener("click", async () => {
+  const name = $("nameJoin").value.trim() || "Oyuncu";
+  const code = $("roomCodeInput").value.trim().toUpperCase();
+
+  if (!code) {
+    toast("Önce oda kodunu yaz.");
+    return;
+  }
+
+  const result = await call("join-room", { name, code });
+
+  if (!result.ok) {
+    toast(result.error);
+    return;
+  }
+
+  currentRoom = result.room;
+  showGame();
+});
+
+function showGame() {
+  $("home").classList.add("hidden");
+  $("game").classList.remove("hidden");
+  renderRoom(currentRoom);
+}
+
+function showHome() {
+  currentRoom = null;
+  stopMusic();
+
+  $("game").classList.add("hidden");
+  $("home").classList.remove("hidden");
+}
+
+/* ANA MENÜ */
+
+$("leaveBtn").addEventListener("click", () => {
+  socket.disconnect();
+  socket.connect();
+  showHome();
+});
+
+$("copyCode").addEventListener("click", async () => {
+  if (!currentRoom) return;
+
+  try {
+    await navigator.clipboard.writeText(currentRoom.code);
+    toast("Oda kodu kopyalandı!");
+  } catch(e) {
+    toast("Oda kodun: " + currentRoom.code);
+  }
+});
+
+/* OYUNU BAŞLAT */
+
+$("startBtn").addEventListener("click", async () => {
+  const result = await call("start-game");
+
+  if (!result.ok) {
+    toast(result.error);
+  }
+});
+
+/* YENİ TUR */
+
+$("nextRound").addEventListener("click", async () => {
+  const result = await call("next-round");
+
+  if (!result.ok) {
+    toast(result.error);
+  }
+});
+
+/* SES BUTONLARI */
+
+document.querySelectorAll(".sound-btn").forEach(button => {
+
+  button.addEventListener("click", async () => {
+
+    if (!currentRoom || !currentRoom.started) {
+      toast("Önce oyunu başlatın.");
+      return;
+    }
+
+    const kind = button.dataset.kind;
+    const data = {};
+
+    if (button.dataset.note) {
+      data.note = button.dataset.note;
+    }
+
+    if (button.dataset.chord) {
+      data.chord = button.dataset.chord;
+    }
+
+    await addAction(kind, button.dataset.label, data);
+  });
+
+});
+
+/* TEMPO */
+
+$("tempoControl").addEventListener("input", () => {
+  $("tempoValue").textContent = $("tempoControl").value + " BPM";
+});
+
+$("applyTempo").addEventListener("click", async () => {
+  if (!currentRoom || !currentRoom.started) {
+    toast("Önce oyunu başlatın.");
+    return;
+  }
+
+  const result = await call("change-tempo", {
+    tempo:Number($("tempoControl").value)
+  });
+
+  if (!result.ok) {
+    toast(result.error);
+    return;
+  }
+
+  toast("Tempo güncellendi!");
+});
+
+/* MÜZİĞİ ÇAL */
+
+$("playMusic").addEventListener("click", async () => {
+
+  if (!currentRoom || !currentRoom.actions.length) {
+    toast("Önce birkaç ses ekleyin.");
+    return;
+  }
+
+  const ctx = await ensureAudio();
+  if (!ctx) return;
+
+  stopMusic();
+
+  const beat = 60 / (currentRoom.tempo || 115);
+
+  currentRoom.actions.forEach((action, index) => {
+
+    const delay = ctx.currentTime + .12 + index * beat * .75;
+    const data = action.data || {};
+
+    if (action.type === "note") {
+      tone(notes[data.note] || 440, delay, .38, "triangle", .12);
+    }
+
+    else if (action.type === "chord") {
+      const frequencies = data.chord === "mystery"
+        ? [220,261.63,311.13]
+        : [261.63,329.63,392];
+
+      frequencies.forEach(f => {
+        tone(f, delay, .55, "sine", .07);
+      });
+    }
+
+    else if (action.type === "drums") {
+      tone(85, delay, .14, "sine", .24);
+      tone(170, delay + .12, .1, "triangle", .12);
+    }
+
+    else if (action.type === "bass") {
+      tone(82.4, delay, .45, "sawtooth", .12);
+    }
+
+    else if (action.type === "funny") {
+      tone(190, delay, .13, "square", .12);
+      tone(270, delay + .14, .16, "square", .12);
+    }
+
+    else if (action.type === "instrument") {
+      tone(1046.5, delay, .45, "sine", .1);
+    }
+
+    else if (action.type === "melody") {
+      [261.63,329.63,392].forEach((f,i) => {
+        tone(f, delay + i*.12, .2, "triangle", .1);
+      });
+    }
+
+    else {
+      tone(600, delay, .18, "square", .07);
+    }
+
+  });
+
+});
+
+$("stopMusic").addEventListener("click", stopMusic);
+
+/* ODA EKRANINI GÜNCELLE */
+
+function renderRoom(room) {
+  if (!room) return;
+
+  currentRoom = room;
+
+  $("roomCode").textContent = room.code;
+  $("players").innerHTML = "";
+
+  room.players.forEach(player => {
+
+    const el = document.createElement("div");
+
+    const isCurrent =
+      room.mode === "party" &&
+      room.started &&
+      !room.finished &&
+      room.players[room.turn]?.id === player.id;
+
+    el.className = "player" + (isCurrent ? " current" : "");
+
+    const avatar = document.createElement("span");
+    avatar.textContent = player.avatar || "🎧";
+
+    const name = document.createElement("strong");
+    name.textContent =
+      player.name + (player.id === room.hostId ? " 👑" : "");
+
+    const detail = document.createElement("small");
+    detail.className = "hint";
+    detail.textContent = player.id === socket.id ? "Sen" : "Oyuncu";
+
+    el.append(avatar, name, detail);
+    $("players").appendChild(el);
+
+  });
+
+  const isHost = room.hostId === socket.id;
+
+  $("hostControls").classList.toggle(
+    "hidden",
+    room.started || !isHost
+  );
+
+  $("startBtn").disabled = room.players.length < 2;
+
+  $("playArea").classList.toggle("hidden", !room.started);
+
+  if (!room.started) {
+    $("status").textContent = isHost
+      ? "Arkadaşların katılınca oyunu başlatabilirsin."
+      : "Oda sahibinin oyunu başlatması bekleniyor.";
+  }
+
+  else if (room.mode === "party") {
+    if (room.finished) {
+      $("status").textContent =
+        "🎉 Herkes katkısını yaptı! Yeni tur başlayabilir.";
+    } else {
+      $("status").textContent =
+        "🎤 Sıra: " + room.players[room.turn]?.name;
+    }
+  }
+
+  else {
+    $("status").textContent =
+      "🎹 Serbest mod! Herkes istediği zaman ses ekleyebilir.";
+  }
+
+  const myTurn =
+    room.mode === "free" ||
+    (
+      !room.finished &&
+      room.players[room.turn]?.id === socket.id &&
+      !room.acted.includes(socket.id)
+    );
+
+  document.querySelectorAll(".sound-btn").forEach(button => {
+    button.disabled = !myTurn;
+  });
+
+  $("turnHint").textContent =
+    room.mode === "free"
+      ? "İstediğin sesi istediğin zaman ekle!"
+      : myTurn
+        ? "Sıra sende! Bir ses seç."
+        : "Sıra sana gelince ses ekleyebilirsin.";
+
+  $("nextRound").classList.toggle(
+    "hidden",
+    !(isHost && room.mode === "party" && room.finished)
+  );
+
+  $("roundLabel").textContent =
+    room.mode === "party" ? "Tur " + room.round : "Serbest mod";
+
+  $("tempoControl").value = room.tempo;
+  $("tempoValue").textContent = room.tempo + " BPM";
+
+  $("feed").innerHTML = "";
+
+  if (!room.actions.length) {
+    $("feed").innerHTML =
+      '<div class="hint">Henüz ses eklenmedi. İlk sesi sen ekle!</div>';
+  }
+
+  else {
+    room.actions.slice().reverse().forEach(action => {
+
+      const item = document.createElement("div");
+      item.className = "feed-item";
+
+      const left = document.createElement("span");
+      left.textContent = action.label;
+
+      const right = document.createElement("small");
+      right.textContent = action.playerName;
+
+      item.append(left, right);
+      $("feed").appendChild(item);
+
+    });
+  }
+}
+
+/* SUNUCU GÜNCELLEMELERİ */
+
+socket.on("room-state", renderRoom);
+
+socket.on("connect_error", () => {
+  toast("Sunucuya bağlanılamadı. CMD penceresini kontrol et.");
+});
+
+})();
+</script>
+
+</body>
+</html>
