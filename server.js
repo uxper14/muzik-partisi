@@ -54,7 +54,7 @@ function serializeRoom(room) {
     id: p.id,
     name: p.name,
     avatar: p.avatar,
-    score: p.score || 0,
+    score: Number(p.score || 0),
     connected: Boolean(p.ws && p.ws.readyState === 1)
   }));
 
@@ -334,9 +334,11 @@ wss.on("connection", (ws) => {
     room.lastActiveAt = Date.now();
 
     if (msg.type === "update_settings" && room.hostId === boundPlayerId) {
+      const incoming = { ...(msg.settings || {}) };
+      if (incoming.mode === "muzziko") incoming.mode = "collab";
       room.settings = {
         ...room.settings,
-        ...(msg.settings || {})
+        ...incoming
       };
       broadcastRoom(room);
       return;
@@ -362,6 +364,9 @@ wss.on("connection", (ws) => {
 
     if (msg.type === "submit_layer") {
       const player = room.players.get(boundPlayerId);
+      if (player) {
+        player.score = (player.score || 0) + 10;
+      }
       room.layers.push({
         id: makeId("lyr"),
         playerId: boundPlayerId,
@@ -370,10 +375,16 @@ wss.on("connection", (ws) => {
         instrumentId: msg.instrumentId || "grand_piano",
         synth: msg.synth || {},
         reverse: Boolean(msg.reverse),
-        notes: Array.isArray(msg.notes) ? msg.notes.slice(0, 300) : [],
-        mic: msg.mic || null
+        notes: Array.isArray(msg.notes) ? msg.notes.slice(0, 300) : []
       });
       advanceStudioTurn(room);
+      broadcastRoom(room);
+      return;
+    }
+
+    // Yalnızca odayı kuran kişi (host) döngü katmanı silebilir
+    if (msg.type === "delete_layer" && room.hostId === boundPlayerId) {
+      room.layers = room.layers.filter((l) => l.id !== msg.layerId);
       broadcastRoom(room);
       return;
     }
@@ -389,6 +400,10 @@ wss.on("connection", (ws) => {
     if (msg.type === "cast_vote") {
       if (msg.targetPlayerId) {
         room.votes[boundPlayerId] = msg.targetPlayerId;
+        const target = room.players.get(msg.targetPlayerId);
+        if (target) {
+          target.score = (target.score || 0) + 5;
+        }
       }
       broadcastRoom(room);
       return;
