@@ -1,4 +1,3 @@
-
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
@@ -19,6 +18,21 @@ app.get("/", (req, res) => {
 const rooms = new Map();
 const MAX_PLAYERS = 8;
 
+const CHALLENGE_INSTRUMENTS = [
+  "acoustic_grand_piano",
+  "electric_piano_1",
+  "music_box",
+  "violin",
+  "cello",
+  "acoustic_guitar_nylon",
+  "electric_guitar_clean",
+  "flute",
+  "clarinet",
+  "trumpet",
+  "vibraphone",
+  "marimba"
+];
+
 function makeCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let code = "";
@@ -31,10 +45,81 @@ function makeCode() {
   return code;
 }
 
+function generateChallenge() {
+  const scales = [
+    [60, 62, 64, 65, 67, 69, 71, 72], // Do Majör
+    [60, 62, 63, 65, 67, 68, 70, 72], // Do Minör
+    [62, 64, 66, 67, 69, 71, 73, 74], // Re Majör
+    [64, 66, 67, 69, 71, 72, 74, 76], // Mi Minör
+    [67, 69, 71, 72, 74, 76, 78, 79]  // Sol Majör
+  ];
+  const scale = scales[Math.floor(Math.random() * scales.length)];
+  const length = 4;
+  const sequence = [];
+
+  for (let i = 0; i < length; i++) {
+    const note = scale[Math.floor(Math.random() * scale.length)];
+    sequence.push([note]);
+  }
+
+  const instrument = CHALLENGE_INSTRUMENTS[Math.floor(Math.random() * CHALLENGE_INSTRUMENTS.length)];
+  const tempo = [0.45, 0.55, 0.65][Math.floor(Math.random() * 3)];
+
+  return {
+    instrument,
+    tempo,
+    sequence
+  };
+}
+
+function calculateSimilarity(target, submission) {
+  if (!target || !submission || !Array.isArray(submission.sequence)) return 0;
+
+  const targetSeq = target.sequence;
+  const userSeq = submission.sequence;
+  const steps = targetSeq.length;
+
+  let noteScoreTotal = 0;
+
+  for (let i = 0; i < steps; i++) {
+    const tNotes = targetSeq[i] || [];
+    const uNotes = userSeq[i] || [];
+
+    if (uNotes.length === 0 || tNotes.length === 0) continue;
+
+    // İlk notalar arasındaki yarım ses farkına göre yakınlık puanı
+    const tMidi = tNotes[0];
+    let bestStepScore = 0;
+
+    for (const uMidi of uNotes) {
+      const diff = Math.abs(tMidi - uMidi);
+      let score = 0;
+      if (diff === 0) score = 100;
+      else if (diff === 12) score = 80; // Aynı nota farklı oktav
+      else if (diff === 1) score = 65;  // 1 yarım ses yakın
+      else if (diff === 2) score = 45;  // 1 tam ses yakın
+      else if (diff <= 4) score = 20;
+      else score = 5;
+
+      if (score > bestStepScore) bestStepScore = score;
+    }
+
+    // Fazladan basılan alakasız tuş varsa hafif ceza
+    const extraPenalty = Math.max(0, (uNotes.length - tNotes.length) * 10);
+    noteScoreTotal += Math.max(0, bestStepScore - extraPenalty);
+  }
+
+  const melodyPart = (noteScoreTotal / steps) * 0.85;
+  const instrumentBonus = submission.instrument === target.instrument ? 15 : 0;
+
+  return Math.min(100, Math.round(melodyPart + instrumentBonus));
+}
+
 function publicRoom(room) {
   return {
     code: room.code,
     mode: room.mode,
+    solo: room.solo,
     host: room.host,
     started: room.started,
     currentTurn: room.currentTurn,
@@ -42,7 +127,22 @@ function publicRoom(room) {
       id: p.id,
       name: p.name
     })),
-    actions: room.actions
+    actions: room.actions,
+    challenge: room.challenge
+      ? {
+          instrument: room.challenge.instrument,
+          tempo: room.challenge.tempo,
+          sequence: room.challenge.sequence,
+          submissions: room.challenge.submissions.map(s => ({
+            playerId: s.playerId,
+            playerName: s.playerName,
+            instrument: s.instrument,
+            sequence: s.sequence,
+            score: s.score
+          })),
+          revealed: room.challenge.revealed
+        }
+      : null
   };
 }
 
@@ -84,19 +184,28 @@ function removePlayer(socket) {
 io.on("connection", socket => {
   socket.on("create-room", (data, callback) => {
     const name = String(data?.name || "Oyuncu").trim().slice(0, 18);
-    const mode = data?.mode === "free" ? "free" : "party";
+    const allowedModes = ["party", "free", "mimic"];
+    const mode = allowedModes.includes(data?.mode) ? data.mode : "party";
+    const solo = Boolean(data?.solo);
     const code = makeCode();
 
     const room = {
       code,
       mode,
+      solo,
       host: socket.id,
-      started: false,
+      started: solo, // Tek kişilik modda direkt başlar
       currentTurn: 0,
       players: [{ id: socket.id, name }],
       actions: [],
+      challenge: null,
       dj: null
     };
+
+    if (solo && mode === "mimic") {
+      const ch = generateChallenge();
+      room.challenge = { ...ch, submissions: [], revealed: false };
+    }
 
     rooms.set(code, room);
     socket.join(code);
@@ -106,6 +215,9 @@ io.on("connection", socket => {
     }
 
     sendRoom(room);
+    if (solo) {
+      socket.emit("game-started");
+    }
   });
 
   socket.on("join-room", (data, callback) => {
@@ -115,6 +227,10 @@ io.on("connection", socket => {
 
     if (!room) {
       return callback?.({ ok: false, message: "Oda bulunamadı." });
+    }
+
+    if (room.solo) {
+      return callback?.({ ok: false, message: "Bu oda tek kişilik olarak açılmış." });
     }
 
     if (room.started) {
@@ -148,6 +264,13 @@ io.on("connection", socket => {
     room.actions = [];
     room.currentTurn = 0;
 
+    if (room.mode === "mimic") {
+      const ch = generateChallenge();
+      room.challenge = { ...ch, submissions: [], revealed: false };
+    } else {
+      room.challenge = null;
+    }
+
     sendRoom(room);
     callback?.({ ok: true });
     io.to(room.code).emit("game-started");
@@ -158,6 +281,10 @@ io.on("connection", socket => {
 
     if (!room || !room.started) {
       return callback?.({ ok: false, message: "Oyun başlamamış." });
+    }
+
+    if (room.mode === "mimic") {
+      return callback?.({ ok: false, message: "Bu modda melodi gönderme alanını kullan." });
     }
 
     const playerIndex = room.players.findIndex(p => p.id === socket.id);
@@ -195,13 +322,109 @@ io.on("connection", socket => {
     };
 
     room.actions.push(action);
-
     io.to(room.code).emit("sound-added", action);
 
     if (room.mode === "party") {
       room.currentTurn = (room.currentTurn + 1) % room.players.length;
     }
 
+    sendRoom(room);
+    callback?.({ ok: true });
+  });
+
+  // Sadece oda sahibinin ortak müziği başlatması/durdurması
+  socket.on("play-song", (data, callback) => {
+    const room = getRoom(socket, data?.code);
+    if (!room) return callback?.({ ok: false, message: "Oda bulunamadı." });
+    if (room.host !== socket.id) {
+      return callback?.({ ok: false, message: "Müziği yalnızca oda sahibi başlatabilir." });
+    }
+    if (!room.actions || room.actions.length === 0) {
+      return callback?.({ ok: false, message: "Çalınacak eklenmiş bir ses yok." });
+    }
+
+    io.to(room.code).emit("song-playback", { action: "play" });
+    callback?.({ ok: true });
+  });
+
+  socket.on("stop-song", (data, callback) => {
+    const room = getRoom(socket, data?.code);
+    if (!room) return callback?.({ ok: false, message: "Oda bulunamadı." });
+    if (room.host !== socket.id) {
+      return callback?.({ ok: false, message: "Müziği yalnızca oda sahibi durdurabilir." });
+    }
+
+    io.to(room.code).emit("song-playback", { action: "stop" });
+    callback?.({ ok: true });
+  });
+
+  // Melodi Taklit Modu: Oyuncu tahmini gönderme
+  socket.on("submit-mimic", (data, callback) => {
+    const room = getRoom(socket, data?.code);
+    if (!room || !room.started || room.mode !== "mimic" || !room.challenge) {
+      return callback?.({ ok: false, message: "Aktif melodi yarışması bulunamadı." });
+    }
+
+    if (room.challenge.revealed) {
+      return callback?.({ ok: false, message: "Bu tur sonuçlandı. Yeni tur başlatılmasını bekle." });
+    }
+
+    const player = room.players.find(p => p.id === socket.id);
+    if (!player) return callback?.({ ok: false, message: "Oyuncu bulunamadı." });
+
+    const rawSeq = Array.isArray(data?.sequence) ? data.sequence.slice(0, 8) : [];
+    const sequence = rawSeq.map(step =>
+      Array.isArray(step)
+        ? step.slice(0, 6).map(n => Math.max(0, Math.min(127, Number(n) || 60)))
+        : []
+    );
+
+    if (sequence.length !== room.challenge.sequence.length || sequence.some(s => s.length === 0)) {
+      return callback?.({
+        ok: false,
+        message: `Lütfen tüm ${room.challenge.sequence.length} adımı da doldur.`
+      });
+    }
+
+    const instrument = String(data?.instrument || "acoustic_grand_piano").slice(0, 60);
+    const score = calculateSimilarity(room.challenge, { instrument, sequence });
+
+    const existingIdx = room.challenge.submissions.findIndex(s => s.playerId === socket.id);
+    const entry = {
+      playerId: socket.id,
+      playerName: player.name,
+      instrument,
+      sequence,
+      score
+    };
+
+    if (existingIdx >= 0) {
+      room.challenge.submissions[existingIdx] = entry;
+    } else {
+      room.challenge.submissions.push(entry);
+    }
+
+    // Odadaki herkes gönderdiyse sonuçları otomatik açıkla
+    if (room.challenge.submissions.length >= room.players.length) {
+      room.challenge.revealed = true;
+      room.challenge.submissions.sort((a, b) => b.score - a.score);
+    }
+
+    sendRoom(room);
+    callback?.({ ok: true });
+  });
+
+  socket.on("reveal-mimic", (data, callback) => {
+    const room = getRoom(socket, data?.code);
+    if (!room || room.mode !== "mimic" || !room.challenge) {
+      return callback?.({ ok: false, message: "Oda bulunamadı." });
+    }
+    if (room.host !== socket.id) {
+      return callback?.({ ok: false, message: "Sonuçları yalnızca oda sahibi açıklayabilir." });
+    }
+
+    room.challenge.revealed = true;
+    room.challenge.submissions.sort((a, b) => b.score - a.score);
     sendRoom(room);
     callback?.({ ok: true });
   });
@@ -216,6 +439,12 @@ io.on("connection", socket => {
 
     room.actions = [];
     room.currentTurn = 0;
+
+    if (room.mode === "mimic") {
+      const ch = generateChallenge();
+      room.challenge = { ...ch, submissions: [], revealed: false };
+    }
+
     sendRoom(room);
     io.to(room.code).emit("round-cleared");
     callback?.({ ok: true });
