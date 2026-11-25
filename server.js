@@ -63,11 +63,7 @@ function generateChallenge() {
   const instrument = CHALLENGE_INSTRUMENTS[Math.floor(Math.random() * CHALLENGE_INSTRUMENTS.length)];
   const tempo = [0.45, 0.55, 0.65][Math.floor(Math.random() * 3)];
 
-  return {
-    instrument,
-    tempo,
-    sequence
-  };
+  return { instrument, tempo, sequence };
 }
 
 function calculateSimilarity(target, submission) {
@@ -76,13 +72,11 @@ function calculateSimilarity(target, submission) {
   const targetSeq = target.sequence;
   const userSeq = submission.sequence;
   const steps = targetSeq.length;
-
   let noteScoreTotal = 0;
 
   for (let i = 0; i < steps; i++) {
     const tNotes = targetSeq[i] || [];
     const uNotes = userSeq[i] || [];
-
     if (uNotes.length === 0 || tNotes.length === 0) continue;
 
     const tMidi = tNotes[0];
@@ -97,7 +91,6 @@ function calculateSimilarity(target, submission) {
       else if (diff === 2) score = 45;
       else if (diff <= 4) score = 20;
       else score = 5;
-
       if (score > bestStepScore) bestStepScore = score;
     }
 
@@ -107,7 +100,6 @@ function calculateSimilarity(target, submission) {
 
   const melodyPart = (noteScoreTotal / steps) * 0.85;
   const instrumentBonus = submission.instrument === target.instrument ? 15 : 0;
-
   return Math.min(100, Math.round(melodyPart + instrumentBonus));
 }
 
@@ -119,10 +111,8 @@ function publicRoom(room) {
     host: room.host,
     started: room.started,
     currentTurn: room.currentTurn,
-    players: room.players.map(p => ({
-      id: p.id,
-      name: p.name
-    })),
+    beat: room.beat,
+    players: room.players.map(p => ({ id: p.id, name: p.name })),
     actions: room.actions,
     challenge: room.challenge
       ? {
@@ -192,6 +182,7 @@ io.on("connection", socket => {
       host: socket.id,
       started: solo,
       currentTurn: 0,
+      beat: "none",
       players: [{ id: socket.id, name }],
       actions: [],
       challenge: null
@@ -205,14 +196,9 @@ io.on("connection", socket => {
     rooms.set(code, room);
     socket.join(code);
 
-    if (typeof callback === "function") {
-      callback({ ok: true, room: publicRoom(room) });
-    }
-
+    callback?.({ ok: true, room: publicRoom(room) });
     sendRoom(room);
-    if (solo) {
-      socket.emit("game-started");
-    }
+    if (solo) socket.emit("game-started");
   });
 
   socket.on("join-room", (data, callback) => {
@@ -256,6 +242,20 @@ io.on("connection", socket => {
     io.to(room.code).emit("game-started");
   });
 
+  // Arka plan ritim (Beat) seçimi
+  socket.on("set-beat", (data, callback) => {
+    const room = getRoom(socket, data?.code);
+    if (!room) return callback?.({ ok: false, message: "Oda bulunamadı." });
+    if (room.host !== socket.id) return callback?.({ ok: false, message: "Ritmi yalnızca oda sahibi değiştirebilir." });
+
+    const allowedBeats = ["none", "pop", "lofi", "trap"];
+    room.beat = allowedBeats.includes(data?.beat) ? data.beat : "none";
+    sendRoom(room);
+    io.to(room.code).emit("beat-changed", { beat: room.beat });
+    callback?.({ ok: true });
+  });
+
+  // Hem tekli/akor hem de ritimli kayıt (events) ekleme
   socket.on("add-sound", (data, callback) => {
     const room = getRoom(socket, data?.code);
     if (!room || !room.started) return callback?.({ ok: false, message: "Oyun başlamamış." });
@@ -266,18 +266,35 @@ io.on("connection", socket => {
       return callback?.({ ok: false, message: "Henüz senin sıran değil." });
     }
 
-    const notes = Array.isArray(data.notes)
+    // Ritimli kayıt geldiyse events dizisini doğrula
+    const rawEvents = Array.isArray(data?.events) ? data.events.slice(0, 64) : [];
+    const events = rawEvents
+      .map(ev => ({
+        time: clamp(ev?.time, 0, 8000, 0),
+        notes: Array.isArray(ev?.notes)
+          ? ev.notes.slice(0, 12).map(n => Math.max(0, Math.min(127, Number(n) || 60)))
+          : []
+      }))
+      .filter(ev => ev.notes.length > 0);
+
+    const notes = Array.isArray(data?.notes)
       ? data.notes.slice(0, 16).map(n => Math.max(0, Math.min(127, Number(n) || 60)))
       : [];
 
-    if (notes.length === 0) return callback?.({ ok: false, message: "Önce nota seç." });
+    if (events.length === 0 && notes.length === 0) {
+      return callback?.({ ok: false, message: "Önce nota seç veya ritim kaydet." });
+    }
+
+    const finalEvents = events.length > 0 ? events : [{ time: 0, notes }];
 
     const action = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       playerId: socket.id,
       playerName: room.players[playerIndex].name,
       instrument: String(data.instrument || "acoustic_grand_piano").slice(0, 60),
-      notes,
+      notes: finalEvents[0].notes,
+      events: finalEvents,
+      isRhythm: events.length > 1,
       settings: {
         volume: clamp(data.settings?.volume, 0, 1, 0.7),
         pitch: clamp(data.settings?.pitch, -12, 12, 0),
@@ -303,11 +320,23 @@ io.on("connection", socket => {
     callback?.({ ok: true });
   });
 
+  socket.on("remove-action", (data, callback) => {
+    const room = getRoom(socket, data?.code);
+    if (!room) return callback?.({ ok: false, message: "Oda bulunamadı." });
+    if (room.host !== socket.id) return callback?.({ ok: false, message: "Yalnızca oda sahibi katman silebilir." });
+
+    room.actions = room.actions.filter(a => a.id !== data?.actionId);
+    sendRoom(room);
+    callback?.({ ok: true });
+  });
+
   socket.on("play-song", (data, callback) => {
     const room = getRoom(socket, data?.code);
     if (!room) return callback?.({ ok: false, message: "Oda bulunamadı." });
     if (room.host !== socket.id) return callback?.({ ok: false, message: "Yalnızca oda sahibi çalabilir." });
-    if (!room.actions || room.actions.length === 0) return callback?.({ ok: false, message: "Ses yok." });
+    if ((!room.actions || room.actions.length === 0) && room.beat === "none") {
+      return callback?.({ ok: false, message: "Çalınacak ses veya ritim yok." });
+    }
 
     io.to(room.code).emit("song-playback", { action: "play" });
     callback?.({ ok: true });
@@ -327,7 +356,6 @@ io.on("connection", socket => {
     if (!room || !room.started || room.mode !== "mimic" || !room.challenge) {
       return callback?.({ ok: false, message: "Aktif melodi yarışması bulunamadı." });
     }
-
     if (room.challenge.revealed) {
       return callback?.({ ok: false, message: "Bu tur sonuçlandı. Yeni tur başlat." });
     }
@@ -343,29 +371,17 @@ io.on("connection", socket => {
     );
 
     if (sequence.length !== room.challenge.sequence.length || sequence.some(s => s.length === 0)) {
-      return callback?.({
-        ok: false,
-        message: `Lütfen 4 adımın tamamına nota seç (boş adım var).`
-      });
+      return callback?.({ ok: false, message: "Lütfen 4 adımın tamamına nota seç." });
     }
 
     const instrument = String(data?.instrument || "acoustic_grand_piano").slice(0, 60);
     const score = calculateSimilarity(room.challenge, { instrument, sequence });
 
     const existingIdx = room.challenge.submissions.findIndex(s => s.playerId === socket.id);
-    const entry = {
-      playerId: socket.id,
-      playerName: player.name,
-      instrument,
-      sequence,
-      score
-    };
+    const entry = { playerId: socket.id, playerName: player.name, instrument, sequence, score };
 
-    if (existingIdx >= 0) {
-      room.challenge.submissions[existingIdx] = entry;
-    } else {
-      room.challenge.submissions.push(entry);
-    }
+    if (existingIdx >= 0) room.challenge.submissions[existingIdx] = entry;
+    else room.challenge.submissions.push(entry);
 
     if (room.solo || room.challenge.submissions.length >= room.players.length) {
       room.challenge.revealed = true;
