@@ -92,6 +92,7 @@ function serializeRoomForClient(room, viewerId) {
     started: room.started,
     finished: room.finished,
     gameSessionId: room.gameSessionId,
+    turnSeq: room.turnSeq,
     currentRound: room.currentRound,
     turnIndex: room.turnIndex,
     concept: room.concept,
@@ -127,6 +128,7 @@ function broadcastRoom(room) {
 function advanceStudioTurn(room, nextConcept) {
   if (!room.players.length) return;
   if (nextConcept) room.concept = nextConcept;
+  room.turnSeq = (room.turnSeq || 0) + 1;
 
   const nextIdx = room.turnIndex + 1;
   if (nextIdx >= room.players.length) {
@@ -145,6 +147,7 @@ function advanceStudioTurn(room, nextConcept) {
 
 function advanceTabuTurn(room, nextCard) {
   if (!room.players.length) return;
+  room.turnSeq = (room.turnSeq || 0) + 1;
   room.turnIndex = (room.turnIndex + 1) % room.players.length;
   room.tabu = {
     card: nextCard || room.tabu?.card || null,
@@ -158,6 +161,7 @@ function resetToLobby(room) {
   room.started = false;
   room.finished = false;
   room.gameSessionId = (room.gameSessionId || 0) + 1;
+  room.turnSeq = (room.turnSeq || 0) + 1;
   room.currentRound = 1;
   room.turnIndex = 0;
   room.loopPlaying = false;
@@ -261,6 +265,7 @@ wss.on("connection", (ws) => {
         started: false,
         finished: false,
         gameSessionId: 1,
+        turnSeq: 1,
         currentRound: 1,
         turnIndex: 0,
         concept: "Güneşli Piknik",
@@ -316,6 +321,7 @@ wss.on("connection", (ws) => {
       room.started = true;
       room.finished = false;
       room.gameSessionId = (room.gameSessionId || 0) + 1;
+      room.turnSeq = (room.turnSeq || 0) + 1;
       room.currentRound = 1;
       room.turnIndex = 0;
       room.concept = String(msg.concept || "Güneşli Piknik").slice(0, 60);
@@ -343,7 +349,8 @@ wss.on("connection", (ws) => {
       } else {
         room.challenge = null;
         room.tabu = null;
-        room.loopPlaying = true;
+        // Herkes önce kendi kaydını yapıp dinleyebilsin; gönderince loop başlar
+        room.loopPlaying = false;
         room.loopAnchorServerMs = Date.now();
       }
       broadcastRoom(room);
@@ -366,7 +373,7 @@ wss.on("connection", (ws) => {
               type: "live_note",
               slot: msg.slot || "",
               freq: Number(msg.freq) || 261.63,
-              holdMs: Math.min(8000, Math.max(850, Number(msg.holdMs) || 850)),
+              holdMs: Math.min(12000, Math.max(45, Number(msg.holdMs) || 140)),
               instrumentId: String(msg.instrumentId || "grand_piano"),
               synthParams: msg.synthParams || null,
               serverNow: Date.now()
@@ -414,9 +421,11 @@ wss.on("connection", (ws) => {
 
     if (msg.type === "add_layer") {
       if (msg.layer && typeof msg.layer === "object") {
+        const cleanNotes = Array.isArray(msg.layer.notes) ? msg.layer.notes : [];
         room.layers.push({
           ...msg.layer,
-          id: String(msg.layer.id || "l_" + Date.now()),
+          notes: cleanNotes,
+          id: String(msg.layer.id || "l_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6)),
           playerId,
           playerName: senderPlayer?.name || msg.layer.playerName || "Oyuncu",
           avatar: senderPlayer?.avatar || msg.layer.avatar || "fox",
