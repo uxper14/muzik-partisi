@@ -25,7 +25,7 @@ const server = http.createServer((req, res) => {
   });
 });
 
-const wss = new WebSocketServer({ server });
+const wss = new WebSocketServer({ server, maxPayload: 15 * 1024 * 1024 });
 
 const rooms = new Map();
 const clients = new Map();
@@ -52,7 +52,7 @@ function normalizeBeats(raw) {
 }
 
 function isLoopMode(mode) {
-  return ["collab", "theme", "muzziko"].includes(mode);
+  return ["collab", "theme"].includes(mode);
 }
 
 function buildPublicRoomForPlayer(room, viewerId) {
@@ -71,6 +71,7 @@ function buildPublicRoomForPlayer(room, viewerId) {
         recordedBpm: layer.recordedBpm,
         recordedBeats: layer.recordedBeats,
         hasVocal: false,
+        vocalData: null,
         muted: Boolean(layer.muted),
         reverse: Boolean(layer.reverse),
         hiddenUntilEnd: true
@@ -246,7 +247,7 @@ wss.on("connection", (ws) => {
         started: false,
         finished: false,
         settings: {
-          mode: s.mode || "collab",
+          mode: isLoopMode(s.mode) || ["rhythm", "melody", "tabu"].includes(s.mode) ? s.mode : "collab",
           bpm: Number(s.bpm) || 110,
           beats: normalizeBeats(s.beats),
           totalRounds: Math.max(1, Number(s.totalRounds) || 2),
@@ -312,7 +313,9 @@ wss.on("connection", (ws) => {
     if (msg.type === "update_settings") {
       if (!isHost || room.started) return;
       const s = msg.settings || {};
-      if (s.mode) room.settings.mode = s.mode;
+      if (s.mode && ["collab", "theme", "rhythm", "melody", "tabu"].includes(s.mode)) {
+        room.settings.mode = s.mode;
+      }
       if (s.bpm !== undefined) {
         room.settings.bpm = Math.min(200, Math.max(50, Number(s.bpm) || 110));
         room.loopBpm = room.settings.bpm;
@@ -346,7 +349,6 @@ wss.on("connection", (ws) => {
 
       const mode = room.settings.mode;
       if (isLoopMode(mode)) {
-        // Herkeste aynı anda tempo ve ortak döngü başlasın
         room.loopPlaying = true;
         room.loopAnchorServerMs = Date.now();
       } else {
@@ -371,12 +373,15 @@ wss.on("connection", (ws) => {
     }
 
     if (msg.type === "restart_game") {
+      if (!isHost) return;
       resetRoomToLobby(room);
       broadcastRoom(room);
       return;
     }
 
     if (msg.type === "live_note") {
+      const activePlayer = room.players[room.turnIndex];
+      if (!activePlayer || activePlayer.id !== playerId) return;
       broadcastToOthers(room, playerId, {
         type: "live_note",
         slot: msg.slot || "",
@@ -404,7 +409,6 @@ wss.on("connection", (ws) => {
         });
       }
 
-      // Katman eklendikten sonra ortak loop kesintisiz devam etsin ve sıra diğerine geçsin
       if (!room.loopPlaying) {
         room.loopPlaying = true;
         room.loopAnchorServerMs = Date.now();
@@ -424,12 +428,14 @@ wss.on("connection", (ws) => {
     }
 
     if (msg.type === "new_concept") {
+      if (!isHost) return;
       if (msg.concept) room.concept = msg.concept;
       broadcastRoom(room);
       return;
     }
 
     if (msg.type === "set_loop_playing") {
+      if (!isHost) return;
       room.loopPlaying = Boolean(msg.playing);
       if (room.loopPlaying) {
         room.loopAnchorServerMs = Number(msg.anchorServerMs) || Date.now();
@@ -439,6 +445,7 @@ wss.on("connection", (ws) => {
     }
 
     if (msg.type === "set_loop_bpm") {
+      if (!isHost) return;
       const newBpm = Math.min(200, Math.max(50, Number(msg.bpm) || 110));
       room.loopBpm = newBpm;
       room.settings.bpm = newBpm;
@@ -455,26 +462,27 @@ wss.on("connection", (ws) => {
     }
 
     if (msg.type === "toggle_mute") {
+      if (!isHost) return;
       const layer = room.layers.find((l) => l.id === msg.layerId);
-      if (!layer || (!isHost && layer.playerId !== playerId)) return;
+      if (!layer) return;
       layer.muted = !layer.muted;
       broadcastRoom(room);
       return;
     }
 
     if (msg.type === "toggle_reverse") {
+      if (!isHost) return;
       const layer = room.layers.find((l) => l.id === msg.layerId);
-      if (!layer || (!isHost && layer.playerId !== playerId)) return;
+      if (!layer) return;
       layer.reverse = !layer.reverse;
       broadcastRoom(room);
       return;
     }
 
     if (msg.type === "delete_layer") {
+      if (!isHost) return;
       const idx = room.layers.findIndex((l) => l.id === msg.layerId);
       if (idx === -1) return;
-      const layer = room.layers[idx];
-      if (!isHost && layer.playerId !== playerId) return;
       room.layers.splice(idx, 1);
       broadcastRoom(room);
       return;
@@ -506,6 +514,8 @@ wss.on("connection", (ws) => {
 
     if (msg.type === "tabu_guess") {
       if (!room.tabu || !sender) return;
+      const teller = room.players[room.turnIndex];
+      if (teller && teller.id === playerId) return;
       const guessTxt = String(msg.text || "").trim();
       if (!guessTxt) return;
       const target = String(room.tabu.card?.word || "").toLocaleUpperCase("tr-TR");
@@ -520,7 +530,6 @@ wss.on("connection", (ws) => {
       });
 
       if (isCorrect) {
-        const teller = room.players[room.turnIndex];
         room.tabu.scores[sender.id] = (room.tabu.scores[sender.id] || 0) + 1;
         if (teller) {
           room.tabu.scores[teller.id] = (room.tabu.scores[teller.id] || 0) + 1;
@@ -544,6 +553,7 @@ wss.on("connection", (ws) => {
     if (msg.type === "tabu_buzz") {
       if (!room.tabu) return;
       const teller = room.players[room.turnIndex];
+      if (teller && teller.id === playerId) return;
       if (teller) {
         room.tabu.scores[teller.id] = (room.tabu.scores[teller.id] || 0) - 1;
       }
@@ -560,6 +570,8 @@ wss.on("connection", (ws) => {
 
     if (msg.type === "tabu_pass") {
       if (!room.tabu) return;
+      const teller = room.players[room.turnIndex];
+      if (!teller || (teller.id !== playerId && !isHost)) return;
       if (msg.nextCard) room.tabu.card = msg.nextCard;
       broadcastRoom(room);
       return;
@@ -567,6 +579,8 @@ wss.on("connection", (ws) => {
 
     if (msg.type === "tabu_next_turn") {
       if (!room.tabu || !room.players.length) return;
+      const teller = room.players[room.turnIndex];
+      if (!teller || (teller.id !== playerId && !isHost)) return;
       room.turnIndex = (room.turnIndex + 1) % room.players.length;
       room.tabu.turnToken = (room.tabu.turnToken || 1) + 1;
       if (msg.nextCard) room.tabu.card = msg.nextCard;
