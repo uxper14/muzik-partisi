@@ -1,6 +1,6 @@
 {
   "name": "kollay-gelsin",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "Kollay Gelsin! - Çok Oyunculu Müzik ve Parti Stüdyosu",
   "main": "server.js",
   "scripts": {
