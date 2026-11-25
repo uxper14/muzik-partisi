@@ -91,6 +91,7 @@ function serializeRoomForClient(room, viewerId) {
     settings: room.settings,
     started: room.started,
     finished: room.finished,
+    gameSessionId: room.gameSessionId,
     currentRound: room.currentRound,
     turnIndex: room.turnIndex,
     concept: room.concept,
@@ -156,6 +157,7 @@ function advanceTabuTurn(room, nextCard) {
 function resetToLobby(room) {
   room.started = false;
   room.finished = false;
+  room.gameSessionId = (room.gameSessionId || 0) + 1;
   room.currentRound = 1;
   room.turnIndex = 0;
   room.loopPlaying = false;
@@ -258,6 +260,7 @@ wss.on("connection", (ws) => {
         settings,
         started: false,
         finished: false,
+        gameSessionId: 1,
         currentRound: 1,
         turnIndex: 0,
         concept: "Güneşli Piknik",
@@ -312,6 +315,7 @@ wss.on("connection", (ws) => {
       const mode = room.settings.mode;
       room.started = true;
       room.finished = false;
+      room.gameSessionId = (room.gameSessionId || 0) + 1;
       room.currentRound = 1;
       room.turnIndex = 0;
       room.concept = String(msg.concept || "Güneşli Piknik").slice(0, 60);
@@ -362,7 +366,7 @@ wss.on("connection", (ws) => {
               type: "live_note",
               slot: msg.slot || "",
               freq: Number(msg.freq) || 261.63,
-              holdMs: Math.min(8000, Math.max(440, Number(msg.holdMs) || 440)),
+              holdMs: Math.min(8000, Math.max(850, Number(msg.holdMs) || 850)),
               instrumentId: String(msg.instrumentId || "grand_piano"),
               synthParams: msg.synthParams || null,
               serverNow: Date.now()
@@ -461,7 +465,8 @@ wss.on("connection", (ws) => {
         name: senderPlayer.name,
         avatar: senderPlayer.avatar,
         accuracy: Math.min(100, Math.max(0, Number(msg.accuracy) || 0)),
-        detail: String(msg.detail || "").slice(0, 140)
+        detail: String(msg.detail || "").slice(0, 140),
+        playedNotesText: String(msg.playedNotesText || "").slice(0, 260)
       };
       if (room.players.length > 0 && Object.keys(room.submissions).length >= room.players.length) {
         room.finished = true;
