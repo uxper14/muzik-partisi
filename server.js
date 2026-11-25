@@ -9,6 +9,44 @@ const INDEX_PATH = path.join(__dirname, "index.html");
 
 const rooms = new Map();
 
+const TABU_CARDS = [
+  { word: "PİYANO", forbidden: ["Tuş", "Siyah", "Beyaz", "Müzik", "Çalmak"] },
+  { word: "GİTAR", forbidden: ["Tel", "Akustik", "Elektro", "Pena", "Çalmak"] },
+  { word: "KEMAN", forbidden: ["Yay", "Tel", "Orkestra", "Omuz", "Klasik"] },
+  { word: "BATERİ", forbidden: ["Davul", "Baget", "Ritim", "Zil", "Vurmak"] },
+  { word: "KONSER", forbidden: ["Sahne", "Şarkıcı", "Bilet", "Seyirci", "Canlı"] },
+  { word: "NAKARAT", forbidden: ["Şarkı", "Tekrar", "Söz", "Melodi", "Bölüm"] },
+  { word: "MİKROFON", forbidden: ["Ses", "Şarkı", "Konuşmak", "Sahne", "Kayıt"] },
+  { word: "KULAKLIK", forbidden: ["Müzik", "Dinlemek", "Kablo", "Bluetooth", "Ses"] },
+  { word: "ORKESTRA", forbidden: ["Şef", "Klasik", "Keman", "Enstrüman", "Grup"] },
+  { word: "DANS PİSTİ", forbidden: ["Müzik", "Oynamak", "Parti", "DJ", "Işık"] },
+  { word: "METRONOM", forbidden: ["Tempo", "BPM", "Ritim", "Zaman", "Hız"] },
+  { word: "AKOR", forbidden: ["Nota", "Gitar", "Piyano", "Majör", "Minör"] }
+];
+
+const MELODY_PRESETS = [
+  { id: "twinkle", title: "Daha Dün Annemizin", notes: [60, 60, 67, 67, 69, 69, 67] },
+  { id: "ode", title: "Neşeye Övgü", notes: [64, 64, 65, 67, 67, 65, 64, 62] },
+  { id: "mario", title: "Oyun Teması", notes: [64, 64, 64, 60, 64, 67, 55] },
+  { id: "canon", title: "Kanon Melodisi", notes: [64, 62, 60, 59, 57, 55, 57, 59] },
+  { id: "happy", title: "İyi Ki Doğdun", notes: [60, 60, 62, 60, 65, 64] }
+];
+
+const CONCEPTS = [
+  "Güneşli Piknik",
+  "Gergin Robot",
+  "Yağmurda Koşmak",
+  "Uzay Gemisi",
+  "Gece Nöbeti",
+  "Büyülü Orman",
+  "Hızlı Kaçış",
+  "Dans Pisti",
+  "Korsan Gemisi",
+  "Gizemli Şato",
+  "Siberpunk Gece",
+  "Sahil Gün Batımı"
+];
+
 function normalizeCode(raw) {
   return String(raw || "")
     .trim()
@@ -66,6 +104,7 @@ function serializeRoom(room) {
     round: room.round,
     turnIndex: room.turnIndex,
     currentTurnPlayerId: room.turnOrder[room.turnIndex] || null,
+    turnEndsAt: room.turnEndsAt,
     cycleStartServerMs: room.cycleStartServerMs,
     djEffect: room.djEffect,
     concept: room.concept,
@@ -87,6 +126,8 @@ function serializeRoom(room) {
       ? {
           kind: room.challenge.kind,
           pattern: room.challenge.pattern,
+          melodyTitle: room.challenge.melodyTitle || null,
+          melodyChoices: room.challenge.melodyChoices || [],
           instrumentId: room.challenge.instrumentId,
           submittedIds: Array.from(room.challenge.submitted.keys()),
           results: room.challenge.results || null
@@ -128,7 +169,7 @@ function cleanupEmptyRooms() {
         break;
       }
     }
-    if (!anyConnected && Date.now() - room.lastActiveAt > 1000 * 60 * 15) {
+    if (!anyConnected && Date.now() - room.lastActiveAt > 1000 * 60 * 20) {
       rooms.delete(code);
     }
   }
@@ -136,29 +177,57 @@ function cleanupEmptyRooms() {
 
 setInterval(cleanupEmptyRooms, 60 * 1000);
 
+function setStudioTurnDeadline(room) {
+  const sec = Number(room.settings.turnTimer || 0);
+  room.turnEndsAt = sec > 0 ? Date.now() + sec * 1000 : null;
+}
+
 function startChallenge(room, kind) {
   const maxBeat = Math.max(1, Number(room.settings.beats || 8));
   room.phase = "challenge";
-  room.challenge = {
-    kind,
-    pattern:
-      kind === "rhythm"
-        ? [0, 0.5, 1, 1.5, 2, 3, 3.5].map((b) => Math.min(maxBeat - 0.1, b))
-        : [60, 64, 67, 72, 67, 64],
-    instrumentId: kind === "melody" ? "grand_piano" : "clap",
-    submitted: new Map(),
-    results: null
-  };
+  if (kind === "rhythm") {
+    const rawPatterns = [
+      [0, 0.5, 1, 1.5, 2, 3, 3.5],
+      [0, 1, 1.5, 2.5, 3, 3.5],
+      [0, 0.75, 1.5, 2, 2.75, 3.5]
+    ];
+    const picked = rawPatterns[Math.floor(Math.random() * rawPatterns.length)];
+    room.challenge = {
+      kind: "rhythm",
+      pattern: picked.map((b) => Math.min(maxBeat - 0.15, b)),
+      instrumentId: "clap",
+      submitted: new Map(),
+      results: null
+    };
+  } else {
+    const picked = MELODY_PRESETS[Math.floor(Math.random() * MELODY_PRESETS.length)];
+    room.challenge = {
+      kind: "melody",
+      pattern: picked.notes,
+      melodyTitle: picked.title,
+      melodyChoices: MELODY_PRESETS.map((m) => m.title),
+      instrumentId: "grand_piano",
+      submitted: new Map(),
+      results: null
+    };
+  }
+}
+
+function nextTabuCard(room) {
+  const card = TABU_CARDS[Math.floor(Math.random() * TABU_CARDS.length)];
+  room.tabu.word = card.word;
+  room.tabu.forbidden = card.forbidden;
 }
 
 function startTabuRound(room) {
   const playerIds = Array.from(room.players.keys());
   const tellerId = playerIds[room.turnIndex % Math.max(1, playerIds.length)] || room.hostId;
+  const card = TABU_CARDS[Math.floor(Math.random() * TABU_CARDS.length)];
   room.phase = "tabu";
   room.tabu = {
     tellerId,
-    word: "PİYANO",
-    forbidden: ["Tuş", "Siyah", "Beyaz", "Müzik", "Çalmak"],
+    word: card.word,
+    forbidden: card.forbidden,
     guesses: [],
     endsAt: Date.now() + 60000
   };
@@ -184,7 +253,8 @@ function beginGame(room) {
     return;
   }
   room.phase = "studio";
-  room.concept = "Güneşli Piknik";
+  room.concept = CONCEPTS[Math.floor(Math.random() * CONCEPTS.length)];
+  setStudioTurnDeadline(room);
 }
 
 function advanceStudioTurn(room) {
@@ -195,12 +265,27 @@ function advanceStudioTurn(room) {
       room.turnIndex = 0;
     } else {
       room.phase = "results";
+      room.turnEndsAt = null;
       room.voteEndsAt = Date.now() + (room.settings.voteTimer || 30) * 1000;
       return;
     }
   }
-  room.cycleStartServerMs = Date.now();
+  setStudioTurnDeadline(room);
 }
+
+setInterval(() => {
+  const now = Date.now();
+  for (const room of rooms.values()) {
+    if (room.phase === "studio" && room.turnEndsAt && now >= room.turnEndsAt) {
+      advanceStudioTurn(room);
+      broadcastRoom(room);
+    } else if (room.phase === "results" && room.voteEndsAt && now >= room.voteEndsAt) {
+      room.phase = "final";
+      room.voteEndsAt = null;
+      broadcastRoom(room);
+    }
+  }
+}, 1000);
 
 const server = http.createServer((req, res) => {
   const cleanUrl = (req.url || "/").split("?")[0];
@@ -257,6 +342,7 @@ wss.on("connection", (ws) => {
         round: 1,
         turnIndex: 0,
         turnOrder: [],
+        turnEndsAt: null,
         cycleStartServerMs: Date.now(),
         djEffect: "normal",
         concept: "Güneşli Piknik",
@@ -314,6 +400,10 @@ wss.on("connection", (ws) => {
         score: existing?.score || 0,
         ws
       });
+
+      if (room.phase === "studio" && !room.turnOrder.includes(playerId)) {
+        room.turnOrder.push(playerId);
+      }
 
       room.lastActiveAt = Date.now();
       boundRoomCode = code;
@@ -376,14 +466,14 @@ wss.on("connection", (ws) => {
         instrumentId: msg.instrumentId || "grand_piano",
         synth: msg.synth || {},
         reverse: Boolean(msg.reverse),
-        notes: Array.isArray(msg.notes) ? msg.notes.slice(0, 300) : []
+        notes: Array.isArray(msg.notes) ? msg.notes.slice(0, 400) : [],
+        audioClip: typeof msg.audioClip === "string" && msg.audioClip.length < 450000 ? msg.audioClip : null
       });
       advanceStudioTurn(room);
       broadcastRoom(room);
       return;
     }
 
-    // Yalnızca odayı kuran kişi döngü katmanlarını silebilir
     if (msg.type === "delete_layer" && room.hostId === boundPlayerId) {
       room.layers = room.layers.filter((l) => l.id !== msg.layerId);
       broadcastRoom(room);
@@ -400,6 +490,11 @@ wss.on("connection", (ws) => {
 
     if (msg.type === "cast_vote") {
       if (msg.targetPlayerId) {
+        const prevVote = room.votes[boundPlayerId];
+        if (prevVote && room.players.has(prevVote)) {
+          const prevPl = room.players.get(prevVote);
+          prevPl.score = Math.max(0, (prevPl.score || 0) - 5);
+        }
         room.votes[boundPlayerId] = msg.targetPlayerId;
         const target = room.players.get(msg.targetPlayerId);
         if (target) {
@@ -412,6 +507,7 @@ wss.on("connection", (ws) => {
 
     if (msg.type === "finish_voting") {
       room.phase = "final";
+      room.voteEndsAt = null;
       broadcastRoom(room);
       return;
     }
@@ -420,6 +516,7 @@ wss.on("connection", (ws) => {
       room.phase = "lobby";
       room.layers = [];
       room.votes = {};
+      room.turnEndsAt = null;
       room.voteEndsAt = null;
       room.challenge = null;
       room.tabu = null;
@@ -461,19 +558,28 @@ wss.on("connection", (ws) => {
       const teller = room.players.get(room.tabu.tellerId);
       if (msg.action === "correct" && teller) {
         teller.score = (teller.score || 0) + 1;
+        nextTabuCard(room);
       } else if (msg.action === "buzz" && teller) {
         teller.score = (teller.score || 0) - 1;
+        nextTabuCard(room);
       } else if (msg.action === "guess" && msg.text) {
         const sender = room.players.get(boundPlayerId);
+        const text = String(msg.text).trim().slice(0, 80);
         room.tabu.guesses.push({
           from: sender?.name || "Oyuncu",
-          text: String(msg.text).slice(0, 80)
+          text
         });
+        if (text.toLocaleUpperCase("tr-TR") === room.tabu.word.toLocaleUpperCase("tr-TR")) {
+          if (sender) sender.score = (sender.score || 0) + 2;
+          if (teller) teller.score = (teller.score || 0) + 1;
+          nextTabuCard(room);
+        }
       } else if (msg.action === "next_turn") {
         room.turnIndex = (room.turnIndex + 1) % Math.max(1, room.players.size);
         const ids = Array.from(room.players.keys());
         room.tabu.tellerId = ids[room.turnIndex] || room.hostId;
         room.tabu.guesses = [];
+        nextTabuCard(room);
       }
       broadcastRoom(room);
     }
