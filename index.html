@@ -851,7 +851,20 @@ socket.on("new-action", action => {
 
 socket.on("challenge-start", data => {
   resetChallenge();
-  $("challengeStatus").textContent = "Melodiyi dinle ve aynısını çalmaya çalış!";
+
+  renderChallengeTarget(data.melody || []);
+
+  $("challengeStatus").textContent =
+    "Melodiyi dinle ve aynısını çalmaya çalış! Süre: " +
+    data.timeLimit + " saniye.";
+
+  if (data.melody) {
+    data.melody.forEach((note, index) => {
+      setTimeout(() => {
+        playTone(note, { volume: 0.7, wave: "sine" }, 0.3);
+      }, index * 450);
+    });
+  }
 });
 
 socket.on("challenge-result", results => {
