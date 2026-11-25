@@ -137,12 +137,13 @@ function cleanupEmptyRooms() {
 setInterval(cleanupEmptyRooms, 60 * 1000);
 
 function startChallenge(room, kind) {
+  const maxBeat = Math.max(1, Number(room.settings.beats || 8));
   room.phase = "challenge";
   room.challenge = {
     kind,
     pattern:
       kind === "rhythm"
-        ? [0, 0.5, 1, 1.5, 2, 3, 3.5].map((b) => Math.min(room.settings.beats - 0.1, b))
+        ? [0, 0.5, 1, 1.5, 2, 3, 3.5].map((b) => Math.min(maxBeat - 0.1, b))
         : [60, 64, 67, 72, 67, 64],
     instrumentId: kind === "melody" ? "grand_piano" : "clap",
     submitted: new Map(),
@@ -382,7 +383,7 @@ wss.on("connection", (ws) => {
       return;
     }
 
-    // Yalnızca odayı kuran kişi (host) döngü katmanı silebilir
+    // Yalnızca odayı kuran kişi döngü katmanlarını silebilir
     if (msg.type === "delete_layer" && room.hostId === boundPlayerId) {
       room.layers = room.layers.filter((l) => l.id !== msg.layerId);
       broadcastRoom(room);
