@@ -14,7 +14,6 @@
   color-scheme: dark;
   --bg: #0b0d14;
   --panel: rgba(22, 26, 39, 0.88);
-  --panel-solid: #161a27;
   --card: #1e2334;
   --card-hover: #252b40;
   --border: rgba(255, 255, 255, 0.09);
@@ -205,7 +204,6 @@ button.small { padding: 8px 12px; font-size: 13px; }
   background: rgba(16, 185, 129, 0.16);
 }
 
-/* Profesyonel Mod Kartları */
 .mode-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -443,7 +441,7 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
   <div class="hero">
     <div class="badge-top">CANLI ÇOK OYUNCULU MÜZİK STÜDYOSU</div>
     <h1>🎹 Müzik Partisi</h1>
-    <p class="subtitle">Arkadaşlarınla beste yap, DJ kabinine geç veya melodiyi taklit ederek yarış!</p>
+    <p class="subtitle">Arkadaşlarınla beste yap veya hedef melodiyi taklit ederek yarış!</p>
   </div>
 
   <div id="message" class="status">Hoş geldin! Adını yazıp tek başına veya arkadaşlarınla bir mod seç.</div>
@@ -503,7 +501,7 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
     </div>
   </section>
 
-  <!-- OYUN ALANI -->
+  <!-- OYUN ALANI (SADECE SEÇİLİ MODA AİT PANELLERİ GÖSTERİR) -->
   <section id="game" class="hidden">
     <div class="panel">
       <div class="row">
@@ -513,7 +511,7 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
         </div>
         <div class="row" style="justify-content:flex-end">
           <button id="copyCodeBtn" class="secondary small" onclick="copyRoom()">📋 Kodu Kopyala</button>
-          <button class="secondary small" onclick="location.reload()">🚪 Çıkış</button>
+          <button class="secondary small" onclick="location.reload()">🚪 Ana Menüye Dön</button>
         </div>
       </div>
 
@@ -527,7 +525,7 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
       </div>
     </div>
 
-    <!-- MELODİYİ TAKLİT ET PANELİ -->
+    <!-- SADECE "MELODİYİ TAKLİT ET" MODUNDA GÖRÜNEN PANEL -->
     <div id="mimicPanel" class="panel hidden">
       <h2>🎯 Hedef Melodi Yarışması</h2>
       <p class="muted">Hedef melodiyi dikkatlice dinle, doğru enstrümanı seç ve aşağıdaki 4 adımı sırayla doldur!</p>
@@ -644,6 +642,7 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
         <div id="keyboard" class="keyboard"></div>
       </div>
 
+      <!-- Sadece Beste Modlarında (Sıra Sende & Herkes Serbest) Görünür -->
       <div id="normalNoteControls">
         <div class="note-list" id="selectedNotes">
           <span class="muted">Henüz nota seçilmedi.</span>
@@ -654,6 +653,7 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
         </div>
       </div>
 
+      <!-- Sadece Melodiyi Taklit Et Modunda Görünür -->
       <div id="mimicNoteControls" class="hidden" style="margin-top:12px">
         <div class="row">
           <button class="secondary" onclick="clearCurrentStep()">Bu adımı temizle</button>
@@ -661,54 +661,57 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
         </div>
       </div>
 
-      <hr>
-      <h3>🎛️ Ses Efektleri & Ayarlar</h3>
-      <div class="settings-grid">
-        <div class="control">
-          <label>Ses seviyesi <span class="value" id="volumeValue">70%</span></label>
-          <input id="volume" type="range" min="0" max="100" value="70">
-        </div>
-        <div class="control">
-          <label>Ses inceliği / kalınlığı <span class="value" id="pitchValue">0</span></label>
-          <input id="pitch" type="range" min="-12" max="12" value="0">
-        </div>
-        <div class="control">
-          <label>Nota süresi <span class="value" id="durationValue">0.8 sn</span></label>
-          <input id="duration" type="range" min="1" max="50" value="8">
-        </div>
-        <div class="control">
-          <label>Başlangıç yumuşaklığı <span class="value" id="attackValue">0.02 sn</span></label>
-          <input id="attack" type="range" min="0" max="200" value="2">
-        </div>
-        <div class="control">
-          <label>Ses bitiş yumuşaklığı <span class="value" id="releaseValue">0.2 sn</span></label>
-          <input id="release" type="range" min="0" max="300" value="20">
-        </div>
-        <div class="control">
-          <label>Ses devamlılığı <span class="value" id="sustainValue">80%</span></label>
-          <input id="sustain" type="range" min="0" max="100" value="80">
-        </div>
-        <div class="control">
-          <label>Oda efekti <span class="value" id="reverbValue">15%</span></label>
-          <input id="reverb" type="range" min="0" max="100" value="15">
-        </div>
-        <div class="control">
-          <label>Yankı <span class="value" id="echoValue">0%</span></label>
-          <input id="echo" type="range" min="0" max="100" value="0">
-        </div>
-        <div class="control">
-          <label>Ses bozulması <span class="value" id="distortionValue">0%</span></label>
-          <input id="distortion" type="range" min="0" max="100" value="0">
-        </div>
-        <div class="control">
-          <label>Ses filtresi <span class="value" id="filterValue">12000 Hz</span></label>
-          <input id="filter" type="range" min="200" max="12000" value="12000">
+      <!-- Sadece Beste Modlarında Ses Efektleri Görünür -->
+      <div id="effectsSection">
+        <hr>
+        <h3>🎛️ Ses Efektleri & Ayarlar</h3>
+        <div class="settings-grid">
+          <div class="control">
+            <label>Ses seviyesi <span class="value" id="volumeValue">70%</span></label>
+            <input id="volume" type="range" min="0" max="100" value="70">
+          </div>
+          <div class="control">
+            <label>Ses inceliği / kalınlığı <span class="value" id="pitchValue">0</span></label>
+            <input id="pitch" type="range" min="-12" max="12" value="0">
+          </div>
+          <div class="control">
+            <label>Nota süresi <span class="value" id="durationValue">0.8 sn</span></label>
+            <input id="duration" type="range" min="1" max="50" value="8">
+          </div>
+          <div class="control">
+            <label>Başlangıç yumuşaklığı <span class="value" id="attackValue">0.02 sn</span></label>
+            <input id="attack" type="range" min="0" max="200" value="2">
+          </div>
+          <div class="control">
+            <label>Ses bitiş yumuşaklığı <span class="value" id="releaseValue">0.2 sn</span></label>
+            <input id="release" type="range" min="0" max="300" value="20">
+          </div>
+          <div class="control">
+            <label>Ses devamlılığı <span class="value" id="sustainValue">80%</span></label>
+            <input id="sustain" type="range" min="0" max="100" value="80">
+          </div>
+          <div class="control">
+            <label>Oda efekti <span class="value" id="reverbValue">15%</span></label>
+            <input id="reverb" type="range" min="0" max="100" value="15">
+          </div>
+          <div class="control">
+            <label>Yankı <span class="value" id="echoValue">0%</span></label>
+            <input id="echo" type="range" min="0" max="100" value="0">
+          </div>
+          <div class="control">
+            <label>Ses bozulması <span class="value" id="distortionValue">0%</span></label>
+            <input id="distortion" type="range" min="0" max="100" value="0">
+          </div>
+          <div class="control">
+            <label>Ses filtresi <span class="value" id="filterValue">12000 Hz</span></label>
+            <input id="filter" type="range" min="200" max="12000" value="12000">
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- ORTAK MÜZİK ÇALMA PANELİ (SADECE NORMAL MODLARDA GÖRÜNÜR) -->
-    <div id="sharedMusicPanel" class="panel">
+    <!-- SADECE BESTE MODLARINDA (SIRA SENDE & HERKES SERBEST) GÖRÜNEN ORTAK MÜZİK PANELİ -->
+    <div id="sharedMusicPanel" class="panel hidden">
       <div class="row" style="margin-bottom: 12px;">
         <div>
           <h2 style="margin:0;">🎧 Ortak Müzik</h2>
@@ -723,27 +726,6 @@ hr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 20px 0;
         <div class="muted">Henüz ses eklenmedi.</div>
       </div>
     </div>
-
-    <!-- ORTAK DJ PANELİ -->
-    <div class="panel">
-      <h2>🎚️ Ortak DJ</h2>
-      <p class="muted">DJ yalnızca oda sahibinin kontrolündedir. Oyun modlarından bağımsızdır.</p>
-      <div id="djHostControls" class="hidden">
-        <label>Bilgisayarından MP3 veya WAV seç</label>
-        <input type="file" id="djFile" accept="audio/*">
-        <button style="margin-top:10px" onclick="uploadDJ()">DJ müziğini herkese gönder</button>
-        <div class="row" style="margin-top:12px">
-          <button onclick="djCommand('play')">▶ Başlat</button>
-          <button class="secondary" onclick="djCommand('pause')">⏸ Duraklat</button>
-          <button class="red" onclick="djCommand('stop')">⏹ Durdur</button>
-        </div>
-        <label>DJ ses seviyesi</label>
-        <input id="djVolume" type="range" min="0" max="100" value="70">
-      </div>
-      <div id="djGuestText" class="muted">DJ kontrolleri oda sahibinde.</div>
-      <div id="djName" class="status">Henüz DJ müziği yüklenmedi.</div>
-      <audio id="djAudio" controls style="width:100%;margin-top:8px"></audio>
-    </div>
   </section>
 </main>
 
@@ -756,11 +738,8 @@ let selected = new Set();
 let audioContext = null;
 let masterGain = null;
 let instrumentCache = new Map();
-
-// Ortak müzik oynatma zamanlayıcıları
 let songTimers = [];
 
-// Melodiyi taklit etme (4 ardışık adım) durumu
 let mimicSequence = [new Set(), new Set(), new Set(), new Set()];
 let activeStepIndex = 0;
 
@@ -837,10 +816,7 @@ function updateRoom(room) {
   const isHost = room.host === socket.id;
   $("startButton").classList.toggle("hidden", !isHost || room.started);
   $("clearButton").classList.toggle("hidden", !isHost || !room.started);
-  $("djHostControls").classList.toggle("hidden", !isHost);
-  $("djGuestText").classList.toggle("hidden", isHost);
 
-  // Sadece oda sahibine ortak müziği çal/durdur butonlarını göster
   $("hostPlaybackControls").classList.toggle("hidden", !isHost);
   $("playbackOwnerHint").textContent = isHost
     ? "Oda sahibi olarak ortak müziği başlatıp durdurabilirsin."
@@ -856,10 +832,12 @@ function updateRoom(room) {
 
   const isMimic = room.mode === "mimic";
 
-  $("sharedMusicPanel").classList.toggle("hidden", isMimic);
+  // Sadece seçilen moda ait panelleri görünür yap, diğerlerini tamamen gizle
+  $("sharedMusicPanel").classList.toggle("hidden", isMimic || !room.started);
   $("mimicPanel").classList.toggle("hidden", !isMimic || !room.started);
   $("normalNoteControls").classList.toggle("hidden", isMimic);
   $("mimicNoteControls").classList.toggle("hidden", !isMimic);
+  $("effectsSection").classList.toggle("hidden", isMimic);
 
   if (!room.started) {
     $("turnStatus").textContent = "Oyun başlamayı bekliyor. Oda sahibi oyunu başlatabilir.";
@@ -868,7 +846,7 @@ function updateRoom(room) {
     $("studio").classList.remove("hidden");
 
     if (isMimic) {
-      $("studioHint").textContent = "Yukarıdan bir adım kutusu seç, ardından piyanodan o adımın notasını (veya akorunu) seç.";
+      $("studioHint").textContent = "Yukarıdan bir adım kutusu seç, ardından piyanodan o adımın notasını seç.";
       $("turnStatus").textContent = "🎯 Hedef melodiyi dinle ve 4 adımlık kendi melodini oluştur!";
       $("revealMimicBtn").classList.toggle("hidden", !isHost || room.challenge?.revealed);
       renderMimicPanel(room.challenge);
@@ -987,7 +965,6 @@ function renderMimicPanel(challenge) {
     return;
   }
 
-  // Sonuçlar açıklandıysa
   const targetStr = challenge.sequence
     .map((step, i) => `${i + 1}. [${step.map(n => noteName(n)).join("+")}]`)
     .join(" → ");
@@ -1158,7 +1135,6 @@ function buildKeyboard() {
     if (!blackNotes.has(semitone)) continue;
 
     const octaveOffset = Math.floor(i / 12);
-    // DÜZELTİLDİ: Siyah tuşlar artık tam doğru beyaz tuşların arasına yerleşiyor
     const previousWhite = [0,2,4,5,7,9,11].filter(n => n < semitone).length - 1;
     const whiteIndex = octaveOffset * 7 + previousWhite;
     const midi = 12 * (octave + 1) + i;
@@ -1187,7 +1163,6 @@ function selectNote(midi, element) {
       stepSet.delete(midi);
       element.classList.remove("selected");
     } else {
-      // Tek tuş seçildiyse otomatik sonraki boş adıma geçmeyi kolaylaştır
       stepSet.clear();
       stepSet.add(midi);
       syncKeyboardToCurrentStep();
@@ -1383,67 +1358,6 @@ Object.keys(rangeLabels).forEach(id => {
   $(id).addEventListener("input", () => {
     $(id + "Value").textContent = rangeLabels[id]($(id).value);
   });
-});
-
-/* DJ */
-function uploadDJ() {
-  const file = $("djFile").files[0];
-  if (!file) return message("Önce bir MP3 veya WAV dosyası seç.");
-  if (!file.type.startsWith("audio/")) return message("Bu bir ses dosyası değil.");
-  if (file.size > 13 * 1024 * 1024) {
-    return message("Dosya 13 MB'dan küçük olmalı.");
-  }
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    socket.emit("dj-upload", {
-      code: roomCode,
-      fileName: file.name,
-      dataUrl: reader.result
-    }, result => {
-      message(result?.ok ? "DJ müziği herkese gönderildi." : result?.message || "Yükleme başarısız.");
-    });
-  };
-  reader.readAsDataURL(file);
-}
-
-function djCommand(action) {
-  socket.emit("dj-control", {
-    code: roomCode,
-    action,
-    volume: Number($("djVolume").value) / 100
-  }, result => {
-    if (!result?.ok) message(result?.message || "DJ komutu gönderilemedi.");
-  });
-}
-
-function setDJ(data) {
-  if (!data?.dataUrl) return;
-  $("djName").textContent = "🎵 " + data.fileName;
-  const audio = $("djAudio");
-  audio.src = data.dataUrl;
-  audio.volume = Number($("djVolume").value) / 100;
-  audio.load();
-  message("DJ müziği hazır. Her oyuncu gerekirse oynat düğmesine basmalı.");
-}
-
-$("djVolume").addEventListener("input", () => {
-  $("djAudio").volume = Number($("djVolume").value) / 100;
-});
-
-socket.on("dj-ready", setDJ);
-
-socket.on("dj-control", data => {
-  const audio = $("djAudio");
-  if (data.action === "volume") audio.volume = data.volume;
-  if (data.action === "play") audio.play().catch(() => {
-    message("DJ müziğini duymak için ses oynat düğmesine bas.");
-  });
-  if (data.action === "pause") audio.pause();
-  if (data.action === "stop") {
-    audio.pause();
-    audio.currentTime = 0;
-  }
 });
 
 socket.on("room-state", room => {
