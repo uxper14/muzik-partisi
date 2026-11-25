@@ -3,33 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kollay Gelsin! — Çok Oyunculu Müzik & Ritim Oyunu</title>
+  <title>Kollay Gelsin!</title>
   <style>
     :root,
     [data-theme="neon"] {
-      --bg: #0b0e17;
-      --panel: rgba(20, 26, 43, 0.88);
-      --panel-border: rgba(114, 137, 218, 0.25);
-      --text: #f3f6ff;
-      --muted: #9aa7c7;
+      --bg: #0c0f1a;
+      --panel: rgba(22, 28, 46, 0.9);
+      --border: rgba(124, 92, 255, 0.28);
+      --text: #f4f6ff;
+      --muted: #9aa6c4;
       --accent: #7c5cff;
       --accent-2: #00e5ff;
       --danger: #ff4d6d;
       --success: #2ee59d;
       --key-white: #f8fafc;
       --key-white-active: #c7d2fe;
-      --key-black: #161b2e;
+      --key-black: #171c2e;
       --key-black-active: #7c5cff;
-      --orb-1: rgba(124, 92, 255, 0.35);
-      --orb-2: rgba(0, 229, 255, 0.28);
-      --orb-3: rgba(255, 77, 109, 0.22);
-      --radius: 16px;
+      --orb-1: rgba(124, 92, 255, 0.32);
+      --orb-2: rgba(0, 229, 255, 0.24);
     }
 
     [data-theme="wood"] {
-      --bg: #231710;
-      --panel: rgba(48, 32, 22, 0.92);
-      --panel-border: rgba(217, 160, 102, 0.3);
+      --bg: #22160f;
+      --panel: rgba(46, 30, 20, 0.92);
+      --border: rgba(217, 160, 102, 0.3);
       --text: #fdf6ec;
       --muted: #d6bfa9;
       --accent: #d97724;
@@ -40,16 +38,15 @@
       --key-white-active: #fbd38d;
       --key-black: #2b1a10;
       --key-black-active: #d97724;
-      --orb-1: rgba(217, 119, 36, 0.3);
-      --orb-2: rgba(244, 184, 96, 0.24);
-      --orb-3: rgba(168, 85, 40, 0.25);
+      --orb-1: rgba(217, 119, 36, 0.28);
+      --orb-2: rgba(244, 184, 96, 0.22);
     }
 
     [data-theme="pastel"] {
-      --bg: #f6f2ff;
-      --panel: rgba(255, 255, 255, 0.9);
-      --panel-border: rgba(167, 139, 250, 0.35);
-      --text: #2a2438;
+      --bg: #f5f2ff;
+      --panel: rgba(255, 255, 255, 0.92);
+      --border: rgba(139, 92, 246, 0.28);
+      --text: #272136;
       --muted: #6b6280;
       --accent: #8b5cf6;
       --accent-2: #ec4899;
@@ -57,17 +54,16 @@
       --success: #10b981;
       --key-white: #ffffff;
       --key-white-active: #ede9fe;
-      --key-black: #3b3355;
+      --key-black: #362e4f;
       --key-black-active: #ec4899;
-      --orb-1: rgba(167, 139, 250, 0.3);
-      --orb-2: rgba(244, 114, 182, 0.26);
-      --orb-3: rgba(56, 189, 248, 0.24);
+      --orb-1: rgba(167, 139, 250, 0.28);
+      --orb-2: rgba(244, 114, 182, 0.24);
     }
 
     [data-theme="retro"] {
       --bg: #141026;
       --panel: rgba(31, 24, 58, 0.94);
-      --panel-border: rgba(250, 204, 21, 0.35);
+      --border: rgba(250, 204, 21, 0.32);
       --text: #fef9c3;
       --muted: #c4b5fd;
       --accent: #facc15;
@@ -78,15 +74,14 @@
       --key-white-active: #fde047;
       --key-black: #1e1538;
       --key-black-active: #34d399;
-      --orb-1: rgba(250, 204, 21, 0.25);
-      --orb-2: rgba(52, 211, 153, 0.25);
-      --orb-3: rgba(251, 113, 133, 0.22);
+      --orb-1: rgba(250, 204, 21, 0.24);
+      --orb-2: rgba(52, 211, 153, 0.24);
     }
 
     [data-theme="minimal"] {
-      --bg: #111214;
-      --panel: rgba(25, 27, 31, 0.94);
-      --panel-border: rgba(255, 255, 255, 0.12);
+      --bg: #111215;
+      --panel: rgba(25, 27, 32, 0.94);
+      --border: rgba(255, 255, 255, 0.14);
       --text: #f5f5f7;
       --muted: #9ca3af;
       --accent: #60a5fa;
@@ -99,14 +94,9 @@
       --key-black-active: #60a5fa;
       --orb-1: rgba(96, 165, 250, 0.2);
       --orb-2: rgba(167, 139, 250, 0.18);
-      --orb-3: rgba(52, 211, 153, 0.14);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
@@ -114,7 +104,7 @@
       color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
-      transition: background 0.3s ease, color 0.3s ease;
+      transition: background 0.25s ease, color 0.25s ease;
     }
 
     .ambient-lights {
@@ -122,54 +112,28 @@
       inset: 0;
       pointer-events: none;
       z-index: 0;
-      overflow: hidden;
     }
 
     .light-orb {
       position: absolute;
       border-radius: 50%;
-      filter: blur(75px);
-      transition: transform 0.14s ease-out, opacity 0.2s ease;
+      filter: blur(80px);
+      transition: transform 0.12s ease-out;
     }
 
-    .orb-1 {
-      width: 340px;
-      height: 340px;
-      background: var(--orb-1);
-      top: -60px;
-      left: -60px;
-    }
+    .orb-1 { width: 340px; height: 340px; background: var(--orb-1); top: -60px; left: -60px; }
+    .orb-2 { width: 360px; height: 360px; background: var(--orb-2); bottom: -80px; right: -60px; }
+    .ambient-lights.beat-pulse .light-orb { transform: scale(1.22); }
 
-    .orb-2 {
-      width: 380px;
-      height: 380px;
-      background: var(--orb-2);
-      bottom: -80px;
-      right: -60px;
-    }
-
-    .orb-3 {
-      width: 260px;
-      height: 260px;
-      background: var(--orb-3);
-      top: 40%;
-      left: 50%;
-    }
-
-    .ambient-lights.beat-pulse .light-orb {
-      transform: scale(1.22);
-      opacity: 1;
-    }
-
-    .app-shell {
+    .app {
       position: relative;
       z-index: 1;
-      max-width: 1220px;
+      max-width: 1120px;
       margin: 0 auto;
-      padding: 20px 18px 48px;
+      padding: 18px 16px 40px;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 14px;
     }
 
     .topbar {
@@ -177,503 +141,258 @@
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 14px;
-      padding: 16px 20px;
+      gap: 12px;
+      padding: 14px 18px;
       background: var(--panel);
-      border: 1px solid var(--panel-border);
-      border-radius: var(--radius);
-      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .brand-logo {
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon {
+      width: 44px; height: 44px; border-radius: 12px;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      display: grid;
-      place-items: center;
-      font-size: 1.5rem;
-      color: #fff;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      display: grid; place-items: center; font-size: 1.4rem; color: #fff;
       transition: transform 0.12s ease;
     }
+    .brand-icon.bounce { transform: scale(1.18) rotate(-5deg); }
+    .brand h1 { font-size: 1.38rem; }
 
-    .brand-logo.bounce {
-      transform: scale(1.18) rotate(-6deg);
+    .topbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
     }
 
-    .brand h1 {
-      font-size: 1.5rem;
-      letter-spacing: -0.02em;
-    }
+    .hidden { display: none !important; }
 
-    .subtitle {
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    .topbar-controls {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .theme-picker {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-
-    select,
-    input[type="text"] {
+    select, input[type="text"] {
       background: rgba(128, 128, 128, 0.12);
       color: var(--text);
-      border: 1px solid var(--panel-border);
+      border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 8px 12px;
-      font-size: 0.92rem;
+      padding: 9px 12px;
+      font-size: 0.94rem;
       outline: none;
     }
-
-    select option {
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--panel-border);
-      border-radius: var(--radius);
-      padding: 20px;
-      backdrop-filter: blur(12px);
-    }
-
-    .panel h2,
-    .panel h3 {
-      margin-bottom: 12px;
-      font-size: 1.12rem;
-    }
-
-    .hint {
-      color: var(--muted);
-      font-size: 0.88rem;
-      margin-bottom: 12px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
+    select option { background: var(--bg); color: var(--text); }
 
     .btn {
       border: none;
-      border-radius: 11px;
-      padding: 10px 15px;
-      font-size: 0.92rem;
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
-      transition: transform 0.1s ease, opacity 0.15s ease, box-shadow 0.15s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
+      transition: transform 0.08s ease, opacity 0.15s ease;
+    }
+    .btn:hover:not(:disabled) { transform: translateY(-1px); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
+    .btn-secondary { background: rgba(128, 128, 128, 0.16); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary.active { background: var(--accent); color: #fff; border-color: transparent; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-lg { padding: 12px 22px; font-size: 1rem; width: 100%; }
+
+    /* PROFİL & ODA GİRİŞ EKRANI */
+    .entry-box {
+      max-width: 540px;
+      margin: 18px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    .btn:hover:not(:disabled) {
-      transform: translateY(-1px);
+    .avatar-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
     }
 
-    .btn:active:not(:disabled) {
-      transform: translateY(1px);
+    .avatar-btn {
+      height: 46px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(128, 128, 128, 0.1);
+      font-size: 1.45rem;
+      cursor: pointer;
+    }
+    .avatar-btn.selected {
+      border: 2px solid var(--accent-2);
+      background: rgba(124, 92, 255, 0.25);
+      transform: scale(1.06);
     }
 
-    .btn:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
+    .entry-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 6px;
     }
 
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #ffffff;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+    .join-row {
+      display: flex;
+      gap: 8px;
+    }
+    .join-row input {
+      width: 100%;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+      text-align: center;
     }
 
-    .btn-secondary {
-      background: rgba(128, 128, 128, 0.16);
-      color: var(--text);
-      border: 1px solid var(--panel-border);
+    .error-banner {
+      color: var(--danger);
+      font-size: 0.88rem;
+      text-align: center;
     }
 
-    .btn-secondary.active-toggle {
-      background: var(--accent);
-      color: #fff;
-      border-color: transparent;
+    /* BEKLEME ODASI */
+    .lobby-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
     }
 
-    .btn-danger {
-      background: var(--danger);
-      color: #fff;
-    }
-
-    .btn-lg {
-      padding: 14px 26px;
+    .room-code-badge {
+      padding: 8px 14px;
+      border-radius: 12px;
+      background: rgba(128, 128, 128, 0.14);
+      border: 1px dashed var(--accent-2);
       font-size: 1.05rem;
+      letter-spacing: 0.08em;
     }
 
     .lobby-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 18px;
-    }
-
-    .form-group {
-      margin-bottom: 14px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-
-    .form-group select,
-    .form-group input[type="range"] {
-      width: 100%;
-    }
-
-    .form-row-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 12px;
-    }
-
-    .mode-summary-box {
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: rgba(128, 128, 128, 0.1);
-      border-left: 4px solid var(--accent);
-      font-size: 0.9rem;
-      line-height: 1.45;
-    }
-
-    .players-lobby-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 10px;
-      max-height: 360px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .player-slot-card {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px;
-      border-radius: 12px;
-      background: rgba(128, 128, 128, 0.1);
-      border: 1px solid var(--panel-border);
-    }
-
-    .avatar-pick-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 11px;
-      border: 1px solid var(--panel-border);
-      background: rgba(255, 255, 255, 0.08);
-      font-size: 1.35rem;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    .player-slot-card input {
-      width: 100%;
-      min-width: 0;
-    }
-
-    .lobby-footer {
-      margin-top: 20px;
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    #gameView {
-      display: flex;
-      flex-direction: column;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 16px;
     }
 
-    .turn-banner {
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .field label { font-size: 0.86rem; color: var(--muted); }
+
+    .players-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .player-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(128, 128, 128, 0.14);
+      border: 1px solid var(--border);
+      font-size: 0.92rem;
+    }
+
+    /* OYUN İÇİ SADE MENÜ */
+    .turn-bar {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 16px;
-      padding: 18px 20px;
-      border-radius: var(--radius);
-      background: var(--panel);
-      border: 1px solid var(--panel-border);
+      gap: 12px;
     }
 
-    .turn-current {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
+    .turn-who { display: flex; align-items: center; gap: 12px; }
     .turn-avatar {
-      width: 58px;
-      height: 58px;
-      border-radius: 16px;
+      width: 50px; height: 50px; border-radius: 14px;
       background: rgba(128, 128, 128, 0.16);
       border: 2px solid var(--accent);
-      display: grid;
-      place-items: center;
-      font-size: 2rem;
+      display: grid; place-items: center; font-size: 1.75rem;
     }
-
-    .badge-live,
-    .badge-accent {
+    .tag {
       display: inline-block;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 700;
-      letter-spacing: 0.06em;
-      padding: 3px 8px;
+      padding: 2px 8px;
       border-radius: 999px;
       background: var(--accent);
       color: #fff;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
+    .muted { color: var(--muted); font-size: 0.85rem; }
 
-    .next-player-text {
-      font-size: 0.86rem;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .turn-meta {
+    .loop-bar {
       display: flex;
       flex-wrap: wrap;
+      justify-content: space-between;
       align-items: center;
       gap: 12px;
     }
 
-    .meta-pill {
-      padding: 8px 12px;
-      border-radius: 11px;
-      background: rgba(128, 128, 128, 0.12);
-      font-size: 0.85rem;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .meta-pill span {
-      color: var(--muted);
-      font-size: 0.75rem;
-    }
-
-    .turn-actions,
-    .inline-btns {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .mode-special-card .theme-challenge-row {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .mode-special-card h3 {
-      font-size: 1.35rem;
-      margin: 4px 0;
-    }
-
-    .score-pill {
-      padding: 7px 12px;
-      border-radius: 999px;
-      background: rgba(46, 229, 157, 0.16);
-      color: var(--success);
-      font-weight: 700;
-      font-size: 0.88rem;
-    }
-
-    .transport-panel {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .transport-left {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .single-bpm-box {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(128, 128, 128, 0.12);
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-size: 0.9rem;
-    }
-
-    .beat-visualizer-wrap {
+    .beat-row {
       width: 100%;
       display: flex;
-      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       padding-top: 10px;
-      border-top: 1px solid var(--panel-border);
+      border-top: 1px solid var(--border);
     }
 
-    .beat-lights {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
-
+    .beat-dots { display: flex; flex-wrap: wrap; gap: 7px; }
     .beat-dot {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: rgba(128, 128, 128, 0.22);
-      border: 1px solid var(--panel-border);
-      display: grid;
-      place-items: center;
-      font-size: 0.72rem;
-      font-weight: 700;
-      transition: transform 0.08s ease, background 0.08s ease, box-shadow 0.08s ease;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(128, 128, 128, 0.2);
+      display: grid; place-items: center;
+      font-size: 0.72rem; font-weight: 700;
+      transition: transform 0.08s ease, background 0.08s ease;
     }
-
     .beat-dot.active {
       background: var(--accent-2);
-      color: #0b0e17;
+      color: #0c0f1a;
       transform: scale(1.24);
-      box-shadow: 0 0 14px var(--accent-2);
+      box-shadow: 0 0 12px var(--accent-2);
     }
 
-    .vu-bars {
-      display: flex;
-      align-items: flex-end;
-      gap: 4px;
-      height: 30px;
-    }
-
+    .vu-bars { display: flex; align-items: flex-end; gap: 4px; height: 26px; }
     .vu-bars span {
-      width: 6px;
-      height: 20%;
-      border-radius: 4px;
+      width: 5px; height: 20%; border-radius: 3px;
       background: linear-gradient(to top, var(--accent), var(--accent-2));
-      transition: height 0.09s ease;
+      transition: height 0.08s ease;
     }
 
-    .studio-grid {
+    .studio-row {
       display: grid;
       grid-template-columns: 2fr 1fr;
-      gap: 16px;
+      gap: 14px;
     }
+    @media (max-width: 860px) { .studio-row { grid-template-columns: 1fr; } }
 
-    @media (max-width: 920px) {
-      .studio-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .panel-head {
+    .section-head {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       margin-bottom: 12px;
     }
 
-    .panel-head h3 {
-      margin-bottom: 0;
-    }
-
-    .instrument-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .step-selector-bar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 14px;
-      font-size: 0.88rem;
-      color: var(--muted);
-    }
-
-    .step-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .step-pill-btn {
-      min-width: 34px;
-      height: 32px;
-      border-radius: 8px;
-      border: 1px solid var(--panel-border);
-      background: rgba(128, 128, 128, 0.14);
-      color: var(--text);
-      font-weight: 600;
-      font-size: 0.82rem;
-      cursor: pointer;
-    }
-
-    .step-pill-btn.selected {
-      background: var(--accent);
-      color: #fff;
-      border-color: transparent;
-    }
-
-    .step-pill-btn.has-notes {
-      box-shadow: inset 0 -3px 0 var(--accent-2);
-    }
-
-    .piano-wrapper {
-      overflow-x: auto;
-      padding-bottom: 8px;
-    }
-
-    .piano-keyboard {
+    .piano-scroll { overflow-x: auto; padding-bottom: 4px; }
+    .piano {
       position: relative;
       display: flex;
-      height: 185px;
-      min-width: 660px;
+      height: 175px;
+      min-width: 580px;
       user-select: none;
     }
 
     .white-key {
-      position: relative;
       flex: 1;
       height: 100%;
       background: var(--key-white);
@@ -685,27 +404,17 @@
       justify-content: flex-end;
       align-items: center;
       padding-bottom: 10px;
-      font-size: 0.78rem;
+      font-size: 0.82rem;
       font-weight: 700;
       cursor: pointer;
-      transition: background 0.08s ease, transform 0.07s ease;
     }
-
-    .white-key .solfege-sub {
-      font-size: 0.68rem;
-      opacity: 0.75;
-    }
-
-    .white-key.active {
-      background: var(--key-white-active);
-      transform: translateY(2px);
-    }
+    .white-key.active { background: var(--key-white-active); transform: translateY(2px); }
 
     .black-key {
       position: absolute;
       top: 0;
-      width: 38px;
-      height: 112px;
+      width: 36px;
+      height: 106px;
       background: var(--key-black);
       color: #f8fafc;
       border: 1px solid rgba(0, 0, 0, 0.45);
@@ -716,340 +425,263 @@
       justify-content: flex-end;
       align-items: center;
       padding-bottom: 8px;
-      font-size: 0.65rem;
+      font-size: 0.72rem;
       font-weight: 700;
       cursor: pointer;
       transform: translateX(-50%);
-      transition: background 0.08s ease, transform 0.07s ease;
     }
+    .black-key.active { background: var(--key-black-active); transform: translateX(-50%) translateY(2px); }
 
-    .black-key.active {
-      background: var(--key-black-active);
-      color: #fff;
-      transform: translateX(-50%) translateY(2px);
-    }
-
-    .sketch-summary {
-      margin-top: 12px;
-      font-size: 0.86rem;
-      color: var(--muted);
-    }
-
-    .robot-toggle {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .mic-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 12px 0;
-    }
-
-    .mic-status {
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: rgba(128, 128, 128, 0.12);
-      font-size: 0.86rem;
-      color: var(--muted);
-    }
-
-    .layers-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .empty-layers {
-      color: var(--muted);
-      font-size: 0.9rem;
-      padding: 10px 0;
-    }
-
-    .layer-item {
+    .layers-list { display: flex; flex-direction: column; gap: 8px; }
+    .layer-row {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      padding: 12px 14px;
+      gap: 8px;
+      padding: 10px 12px;
       border-radius: 12px;
       background: rgba(128, 128, 128, 0.1);
-      border: 1px solid var(--panel-border);
+      border: 1px solid var(--border);
     }
-
-    .layer-item.muted {
-      opacity: 0.52;
-    }
-
-    .layer-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.9rem;
-    }
-
-    .layer-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    .layer-row.muted { opacity: 0.5; }
   </style>
 </head>
 <body>
   <div class="ambient-lights" id="ambientLights">
     <div class="light-orb orb-1"></div>
     <div class="light-orb orb-2"></div>
-    <div class="light-orb orb-3"></div>
   </div>
 
-  <div class="app-shell">
+  <div class="app">
     <header class="topbar">
       <div class="brand">
-        <div class="brand-logo" id="brandLogo">🎵</div>
+        <div class="brand-icon" id="brandIcon">🎵</div>
         <div>
           <h1>Kollay Gelsin!</h1>
-          <span class="subtitle">Çok Oyunculu Müzik &amp; Döngü Stüdyosu</span>
+          <span class="muted" id="topRoomInfo">Çok Oyunculu Canlı Müzik Stüdyosu</span>
         </div>
       </div>
 
-      <div class="topbar-controls">
-        <label class="theme-picker">
-          <span>Görünüm:</span>
-          <select id="uiThemeSelect">
-            <option value="neon">Gece Neon</option>
-            <option value="wood">Sıcak Ahşap</option>
-            <option value="pastel">Pastel Stüdyo</option>
-            <option value="retro">Retro 8-Bit</option>
-            <option value="minimal">Karanlık Minimal</option>
-          </select>
-        </label>
+      <div class="topbar-right">
+        <select id="uiThemeSelect" title="Görünüm Teması">
+          <option value="neon">Gece Neon</option>
+          <option value="wood">Sıcak Ahşap</option>
+          <option value="pastel">Pastel</option>
+          <option value="retro">Retro 8-Bit</option>
+          <option value="minimal">Minimal</option>
+        </select>
 
-        <button id="restartGameBtn" class="btn btn-danger hidden" title="Oyunu en baştan sıfırla">
-          🔄 Oyunu Yeniden Başlat
-        </button>
+        <button id="restartGameBtn" class="btn btn-danger hidden">🔄 Oyunu Yeniden Başlat</button>
       </div>
     </header>
 
-    <main id="lobbyView" class="panel">
-      <div class="lobby-grid">
-        <section>
-          <h2>1. Oda &amp; Oyun Ayarları</h2>
+    <!-- 1. ADIM: AVATAR & İSİM SEÇİMİ + ODA AÇ / KODLA KATIL -->
+    <section id="entryView" class="card entry-box">
+      <h2>Profilini Seç</h2>
 
-          <div class="form-group">
-            <label for="gameModeSelect">Oyun Modu</label>
-            <select id="gameModeSelect">
-              <option value="collab">🤝 Herkes Bir Şey Eklesin (Ortak Döngü)</option>
-              <option value="theme">🎭 Temalı Beste (Rastgele Sahne Konsepti)</option>
+      <div class="field">
+        <label>Avatar Seç</label>
+        <div class="avatar-grid" id="avatarGrid"></div>
+      </div>
+
+      <div class="field">
+        <label for="myNameInput">İsmin</label>
+        <input type="text" id="myNameInput" placeholder="Adını yaz..." maxlength="18" />
+      </div>
+
+      <div class="entry-actions">
+        <button id="createRoomBtn" class="btn btn-primary">➕ Oda Aç</button>
+        <div class="join-row">
+          <input type="text" id="roomCodeInput" placeholder="ODA KODU" maxlength="6" />
+          <button id="joinRoomBtn" class="btn btn-secondary">Katıl</button>
+        </div>
+      </div>
+
+      <div id="entryError" class="error-banner hidden"></div>
+    </section>
+
+    <!-- 2. ADIM: ODA LOBİSİ -->
+    <section id="lobbyView" class="card hidden">
+      <div class="lobby-top">
+        <div>
+          <h2>Oyun Odası</h2>
+          <p class="muted">Arkadaşların oda kodunu girerek katılabilir (1–10 oyuncu).</p>
+        </div>
+        <div class="room-code-badge">
+          Oda Kodu: <strong id="lobbyRoomCode">-----</strong>
+        </div>
+      </div>
+
+      <div class="lobby-grid">
+        <div>
+          <div class="field">
+            <label for="modeSelect">Oyun Modu</label>
+            <select id="modeSelect">
+              <option value="collab">🤝 Herkes Bir Şey Eklesin</option>
+              <option value="theme">🎭 Temalı Beste</option>
               <option value="rhythm">🥁 Ritmi Taklit Et</option>
               <option value="melody">🎹 Melodiyi Taklit Et</option>
               <option value="free">✨ Serbest Sahne</option>
             </select>
           </div>
 
-          <div class="form-row-2">
-            <div class="form-group">
-              <label for="bpmInput">Tempo (BPM): <strong id="bpmDisplayLobby">115</strong></label>
-              <input type="range" id="bpmInput" min="45" max="210" value="115" />
-            </div>
-
-            <div class="form-group">
-              <label for="beatsSelect">Döngü Vuruş Sayısı</label>
-              <select id="beatsSelect">
-                <option value="3">3 Vuruş</option>
-                <option value="4">4 Vuruş</option>
-                <option value="5">5 Vuruş</option>
-                <option value="6">6 Vuruş</option>
-                <option value="7">7 Vuruş</option>
-                <option value="8" selected>8 Vuruş</option>
-                <option value="9">9 Vuruş</option>
-                <option value="12">12 Vuruş</option>
-                <option value="16">16 Vuruş</option>
-              </select>
-            </div>
+          <div class="field">
+            <label for="lobbyBpm">Tempo (BPM): <strong id="lobbyBpmVal">115</strong></label>
+            <input type="range" id="lobbyBpm" min="45" max="210" value="115" />
           </div>
 
-          <div class="form-row-2">
-            <div class="form-group">
-              <label for="turnTimerSelect">Tur Süresi</label>
-              <select id="turnTimerSelect">
-                <option value="0" selected>Süresiz</option>
-                <option value="30">30 Saniye</option>
-                <option value="45">45 Saniye</option>
-                <option value="60">60 Saniye</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="playerCountSelect">Oyuncu Sayısı (1–10)</label>
-              <select id="playerCountSelect">
-                <option value="1">1 Oyuncu</option>
-                <option value="2" selected>2 Oyuncu</option>
-                <option value="3">3 Oyuncu</option>
-                <option value="4">4 Oyuncu</option>
-                <option value="5">5 Oyuncu</option>
-                <option value="6">6 Oyuncu</option>
-                <option value="7">7 Oyuncu</option>
-                <option value="8">8 Oyuncu</option>
-                <option value="9">9 Oyuncu</option>
-                <option value="10">10 Oyuncu</option>
-              </select>
-            </div>
+          <div class="field">
+            <label for="lobbyBeats">Vuruş Sayısı</label>
+            <select id="lobbyBeats">
+              <option value="3">3 Vuruş</option>
+              <option value="4">4 Vuruş</option>
+              <option value="5">5 Vuruş</option>
+              <option value="6">6 Vuruş</option>
+              <option value="7">7 Vuruş</option>
+              <option value="8" selected>8 Vuruş</option>
+              <option value="9">9 Vuruş</option>
+              <option value="12">12 Vuruş</option>
+              <option value="16">16 Vuruş</option>
+            </select>
           </div>
 
-          <div class="mode-summary-box" id="modeDescriptionBox"></div>
-        </section>
+          <div class="field">
+            <label for="lobbyTimer">Tur Süresi</label>
+            <select id="lobbyTimer">
+              <option value="0" selected>Süresiz</option>
+              <option value="30">30 Saniye</option>
+              <option value="45">45 Saniye</option>
+              <option value="60">60 Saniye</option>
+            </select>
+          </div>
+        </div>
 
-        <section>
-          <h2>2. Oyuncular &amp; Avatar Seçimi</h2>
-          <p class="hint">Avatar ikonuna tıklayarak değiştirebilir, oyuncu adlarını düzenleyebilirsin.</p>
-          <div id="playersListLobby" class="players-lobby-list"></div>
-        </section>
+        <div>
+          <div class="field">
+            <label>Odadaki Oyuncular (<span id="lobbyPlayerCount">1</span>/10)</label>
+            <div id="lobbyPlayersList" class="players-chips"></div>
+          </div>
+          <p class="muted" id="hostHintText" style="margin-top: 12px;"></p>
+        </div>
       </div>
 
-      <div class="lobby-footer">
+      <div style="margin-top: 16px;">
         <button id="startGameBtn" class="btn btn-primary btn-lg">🚀 Oyunu Başlat</button>
       </div>
-    </main>
+    </section>
 
-    <main id="gameView" class="hidden">
-      <section class="turn-banner">
-        <div class="turn-current">
-          <div class="turn-avatar" id="currentAvatar">🦊</div>
+    <!-- 3. ADIM: SADE OYUN İÇİ EKRAN (ESKİ CANLI LOOPING MANTIĞI) -->
+    <main id="gameView" class="hidden" style="display: flex; flex-direction: column; gap: 14px;">
+      <!-- SIRA KİMDE & BASİT TUR KONTROLÜ -->
+      <section class="card turn-bar">
+        <div class="turn-who">
+          <div class="turn-avatar" id="turnAvatar">🦊</div>
           <div>
-            <span class="badge-live">SIRA KİMDE</span>
-            <h2 id="currentPlayerName">1. Oyuncu</h2>
-            <p class="next-player-text" id="nextPlayerText">Sıradaki: 2. Oyuncu</p>
+            <span class="tag">SIRA KİMDE</span>
+            <h2 id="turnPlayerName">Oyuncu</h2>
+            <span class="muted" id="turnNextInfo">Sıradaki: -</span>
           </div>
         </div>
 
-        <div class="turn-meta">
-          <div class="meta-pill">
-            <span>Mod</span>
-            <strong id="activeModeLabel">Herkes Bir Şey Eklesin</strong>
-          </div>
-          <div class="meta-pill">
-            <span>Tur Süresi</span>
-            <strong id="timerDisplay">Süresiz</strong>
-          </div>
-          <div class="turn-actions">
-            <button id="skipTurnBtn" class="btn btn-secondary">⏭️ Sırayı Atla</button>
-            <button id="finishTurnBtn" class="btn btn-primary">✅ Katkıyı Ekle &amp; Devret</button>
-          </div>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
+          <span class="muted" id="turnTimerText" style="margin-right: 6px;">Süresiz</span>
+          <button id="skipTurnBtn" class="btn btn-secondary">⏭️ Sırayı Atla</button>
+          <button id="saveTurnBtn" class="btn btn-primary">✅ Kaydet &amp; Sırayı Devret</button>
         </div>
       </section>
 
-      <section id="themeModeCard" class="panel mode-special-card hidden">
-        <div class="theme-challenge-row">
-          <div>
-            <span class="badge-accent">SAHNE KONSEPTİ</span>
-            <h3 id="conceptTitle">Yağmurda Koşmak</h3>
-            <p class="hint">Bu sahneye uygun kısa bir melodi, ritim veya vokal ekle.</p>
-          </div>
-          <button id="newConceptBtn" class="btn btn-secondary">🎲 Yeni Konsept Çek</button>
+      <!-- MODA ÖZEL ALAN: TEMALI BESTE -->
+      <section id="themeCard" class="card hidden" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <span class="tag">SAHNE KONSEPTİ</span>
+          <h3 id="conceptTitle">Yağmurda Koşmak</h3>
+        </div>
+        <button id="newConceptBtn" class="btn btn-secondary">🎲 Yeni Konsept</button>
+      </section>
+
+      <!-- MODA ÖZEL ALAN: TAKLİT MODU -->
+      <section id="imitateCard" class="card hidden" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <span class="tag" id="imitateTag">TAKLİT HEDEFİ</span>
+          <h3 id="imitateText">Hedef Hazır</h3>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button id="playTargetBtn" class="btn btn-primary">🔊 Dinle</button>
+          <button id="newTargetBtn" class="btn btn-secondary">🔄 Yeni</button>
+          <strong id="imitateScore">%0</strong>
         </div>
       </section>
 
-      <section id="imitateModeCard" class="panel mode-special-card hidden">
-        <div class="theme-challenge-row">
-          <div>
-            <span class="badge-accent" id="imitateBadge">TAKLİT HEDEFİ</span>
-            <h3 id="imitateTargetText">Hedef Hazır</h3>
-            <p class="hint">Önce hedefi dinle, ardından piyanodan aynı deseni yakalamaya çalış.</p>
-          </div>
-          <div class="inline-btns">
-            <button id="playTargetBtn" class="btn btn-primary">🔊 Hedefi Dinle</button>
-            <button id="newTargetBtn" class="btn btn-secondary">🔄 Yeni Hedef</button>
-            <span class="score-pill" id="imitateScorePill">Uyum: %0</span>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel transport-panel">
-        <div class="transport-left">
-          <button id="playStopLoopBtn" class="btn btn-primary">▶️ Döngüyü Başlat</button>
-          <button id="clearCurrentSketchBtn" class="btn btn-secondary">🧹 Taslağı Temizle</button>
-          <button id="downloadWavBtn" class="btn btn-secondary">💾 Kaydı İndir (.WAV)</button>
+      <!-- CANLI DÖNGÜ & TEK BPM ÇUBUĞU -->
+      <section class="card loop-bar">
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <button id="loopToggleBtn" class="btn btn-primary">▶️ Döngüyü Başlat</button>
+          <button id="recLoopBtn" class="btn btn-danger">⏺️ Döngüye Canlı Kaydet</button>
+          <button id="clearTakeBtn" class="btn btn-secondary">🧹 Kaydı Temizle</button>
+          <button id="downloadWavBtn" class="btn btn-secondary">💾 İndir (.WAV)</button>
         </div>
 
-        <div class="transport-right">
-          <label class="single-bpm-box" for="liveBpmInput">
-            <span>Hız (BPM):</span>
-            <input type="range" id="liveBpmInput" min="45" max="210" value="115" />
-            <strong id="liveBpmValue">115</strong>
-          </label>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="muted">BPM:</span>
+          <input type="range" id="liveBpmSlider" min="45" max="210" value="115" />
+          <strong id="liveBpmText">115</strong>
         </div>
 
-        <div class="beat-visualizer-wrap">
-          <div class="beat-lights" id="beatLights"></div>
+        <div class="beat-row">
+          <div class="beat-dots" id="beatDots"></div>
           <div class="vu-bars" id="vuBars">
-            <span></span><span></span><span></span><span></span><span></span>
-            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
           </div>
         </div>
       </section>
 
-      <div class="studio-grid">
-        <section class="panel">
-          <div class="panel-head">
-            <h3>🎹 Klasik Piyano &amp; Enstrümanlar</h3>
-            <div class="instrument-controls">
+      <!-- PİYANO & MİKROFON -->
+      <div class="studio-row">
+        <section class="card">
+          <div class="section-head">
+            <h3>🎹 Piyano</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
               <select id="instrumentSelect"></select>
-              <button id="randomInstrumentBtn" class="btn btn-secondary">🎲 Rastgele Ses</button>
-              <button id="reverseSketchBtn" class="btn btn-secondary">⏪ Ters Çal: Kapalı</button>
+              <button id="randomInstBtn" class="btn btn-secondary">🎲 Rastgele Ses</button>
+              <button id="reverseTakeBtn" class="btn btn-secondary">⏪ Ters Çal</button>
             </div>
           </div>
 
-          <div class="step-selector-bar">
-            <span>Vuruş Seç:</span>
-            <div id="stepButtons" class="step-pills"></div>
+          <div class="piano-scroll">
+            <div class="piano" id="pianoBoard"></div>
           </div>
-
-          <div class="piano-wrapper">
-            <div class="piano-keyboard" id="pianoKeyboard"></div>
-          </div>
-
-          <div class="sketch-summary">
-            <span id="sketchInfoText">Vuruş seçip tuşlara basabilir veya canlı çalabilirsin.</span>
-          </div>
+          <p class="muted" id="takeStatus" style="margin-top: 8px;">Canlı çalabilir veya "Döngüye Canlı Kaydet" ile vuruşlara işleyebilirsin.</p>
         </section>
 
-        <section class="panel">
-          <div class="panel-head">
-            <h3>🎙️ Mikrofon &amp; Robot Vokal</h3>
-            <label class="robot-toggle">
-              <input type="checkbox" id="robotModeCheckbox" />
-              <span>🤖 Robot Modu</span>
+        <section class="card">
+          <div class="section-head">
+            <h3>🎙️ Mikrofon</h3>
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 0.88rem; cursor: pointer;">
+              <input type="checkbox" id="robotCheck" />
+              <span>🤖 Robot</span>
             </label>
           </div>
 
-          <p class="hint">
-            Kısa bir vokal veya ritim kaydet. BPM değiştiğinde ses kaydın otomatik olarak yeni hıza uyum sağlar.
-          </p>
-
-          <div class="mic-controls">
-            <button id="recordMicBtn" class="btn btn-danger">⏺️ Kaydı Başlat</button>
-            <button id="previewMicBtn" class="btn btn-secondary" disabled>▶️ Dinle</button>
-            <button id="reverseMicBtn" class="btn btn-secondary" disabled>⏪ Ters Çevir</button>
-            <button id="clearMicBtn" class="btn btn-secondary" disabled>🗑️ Sil</button>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+            <button id="micRecBtn" class="btn btn-danger">⏺️ Ses Kaydet</button>
+            <button id="micPlayBtn" class="btn btn-secondary" disabled>▶️ Dinle</button>
+            <button id="micRevBtn" class="btn btn-secondary" disabled>⏪ Ters</button>
+            <button id="micDelBtn" class="btn btn-secondary" disabled>🗑️ Sil</button>
           </div>
 
-          <div class="mic-status" id="micStatusText">Mikrofon hazır (düşük gecikme modu).</div>
+          <p class="muted" id="micStatus">Hazır (BPM değişimine uyumlu).</p>
         </section>
       </div>
 
-      <section class="panel">
-        <div class="panel-head">
+      <!-- KATMANLAR -->
+      <section class="card">
+        <div class="section-head">
           <h3>🎚️ Döngü Katmanları</h3>
-          <span class="hint" id="layerCountLabel">0 katman</span>
+          <span class="muted" id="layerCountText">0 katman</span>
         </div>
         <div id="layersList" class="layers-list">
-          <div class="empty-layers">Henüz döngüye eklenmiş bir katman yok.</div>
+          <p class="muted">Henüz katman eklenmedi.</p>
         </div>
       </section>
     </main>
@@ -1071,13 +703,13 @@
       { id: "bell_chime", name: "Kristal Çan", wave: "sine", decay: 0.75, detune: 1200 },
       { id: "organ_warm", name: "Sıcak Org", wave: "triangle", decay: 0.7, detune: 2 },
       { id: "pluck_harp", name: "Arp / Tel", wave: "triangle", decay: 0.4, detune: 0 },
-      { id: "brass_pad", name: "Pirinc / Brass", wave: "sawtooth", decay: 0.5, detune: -6 },
+      { id: "brass_pad", name: "Brass", wave: "sawtooth", decay: 0.5, detune: -6 },
       { id: "pad_dream", name: "Rüya Pad", wave: "sine", decay: 0.85, detune: 8 },
       { id: "kick_drum", name: "Kick Davul", wave: "sine", decay: 0.18, perc: "kick" },
-      { id: "snare_drum", name: "Trampet / Snare", wave: "triangle", decay: 0.14, perc: "snare" },
-      { id: "hihat_closed", name: "Kapalı Hi-Hat", wave: "square", decay: 0.06, perc: "hat" },
+      { id: "snare_drum", name: "Trampet", wave: "triangle", decay: 0.14, perc: "snare" },
+      { id: "hihat_closed", name: "Hi-Hat", wave: "square", decay: 0.06, perc: "hat" },
       { id: "tom_low", name: "Alt Tom", wave: "sine", decay: 0.25, perc: "tom" },
-      { id: "clav_funk", name: "Funk Klavinet", wave: "sawtooth", decay: 0.2, detune: 4 },
+      { id: "clav_funk", name: "Klavinet", wave: "sawtooth", decay: 0.2, detune: 4 },
       { id: "flute_air", name: "Hafif Flüt", wave: "sine", decay: 0.45, detune: 1200 }
     ];
 
@@ -1094,163 +726,112 @@
       "Hüzünlü Veda", "Umut Işığı", "Sessiz Oda", "Kutlama", "Yalnız Yürüyüş"
     ];
 
-    const MODE_DESCRIPTIONS = {
-      collab: "<strong>Herkes Bir Şey Eklesin:</strong> Oyuncular sırayla ortak döngüye piyano melodisi, ritim veya vokal ekleyerek parçayı birlikte büyütür.",
-      theme: "<strong>Temalı Beste:</strong> Her turda rastgele bir sahne konsepti gelir; oyuncular müziği bu fikre göre şekillendirir.",
-      rhythm: "<strong>Ritmi Taklit Et:</strong> Hedef vuruş desenini dinle ve sıran geldiğinde aynı ritim kalıbını çal.",
-      melody: "<strong>Melodiyi Taklit Et:</strong> Hedef notaları dinle ve piyanodan aynı notaları yakalamaya çalış.",
-      free: "<strong>Serbest Sahne:</strong> Kuralsız ve keyifli deneme alanı; dilediğin sesi ve hızı anında dene."
-    };
-
-    const MODE_LABELS = {
-      collab: "Herkes Bir Şey Eklesin",
-      theme: "Temalı Beste",
-      rhythm: "Ritmi Taklit Et",
-      melody: "Melodiyi Taklit Et",
-      free: "Serbest Sahne"
-    };
-
-    // C4 -> C5 klasik piyano tuşları (Do-Re-Mi-Fa-Sol-La-Si + diyez/bemol)
+    // Siyah tuşlarda yalnızca diyez (♯) etiketi
     const PIANO_KEYS = [
-      { id: "C4", solfege: "Do", sub: "C4", isBlack: false, freq: 261.63, whiteIndex: 0 },
-      { id: "Cs4", solfege: "Do♯/Re♭", sub: "C♯/D♭", isBlack: true, freq: 277.18, afterWhite: 0 },
-      { id: "D4", solfege: "Re", sub: "D4", isBlack: false, freq: 293.66, whiteIndex: 1 },
-      { id: "Ds4", solfege: "Re♯/Mi♭", sub: "D♯/E♭", isBlack: true, freq: 311.13, afterWhite: 1 },
-      { id: "E4", solfege: "Mi", sub: "E4", isBlack: false, freq: 329.63, whiteIndex: 2 },
-      { id: "F4", solfege: "Fa", sub: "F4", isBlack: false, freq: 349.23, whiteIndex: 3 },
-      { id: "Fs4", solfege: "Fa♯/Sol♭", sub: "F♯/G♭", isBlack: true, freq: 369.99, afterWhite: 3 },
-      { id: "G4", solfege: "Sol", sub: "G4", isBlack: false, freq: 392.00, whiteIndex: 4 },
-      { id: "Gs4", solfege: "Sol♯/La♭", sub: "G♯/A♭", isBlack: true, freq: 415.30, afterWhite: 4 },
-      { id: "A4", solfege: "La", sub: "A4", isBlack: false, freq: 440.00, whiteIndex: 5 },
-      { id: "As4", solfege: "La♯/Si♭", sub: "A♯/B♭", isBlack: true, freq: 466.16, afterWhite: 5 },
-      { id: "B4", solfege: "Si", sub: "B4", isBlack: false, freq: 493.88, whiteIndex: 6 },
-      { id: "C5", solfege: "Do", sub: "C5", isBlack: false, freq: 523.25, whiteIndex: 7 }
+      { id: "C4", label: "Do", isBlack: false, freq: 261.63 },
+      { id: "Cs4", label: "Do♯", isBlack: true, freq: 277.18, afterWhite: 0 },
+      { id: "D4", label: "Re", isBlack: false, freq: 293.66 },
+      { id: "Ds4", label: "Re♯", isBlack: true, freq: 311.13, afterWhite: 1 },
+      { id: "E4", label: "Mi", isBlack: false, freq: 329.63 },
+      { id: "F4", label: "Fa", isBlack: false, freq: 349.23 },
+      { id: "Fs4", label: "Fa♯", isBlack: true, freq: 369.99, afterWhite: 3 },
+      { id: "G4", label: "Sol", isBlack: false, freq: 392.00 },
+      { id: "Gs4", label: "Sol♯", isBlack: true, freq: 415.30, afterWhite: 4 },
+      { id: "A4", label: "La", isBlack: false, freq: 440.00 },
+      { id: "As4", label: "La♯", isBlack: true, freq: 466.16, afterWhite: 5 },
+      { id: "B4", label: "Si", isBlack: false, freq: 493.88 },
+      { id: "C5", label: "Do", isBlack: false, freq: 523.25 }
     ];
 
-    const state = {
-      mode: "collab",
+    const app = {
+      ws: null,
+      myId: null,
+      myAvatar: AVATARS[0],
+      room: null,
       bpm: 115,
-      baseBpm: 115,
       beats: 8,
-      turnDuration: 0,
-      playerCount: 2,
-      players: [],
-      currentTurnIndex: 0,
-      selectedStep: 0,
-      currentStep: 0,
       isPlaying: false,
-      selectedInstrumentId: "grand_piano",
-      reverseSketch: false,
-      sketchNotes: [], // { step, keyId, instrumentId }
-      layers: [], // { id, playerName, avatar, instrumentId, notes, reverse, muted, vocalBuffer, vocalReverse, vocalRobot, vocalBpm }
+      isLoopRecording: false,
+      currentBeat: 0,
+      loopTimer: null,
+      turnTimer: null,
+      remainingSec: 0,
+      instrumentId: "grand_piano",
+      reverseTake: false,
+      currentTakeNotes: [], // { beat, keyId, instrumentId }
       conceptHistory: [],
-      currentConcept: "Yağmurda Koşmak",
       imitateTarget: [],
-      imitateScore: 0,
       micBuffer: null,
       micReverse: false,
       micRobot: false,
       micBpm: 115,
-      isRecording: false,
+      isMicRecording: false,
       mediaRecorder: null,
-      recordedChunks: [],
-      timerInterval: null,
-      remainingSeconds: 0,
-      loopInterval: null
+      micChunks: []
     };
 
     let audioCtx = null;
-
-    function ensureAudioContext() {
+    function getAudioCtx() {
       if (!audioCtx) {
         const Ctx = window.AudioContext || window.webkitAudioContext;
         audioCtx = new Ctx();
       }
-      if (audioCtx.state === "suspended") {
-        audioCtx.resume();
-      }
+      if (audioCtx.state === "suspended") audioCtx.resume();
       return audioCtx;
     }
 
-    function pulseVisuals(intensity = 0.85) {
+    function pulseLights(power = 0.8) {
       const lights = document.getElementById("ambientLights");
-      const logo = document.getElementById("brandLogo");
-      const bars = document.querySelectorAll("#vuBars span");
-
+      const icon = document.getElementById("brandIcon");
       lights.classList.add("beat-pulse");
-      logo.classList.add("bounce");
+      icon.classList.add("bounce");
       setTimeout(() => {
         lights.classList.remove("beat-pulse");
-        logo.classList.remove("bounce");
-      }, 130);
+        icon.classList.remove("bounce");
+      }, 120);
 
-      bars.forEach((bar) => {
-        const h = Math.min(100, Math.max(16, Math.round((0.25 + Math.random() * 0.75) * intensity * 100)));
-        bar.style.height = h + "%";
+      document.querySelectorAll("#vuBars span").forEach((bar) => {
+        const pct = Math.min(100, Math.max(18, Math.round((0.25 + Math.random() * 0.75) * power * 100)));
+        bar.style.height = pct + "%";
       });
     }
 
-    function triggerNoteAudio(keyObj, instrumentId, durationSec = 0.35) {
-      const ctx = ensureAudioContext();
+    function playNoteSound(keyObj, instrumentId, duration = 0.32) {
+      const ctx = getAudioCtx();
       const inst = INSTRUMENTS.find((i) => i.id === instrumentId) || INSTRUMENTS[0];
       const now = ctx.currentTime;
 
-      if (inst.perc === "kick") {
+      if (inst.perc) {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(140, now);
-        osc.frequency.exponentialRampToValueAtTime(42, now + 0.16);
-        gain.gain.setValueAtTime(0.45, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
-        osc.connect(gain).connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.19);
-        pulseVisuals(0.95);
-        return;
-      }
-
-      if (inst.perc === "snare") {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = "triangle";
-        osc.frequency.setValueAtTime(210, now);
-        osc.frequency.exponentialRampToValueAtTime(85, now + 0.12);
-        gain.gain.setValueAtTime(0.32, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
-        osc.connect(gain).connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.15);
-        pulseVisuals(0.8);
-        return;
-      }
-
-      if (inst.perc === "hat") {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = "square";
-        osc.frequency.setValueAtTime(1800, now);
-        gain.gain.setValueAtTime(0.12, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-        osc.connect(gain).connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.07);
-        pulseVisuals(0.5);
-        return;
-      }
-
-      if (inst.perc === "tom") {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(115, now);
-        osc.frequency.exponentialRampToValueAtTime(55, now + 0.22);
-        gain.gain.setValueAtTime(0.38, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+        if (inst.perc === "kick") {
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(140, now);
+          osc.frequency.exponentialRampToValueAtTime(42, now + 0.16);
+          gain.gain.setValueAtTime(0.45, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+        } else if (inst.perc === "snare") {
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(210, now);
+          osc.frequency.exponentialRampToValueAtTime(85, now + 0.12);
+          gain.gain.setValueAtTime(0.32, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+        } else if (inst.perc === "hat") {
+          osc.type = "square";
+          osc.frequency.setValueAtTime(1800, now);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        } else {
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(115, now);
+          osc.frequency.exponentialRampToValueAtTime(55, now + 0.22);
+          gain.gain.setValueAtTime(0.36, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+        }
         osc.connect(gain).connect(ctx.destination);
         osc.start(now);
         osc.stop(now + 0.25);
-        pulseVisuals(0.85);
+        pulseLights(0.85);
         return;
       }
 
@@ -1258,11 +839,9 @@
       const gain = ctx.createGain();
       osc.type = inst.wave || "triangle";
       osc.frequency.setValueAtTime(keyObj.freq, now);
-      if (inst.detune) {
-        osc.detune.setValueAtTime(inst.detune, now);
-      }
+      if (inst.detune) osc.detune.setValueAtTime(inst.detune, now);
 
-      const dur = Math.max(durationSec, inst.decay || 0.35);
+      const dur = Math.max(duration, inst.decay || 0.32);
       gain.gain.setValueAtTime(0.001, now);
       gain.gain.linearRampToValueAtTime(0.24, now + 0.015);
       gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
@@ -1270,760 +849,634 @@
       osc.connect(gain).connect(ctx.destination);
       osc.start(now);
       osc.stop(now + dur + 0.02);
-      pulseVisuals(0.75);
+      pulseLights(0.75);
     }
 
-    function highlightPianoKey(keyId) {
-      const el = document.querySelector(`[data-key-id="${keyId}"]`);
+    function flashPianoKey(keyId) {
+      const el = document.querySelector(`[data-key="${keyId}"]`);
       if (!el) return;
       el.classList.add("active");
-      setTimeout(() => el.classList.remove("active"), 160);
+      setTimeout(() => el.classList.remove("active"), 150);
     }
 
-    function initPlayersLobby() {
-      const list = document.getElementById("playersListLobby");
-      list.innerHTML = "";
+    // WebSocket bağlantısı
+    function connectSocket() {
+      const proto = location.protocol === "https:" ? "wss:" : "ws:";
+      const ws = new WebSocket(`${proto}//${location.host}`);
+      app.ws = ws;
 
-      while (state.players.length < state.playerCount) {
-        const idx = state.players.length;
-        state.players.push({
-          name: `${idx + 1}. Oyuncu`,
-          avatar: AVATARS[idx % AVATARS.length]
-        });
-      }
-      state.players.length = state.playerCount;
-
-      state.players.forEach((p, i) => {
-        const card = document.createElement("div");
-        card.className = "player-slot-card";
-
-        const avatarBtn = document.createElement("button");
-        avatarBtn.type = "button";
-        avatarBtn.className = "avatar-pick-btn";
-        avatarBtn.title = "Avatar değiştir";
-        avatarBtn.textContent = p.avatar;
-        avatarBtn.addEventListener("click", () => {
-          const nextIdx = (AVATARS.indexOf(p.avatar) + 1) % AVATARS.length;
-          p.avatar = AVATARS[nextIdx];
-          avatarBtn.textContent = p.avatar;
-        });
-
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = p.name;
-        input.maxLength = 18;
-        input.addEventListener("input", (e) => {
-          p.name = e.target.value.trim() || `${i + 1}. Oyuncu`;
-        });
-
-        card.appendChild(avatarBtn);
-        card.appendChild(input);
-        list.appendChild(card);
-      });
-    }
-
-    function renderInstruments() {
-      const sel = document.getElementById("instrumentSelect");
-      sel.innerHTML = "";
-      INSTRUMENTS.forEach((inst) => {
-        const opt = document.createElement("option");
-        opt.value = inst.id;
-        opt.textContent = inst.name;
-        sel.appendChild(opt);
-      });
-      sel.value = state.selectedInstrumentId;
-    }
-
-    function renderPiano() {
-      const board = document.getElementById("pianoKeyboard");
-      board.innerHTML = "";
-
-      const whiteKeys = PIANO_KEYS.filter((k) => !k.isBlack);
-      const blackKeys = PIANO_KEYS.filter((k) => k.isBlack);
-      const whiteWidthPct = 100 / whiteKeys.length;
-
-      whiteKeys.forEach((k) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "white-key";
-        btn.dataset.keyId = k.id;
-        btn.innerHTML = `<span>${k.solfege}</span><span class="solfege-sub">${k.sub}</span>`;
-        btn.addEventListener("pointerdown", () => handleKeyPress(k));
-        board.appendChild(btn);
-      });
-
-      blackKeys.forEach((k) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "black-key";
-        btn.dataset.keyId = k.id;
-        btn.style.left = `${(k.afterWhite + 1) * whiteWidthPct}%`;
-        btn.innerHTML = `<span>${k.solfege}</span>`;
-        btn.addEventListener("pointerdown", (ev) => {
-          ev.stopPropagation();
-          handleKeyPress(k);
-        });
-        board.appendChild(btn);
-      });
-    }
-
-    function handleKeyPress(keyObj) {
-      triggerNoteAudio(keyObj, state.selectedInstrumentId, 0.35);
-      highlightPianoKey(keyObj.id);
-
-      state.sketchNotes.push({
-        step: state.selectedStep,
-        keyId: keyObj.id,
-        instrumentId: state.selectedInstrumentId
-      });
-
-      updateStepButtons();
-      updateSketchInfo();
-
-      if (state.mode === "rhythm" || state.mode === "melody") {
-        evaluateImitateScore();
-      }
-    }
-
-    function renderBeatLightsAndSteps() {
-      const lightsWrap = document.getElementById("beatLights");
-      const stepBtnsWrap = document.getElementById("stepButtons");
-      lightsWrap.innerHTML = "";
-      stepBtnsWrap.innerHTML = "";
-
-      if (state.selectedStep >= state.beats) {
-        state.selectedStep = 0;
-      }
-
-      for (let i = 0; i < state.beats; i++) {
-        const dot = document.createElement("div");
-        dot.className = "beat-dot";
-        dot.dataset.beatIndex = i;
-        dot.textContent = i + 1;
-        lightsWrap.appendChild(dot);
-
-        const pill = document.createElement("button");
-        pill.type = "button";
-        pill.className = "step-pill-btn" + (i === state.selectedStep ? " selected" : "");
-        pill.dataset.stepIndex = i;
-        pill.textContent = i + 1;
-        pill.addEventListener("click", () => {
-          state.selectedStep = i;
-          updateStepButtons();
-        });
-        stepBtnsWrap.appendChild(pill);
-      }
-
-      updateStepButtons();
-    }
-
-    function updateStepButtons() {
-      const pills = document.querySelectorAll(".step-pill-btn");
-      pills.forEach((pill, idx) => {
-        pill.classList.toggle("selected", idx === state.selectedStep);
-        const hasNote = state.sketchNotes.some((n) => n.step === idx);
-        pill.classList.toggle("has-notes", hasNote);
-      });
-    }
-
-    function updateSketchInfo() {
-      const info = document.getElementById("sketchInfoText");
-      if (!state.sketchNotes.length && !state.micBuffer) {
-        info.textContent = "Vuruş seçip tuşlara basabilir veya canlı çalabilirsin.";
-        return;
-      }
-      const parts = [];
-      if (state.sketchNotes.length) {
-        parts.push(`${state.sketchNotes.length} nota`);
-      }
-      if (state.micBuffer) {
-        parts.push(state.micRobot ? "robot vokal kayıtlı" : "vokal kayıtlı");
-      }
-      if (state.reverseSketch) {
-        parts.push("ters çalma aktif");
-      }
-      info.textContent = "Taslakta: " + parts.join(" • ");
-    }
-
-    function pickNextConcept() {
-      const available = CONCEPTS.filter((c) => !state.conceptHistory.includes(c));
-      const pool = available.length ? available : CONCEPTS;
-      const chosen = pool[Math.floor(Math.random() * pool.length)];
-      state.conceptHistory.push(chosen);
-      if (state.conceptHistory.length > Math.min(25, CONCEPTS.length - 1)) {
-        state.conceptHistory.shift();
-      }
-      state.currentConcept = chosen;
-      document.getElementById("conceptTitle").textContent = chosen;
-    }
-
-    function generateImitateTarget() {
-      const count = Math.min(state.beats, 5);
-      const target = [];
-      for (let i = 0; i < count; i++) {
-        const step = Math.floor((i / count) * state.beats);
-        const key = PIANO_KEYS[Math.floor(Math.random() * PIANO_KEYS.length)];
-        target.push({ step, keyId: key.id });
-      }
-      state.imitateTarget = target;
-      state.imitateScore = 0;
-      document.getElementById("imitateScorePill").textContent = "Uyum: %0";
-      document.getElementById("imitateBadge").textContent =
-        state.mode === "rhythm" ? "RİTİM HEDEFİ" : "MELODİ HEDEFİ";
-      document.getElementById("imitateTargetText").textContent =
-        state.mode === "rhythm"
-          ? `${target.length} vuruşluk ritim deseni (${target.map((t) => t.step + 1).join(", ")}. vuruşlar)`
-          : "Notalar: " +
-            target
-              .map((t) => {
-                const k = PIANO_KEYS.find((pk) => pk.id === t.keyId);
-                return `${t.step + 1}.vuruş: ${k ? k.solfege : t.keyId}`;
-              })
-              .join(" | ");
-    }
-
-    function playImitateTarget() {
-      if (!state.imitateTarget.length) return;
-      const stepMs = (60 / state.bpm) * 1000;
-      state.imitateTarget.forEach((item) => {
-        setTimeout(() => {
-          const kObj = PIANO_KEYS.find((pk) => pk.id === item.keyId) || PIANO_KEYS[0];
-          const instId = state.mode === "rhythm" ? "snare_drum" : state.selectedInstrumentId;
-          triggerNoteAudio(kObj, instId, 0.3);
-          highlightPianoKey(kObj.id);
-        }, item.step * stepMs);
-      });
-    }
-
-    function evaluateImitateScore() {
-      if (!state.imitateTarget.length) return;
-      let matches = 0;
-      state.imitateTarget.forEach((targetItem) => {
-        const found = state.sketchNotes.some((n) => {
-          if (state.mode === "rhythm") return n.step === targetItem.step;
-          return n.step === targetItem.step && n.keyId === targetItem.keyId;
-        });
-        if (found) matches++;
-      });
-      const pct = Math.round((matches / state.imitateTarget.length) * 100);
-      state.imitateScore = pct;
-      document.getElementById("imitateScorePill").textContent = `Uyum: %${pct}`;
-    }
-
-    function updateTurnUI() {
-      const current = state.players[state.currentTurnIndex] || state.players[0];
-      const nextIdx = (state.currentTurnIndex + 1) % state.players.length;
-      const next = state.players[nextIdx] || current;
-
-      document.getElementById("currentAvatar").textContent = current.avatar;
-      document.getElementById("currentPlayerName").textContent = current.name;
-      document.getElementById("nextPlayerText").textContent =
-        state.players.length > 1 ? `Sıradaki: ${next.name}` : "Tek oyunculu mod";
-      document.getElementById("activeModeLabel").textContent = MODE_LABELS[state.mode];
-
-      resetTurnTimer();
-    }
-
-    function resetTurnTimer() {
-      clearInterval(state.timerInterval);
-      const timerEl = document.getElementById("timerDisplay");
-      if (!state.turnDuration) {
-        timerEl.textContent = "Süresiz";
-        return;
-      }
-      state.remainingSeconds = state.turnDuration;
-      timerEl.textContent = `${state.remainingSeconds} sn`;
-      state.timerInterval = setInterval(() => {
-        state.remainingSeconds--;
-        if (state.remainingSeconds <= 0) {
-          advanceTurn(false);
-        } else {
-          timerEl.textContent = `${state.remainingSeconds} sn`;
-        }
-      }, 1000);
-    }
-
-    function advanceTurn(saveSketchAsLayer) {
-      if (saveSketchAsLayer && (state.sketchNotes.length || state.micBuffer)) {
-        const player = state.players[state.currentTurnIndex];
-        const inst = INSTRUMENTS.find((i) => i.id === state.selectedInstrumentId);
-        state.layers.push({
-          id: Date.now() + "-" + Math.random().toString(36).slice(2, 6),
-          playerName: player.name,
-          avatar: player.avatar,
-          instrumentName: inst ? inst.name : "Piyano",
-          notes: JSON.parse(JSON.stringify(state.sketchNotes)),
-          reverse: state.reverseSketch,
-          muted: false,
-          vocalBuffer: state.micBuffer,
-          vocalReverse: state.micReverse,
-          vocalRobot: state.micRobot,
-          vocalBpm: state.micBpm
-        });
-        renderLayers();
-      }
-
-      state.sketchNotes = [];
-      state.reverseSketch = false;
-      state.micBuffer = null;
-      state.micReverse = false;
-      document.getElementById("reverseSketchBtn").textContent = "⏪ Ters Çal: Kapalı";
-      document.getElementById("reverseSketchBtn").classList.remove("active-toggle");
-      document.getElementById("previewMicBtn").disabled = true;
-      document.getElementById("reverseMicBtn").disabled = true;
-      document.getElementById("clearMicBtn").disabled = true;
-      document.getElementById("micStatusText").textContent = "Mikrofon hazır (düşük gecikme modu).";
-
-      updateStepButtons();
-      updateSketchInfo();
-
-      state.currentTurnIndex = (state.currentTurnIndex + 1) % state.players.length;
-      if (state.mode === "theme") {
-        pickNextConcept();
-      } else if (state.mode === "rhythm" || state.mode === "melody") {
-        generateImitateTarget();
-      }
-      updateTurnUI();
-    }
-
-    function renderLayers() {
-      const list = document.getElementById("layersList");
-      const countLabel = document.getElementById("layerCountLabel");
-      countLabel.textContent = `${state.layers.length} katman`;
-
-      if (!state.layers.length) {
-        list.innerHTML = `<div class="empty-layers">Henüz döngüye eklenmiş bir katman yok.</div>`;
-        return;
-      }
-
-      list.innerHTML = "";
-      state.layers.forEach((layer) => {
-        const row = document.createElement("div");
-        row.className = "layer-item" + (layer.muted ? " muted" : "");
-
-        const info = document.createElement("div");
-        info.className = "layer-info";
-        const vocalTag = layer.vocalBuffer
-          ? ` + 🎙️${layer.vocalRobot ? "Robot Vokal" : "Vokal"}`
-          : "";
-        info.innerHTML = `
-          <span>${layer.avatar}</span>
-          <strong>${layer.playerName}</strong>
-          <span>— ${layer.notes.length} nota (${layer.instrumentName})${vocalTag}</span>
-        `;
-
-        const actions = document.createElement("div");
-        actions.className = "layer-actions";
-
-        const muteBtn = document.createElement("button");
-        muteBtn.type = "button";
-        muteBtn.className = "btn btn-secondary" + (layer.muted ? " active-toggle" : "");
-        muteBtn.textContent = layer.muted ? "🔇 Susturuldu" : "🔊 Sustur";
-        muteBtn.addEventListener("click", () => {
-          layer.muted = !layer.muted;
-          renderLayers();
-        });
-
-        const revBtn = document.createElement("button");
-        revBtn.type = "button";
-        revBtn.className = "btn btn-secondary" + (layer.reverse ? " active-toggle" : "");
-        revBtn.textContent = layer.reverse ? "⏪ Ters: Açık" : "⏪ Ters";
-        revBtn.addEventListener("click", () => {
-          layer.reverse = !layer.reverse;
-          renderLayers();
-        });
-
-        const delBtn = document.createElement("button");
-        delBtn.type = "button";
-        delBtn.className = "btn btn-secondary";
-        delBtn.textContent = "🗑️ Sil";
-        delBtn.addEventListener("click", () => {
-          state.layers = state.layers.filter((l) => l.id !== layer.id);
-          renderLayers();
-        });
-
-        actions.appendChild(muteBtn);
-        actions.appendChild(revBtn);
-        actions.appendChild(delBtn);
-
-        row.appendChild(info);
-        row.appendChild(actions);
-        list.appendChild(row);
-      });
-    }
-
-    function playVocalBuffer(buffer, { reverse = false, robot = false, sourceBpm = 115, targetBpm = 115 }) {
-      if (!buffer) return;
-      const ctx = ensureAudioContext();
-      let playBuffer = buffer;
-
-      if (reverse) {
-        const copy = ctx.createBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
-        for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
-          const src = buffer.getChannelData(ch);
-          const dst = copy.getChannelData(ch);
-          for (let i = 0; i < src.length; i++) {
-            dst[i] = src[src.length - 1 - i];
+      ws.onmessage = (ev) => {
+        const msg = JSON.parse(ev.data);
+        if (msg.type === "welcome") {
+          app.myId = msg.playerId;
+        } else if (msg.type === "error_msg") {
+          const errEl = document.getElementById("entryError");
+          errEl.textContent = msg.message;
+          errEl.classList.remove("hidden");
+        } else if (msg.type === "room_state") {
+          app.room = msg.room;
+          renderRoomState();
+        } else if (msg.type === "live_note") {
+          const k = PIANO_KEYS.find((x) => x.id === msg.keyId);
+          if (k) {
+            playNoteSound(k, msg.instrumentId, 0.28);
+            flashPianoKey(k.id);
           }
         }
-        playBuffer = copy;
-      }
+      };
 
-      const srcNode = ctx.createBufferSource();
-      srcNode.buffer = playBuffer;
-
-      // BPM değiştiğinde vokal süresini/hızını tempoya uyarla
-      const ratio = targetBpm / Math.max(45, sourceBpm || 115);
-      srcNode.playbackRate.value = Math.min(2.0, Math.max(0.5, ratio));
-
-      if (robot) {
-        const modOsc = ctx.createOscillator();
-        const modGain = ctx.createGain();
-        modOsc.type = "square";
-        modOsc.frequency.value = 48;
-        modGain.gain.value = 0.5;
-        modOsc.connect(modGain.gain);
-        srcNode.connect(modGain).connect(ctx.destination);
-        modOsc.start();
-        srcNode.onended = () => {
-          try { modOsc.stop(); } catch (_) {}
-        };
-      } else {
-        srcNode.connect(ctx.destination);
-      }
-
-      srcNode.start();
-      pulseVisuals(0.8);
+      ws.onclose = () => {
+        setTimeout(connectSocket, 2000);
+      };
     }
 
-    async function toggleMicRecording() {
-      const btn = document.getElementById("recordMicBtn");
-      const status = document.getElementById("micStatusText");
-
-      if (!state.isRecording) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            audio: {
-              echoCancellation: true,
-              noiseSuppression: true,
-              autoGainControl: true,
-              latency: 0.01
-            }
-          });
-          state.recordedChunks = [];
-          state.mediaRecorder = new MediaRecorder(stream);
-          state.mediaRecorder.ondataavailable = (e) => {
-            if (e.data.size > 0) state.recordedChunks.push(e.data);
-          };
-          state.mediaRecorder.onstop = async () => {
-            stream.getTracks().forEach((t) => t.stop());
-            const blob = new Blob(state.recordedChunks, { type: "audio/webm" });
-            const arrBuf = await blob.arrayBuffer();
-            const ctx = ensureAudioContext();
-            state.micBuffer = await ctx.decodeAudioData(arrBuf);
-            state.micBpm = state.bpm;
-            state.micReverse = false;
-            document.getElementById("previewMicBtn").disabled = false;
-            document.getElementById("reverseMicBtn").disabled = false;
-            document.getElementById("clearMicBtn").disabled = false;
-            status.textContent = `Vokal kaydedildi (${state.micBuffer.duration.toFixed(1)} sn, ${state.micBpm} BPM).`;
-            updateSketchInfo();
-          };
-          state.mediaRecorder.start();
-          state.isRecording = true;
-          btn.textContent = "⏹️ Kaydı Bitir";
-          status.textContent = "Kayıt alınıyor...";
-        } catch (err) {
-          status.textContent = "Mikrofon izni alınamadı veya desteklenmiyor.";
-        }
-      } else {
-        state.isRecording = false;
-        btn.textContent = "⏺️ Kaydı Başlat";
-        if (state.mediaRecorder && state.mediaRecorder.state !== "inactive") {
-          state.mediaRecorder.stop();
-        }
+    function sendWs(payload) {
+      if (app.ws && app.ws.readyState === WebSocket.OPEN) {
+        app.ws.send(JSON.stringify(payload));
       }
     }
 
-    function stepLoopTick() {
-      const dots = document.querySelectorAll(".beat-dot");
-      dots.forEach((d, idx) => d.classList.toggle("active", idx === state.currentStep));
+    function renderRoomState() {
+      const room = app.room;
+      if (!room) return;
 
-      // Aktif taslak notaları
-      const sketchEffectiveStep = state.reverseSketch
-        ? state.beats - 1 - state.currentStep
-        : state.currentStep;
+      document.getElementById("entryView").classList.add("hidden");
+      document.getElementById("topRoomInfo").textContent = `Oda Kodu: ${room.code}`;
 
-      state.sketchNotes
-        .filter((n) => n.step === sketchEffectiveStep)
-        .forEach((n) => {
-          const kObj = PIANO_KEYS.find((pk) => pk.id === n.keyId) || PIANO_KEYS[0];
-          triggerNoteAudio(kObj, n.instrumentId, 0.28);
-          highlightPianoKey(kObj.id);
+      const isHost = room.hostId === app.myId;
+      app.bpm = Number(room.settings.bpm) || 115;
+      app.beats = Number(room.settings.beats) || 8;
+
+      if (!room.started) {
+        app.isPlaying = false;
+        clearInterval(app.loopTimer);
+        clearInterval(app.turnTimer);
+
+        document.getElementById("gameView").classList.add("hidden");
+        document.getElementById("restartGameBtn").classList.add("hidden");
+        document.getElementById("lobbyView").classList.remove("hidden");
+
+        document.getElementById("lobbyRoomCode").textContent = room.code;
+        document.getElementById("lobbyPlayerCount").textContent = room.players.length;
+        document.getElementById("modeSelect").value = room.settings.mode;
+        document.getElementById("lobbyBpm").value = room.settings.bpm;
+        document.getElementById("lobbyBpmVal").textContent = room.settings.bpm;
+        document.getElementById("lobbyBeats").value = room.settings.beats;
+        document.getElementById("lobbyTimer").value = room.settings.turnDuration;
+
+        // Ayarları sadece oda kurucusu değiştirir
+        ["modeSelect", "lobbyBpm", "lobbyBeats", "lobbyTimer"].forEach((id) => {
+          document.getElementById(id).disabled = !isHost;
         });
+        document.getElementById("startGameBtn").classList.toggle("hidden", !isHost);
+        document.getElementById("hostHintText").textContent = isHost
+          ? "Oda kurucusu sensin. Ayarları seçip oyunu başlatabilirsin."
+          : "Oda kurucusunun oyunu başlatması bekleniyor...";
 
-      // Kayıtlı ortak katmanlar
-      state.layers.forEach((layer) => {
-        if (layer.muted) return;
-        const effStep = layer.reverse
-          ? state.beats - 1 - state.currentStep
-          : state.currentStep;
-
-        layer.notes
-          .filter((n) => n.step === effStep)
-          .forEach((n) => {
-            const kObj = PIANO_KEYS.find((pk) => pk.id === n.keyId) || PIANO_KEYS[0];
-            triggerNoteAudio(kObj, n.instrumentId, 0.28);
-          });
-
-        if (state.currentStep === 0 && layer.vocalBuffer) {
-          playVocalBuffer(layer.vocalBuffer, {
-            reverse: layer.vocalReverse,
-            robot: layer.vocalRobot,
-            sourceBpm: layer.vocalBpm,
-            targetBpm: state.bpm
-          });
-        }
-      });
-
-      if (state.currentStep === 0 && state.micBuffer) {
-        playVocalBuffer(state.micBuffer, {
-          reverse: state.micReverse,
-          robot: state.micRobot,
-          sourceBpm: state.micBpm,
-          targetBpm: state.bpm
+        const pList = document.getElementById("lobbyPlayersList");
+        pList.innerHTML = "";
+        room.players.forEach((p) => {
+          const chip = document.createElement("div");
+          chip.className = "player-chip";
+          chip.innerHTML = `<span>${p.avatar}</span><strong>${p.name}</strong>${p.id === room.hostId ? " 👑" : ""}`;
+          pList.appendChild(chip);
         });
-      }
-
-      pulseVisuals(state.currentStep === 0 ? 1.0 : 0.65);
-      state.currentStep = (state.currentStep + 1) % state.beats;
-    }
-
-    function restartLoopTimer() {
-      clearInterval(state.loopInterval);
-      if (!state.isPlaying) return;
-      const intervalMs = (60 / state.bpm) * 1000;
-      state.loopInterval = setInterval(stepLoopTick, intervalMs);
-    }
-
-    function toggleLoopPlayback() {
-      const btn = document.getElementById("playStopLoopBtn");
-      state.isPlaying = !state.isPlaying;
-      if (state.isPlaying) {
-        ensureAudioContext();
-        state.currentStep = 0;
-        btn.textContent = "⏹️ Döngüyü Durdur";
-        stepLoopTick();
-        restartLoopTimer();
-      } else {
-        clearInterval(state.loopInterval);
-        document.querySelectorAll(".beat-dot").forEach((d) => d.classList.remove("active"));
-        btn.textContent = "▶️ Döngüyü Başlat";
-      }
-    }
-
-    function downloadLoopWav() {
-      const allNotes = [
-        ...state.sketchNotes,
-        ...state.layers.filter((l) => !l.muted).flatMap((l) => l.notes)
-      ];
-      if (!allNotes.length) {
-        alert("Dışa aktarılacak nota bulunamadı. Önce piyanodan birkaç nota ekle.");
         return;
       }
 
-      const sampleRate = 22050;
-      const stepSec = 60 / state.bpm;
-      const totalSec = Math.max(1, state.beats * stepSec);
-      const length = Math.floor(sampleRate * totalSec);
-      const pcm = new Float32Array(length);
-
-      allNotes.forEach((n) => {
-        const kObj = PIANO_KEYS.find((pk) => pk.id === n.keyId) || PIANO_KEYS[0];
-        const startSample = Math.floor(n.step * stepSec * sampleRate);
-        const durSamples = Math.min(length - startSample, Math.floor(0.32 * sampleRate));
-        for (let i = 0; i < durSamples; i++) {
-          const t = i / sampleRate;
-          const env = Math.exp(-t * 8);
-          const sample = Math.sin(2 * Math.PI * kObj.freq * t) * env * 0.35;
-          pcm[startSample + i] = Math.max(-1, Math.min(1, pcm[startSample + i] + sample));
-        }
-      });
-
-      const wavBuffer = new ArrayBuffer(44 + pcm.length * 2);
-      const view = new DataView(wavBuffer);
-      const writeStr = (off, str) => {
-        for (let i = 0; i < str.length; i++) view.setUint8(off + i, str.charCodeAt(i));
-      };
-
-      writeStr(0, "RIFF");
-      view.setUint32(4, 36 + pcm.length * 2, true);
-      writeStr(8, "WAVE");
-      writeStr(12, "fmt ");
-      view.setUint32(16, 16, true);
-      view.setUint16(20, 1, true);
-      view.setUint16(22, 1, true);
-      view.setUint32(24, sampleRate, true);
-      view.setUint32(28, sampleRate * 2, true);
-      view.setUint16(32, 2, true);
-      view.setUint16(34, 16, true);
-      writeStr(36, "data");
-      view.setUint32(40, pcm.length * 2, true);
-
-      let offset = 44;
-      for (let i = 0; i < pcm.length; i++, offset += 2) {
-        const s = Math.max(-1, Math.min(1, pcm[i]));
-        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
-      }
-
-      const blob = new Blob([wavBuffer], { type: "audio/wav" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "kollay-gelsin-dongu.wav";
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function syncBpmEverywhere(newBpm) {
-      const clamped = Math.min(210, Math.max(45, Number(newBpm) || 115));
-      state.bpm = clamped;
-      document.getElementById("bpmInput").value = clamped;
-      document.getElementById("bpmDisplayLobby").textContent = clamped;
-      document.getElementById("liveBpmInput").value = clamped;
-      document.getElementById("liveBpmValue").textContent = clamped;
-      restartLoopTimer();
-    }
-
-    function startGame() {
-      state.mode = document.getElementById("gameModeSelect").value;
-      state.beats = Number(document.getElementById("beatsSelect").value) || 8;
-      state.turnDuration = Number(document.getElementById("turnTimerSelect").value) || 0;
-      state.currentTurnIndex = 0;
-      state.sketchNotes = [];
-      state.layers = [];
-
+      // Oyun ekranı
       document.getElementById("lobbyView").classList.add("hidden");
       document.getElementById("gameView").classList.remove("hidden");
       document.getElementById("restartGameBtn").classList.remove("hidden");
 
-      document.getElementById("themeModeCard").classList.toggle("hidden", state.mode !== "theme");
-      document.getElementById("imitateModeCard").classList.toggle(
-        "hidden",
-        state.mode !== "rhythm" && state.mode !== "melody"
-      );
+      document.getElementById("liveBpmSlider").value = app.bpm;
+      document.getElementById("liveBpmText").textContent = app.bpm;
 
-      if (state.mode === "theme") pickNextConcept();
-      if (state.mode === "rhythm" || state.mode === "melody") generateImitateTarget();
+      const mode = room.settings.mode;
+      document.getElementById("themeCard").classList.toggle("hidden", mode !== "theme");
+      document.getElementById("imitateCard").classList.toggle("hidden", mode !== "rhythm" && mode !== "melody");
+      document.getElementById("conceptTitle").textContent = room.concept;
 
-      renderBeatLightsAndSteps();
-      renderLayers();
-      updateSketchInfo();
-      updateTurnUI();
+      if ((mode === "rhythm" || mode === "melody") && !app.imitateTarget.length) {
+        buildImitateTarget();
+      }
+
+      const activePlayer = room.players[room.turnIndex] || room.players[0];
+      const nextPlayer = room.players[(room.turnIndex + 1) % room.players.length] || activePlayer;
+      document.getElementById("turnAvatar").textContent = activePlayer.avatar;
+      document.getElementById("turnPlayerName").textContent = activePlayer.name;
+      document.getElementById("turnNextInfo").textContent =
+        room.players.length > 1 ? `Sıradaki: ${nextPlayer.name}` : "Tek oyunculu";
+
+      renderBeatDots();
+      renderLayersList();
+      setupTurnTimer();
+      restartLoopClock();
     }
 
-    function resetWholeGame() {
-      state.isPlaying = false;
-      clearInterval(state.loopInterval);
-      clearInterval(state.timerInterval);
-      state.sketchNotes = [];
-      state.layers = [];
-      state.currentStep = 0;
-      state.currentTurnIndex = 0;
-
-      document.getElementById("playStopLoopBtn").textContent = "▶️ Döngüyü Başlat";
-      document.getElementById("gameView").classList.add("hidden");
-      document.getElementById("restartGameBtn").classList.add("hidden");
-      document.getElementById("lobbyView").classList.remove("hidden");
+    function setupTurnTimer() {
+      clearInterval(app.turnTimer);
+      const sec = Number(app.room?.settings?.turnDuration) || 0;
+      const el = document.getElementById("turnTimerText");
+      if (!sec) {
+        el.textContent = "Süresiz";
+        return;
+      }
+      app.remainingSec = sec;
+      el.textContent = `${app.remainingSec} sn`;
+      app.turnTimer = setInterval(() => {
+        app.remainingSec--;
+        if (app.remainingSec <= 0) {
+          clearInterval(app.turnTimer);
+          sendWs({ type: "skip_turn", nextConcept: nextRandomConcept() });
+        } else {
+          el.textContent = `${app.remainingSec} sn`;
+        }
+      }, 1000);
     }
 
-    // Olay Dinleyicileri
-    document.getElementById("uiThemeSelect").addEventListener("change", (e) => {
-      document.documentElement.setAttribute("data-theme", e.target.value);
-    });
+    function nextRandomConcept() {
+      const avail = CONCEPTS.filter((c) => !app.conceptHistory.includes(c));
+      const pool = avail.length ? avail : CONCEPTS;
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      app.conceptHistory.push(pick);
+      if (app.conceptHistory.length > 25) app.conceptHistory.shift();
+      return pick;
+    }
 
-    document.getElementById("gameModeSelect").addEventListener("change", (e) => {
-      document.getElementById("modeDescriptionBox").innerHTML =
-        MODE_DESCRIPTIONS[e.target.value] || "";
-    });
+    function buildImitateTarget() {
+      const count = Math.min(app.beats, 4);
+      const list = [];
+      for (let i = 0; i < count; i++) {
+        const beat = Math.floor((i / count) * app.beats);
+        const key = PIANO_KEYS[Math.floor(Math.random() * PIANO_KEYS.length)];
+        list.push({ beat, keyId: key.id });
+      }
+      app.imitateTarget = list;
+      const isRhythm = app.room?.settings?.mode === "rhythm";
+      document.getElementById("imitateTag").textContent = isRhythm ? "RİTİM HEDEFİ" : "MELODİ HEDEFİ";
+      document.getElementById("imitateText").textContent = isRhythm
+        ? `${list.length} vuruşluk ritim deseni`
+        : list
+            .map((t) => (PIANO_KEYS.find((k) => k.id === t.keyId) || {}).label)
+            .join(" - ");
+      document.getElementById("imitateScore").textContent = "%0";
+    }
 
-    document.getElementById("bpmInput").addEventListener("input", (e) => syncBpmEverywhere(e.target.value));
-    document.getElementById("liveBpmInput").addEventListener("input", (e) => syncBpmEverywhere(e.target.value));
-
-    document.getElementById("playerCountSelect").addEventListener("change", (e) => {
-      state.playerCount = Number(e.target.value) || 2;
-      initPlayersLobby();
-    });
-
-    document.getElementById("startGameBtn").addEventListener("click", startGame);
-    document.getElementById("restartGameBtn").addEventListener("click", resetWholeGame);
-
-    document.getElementById("skipTurnBtn").addEventListener("click", () => advanceTurn(false));
-    document.getElementById("finishTurnBtn").addEventListener("click", () => advanceTurn(true));
-
-    document.getElementById("newConceptBtn").addEventListener("click", pickNextConcept);
-    document.getElementById("playTargetBtn").addEventListener("click", playImitateTarget);
-    document.getElementById("newTargetBtn").addEventListener("click", generateImitateTarget);
-
-    document.getElementById("playStopLoopBtn").addEventListener("click", toggleLoopPlayback);
-    document.getElementById("clearCurrentSketchBtn").addEventListener("click", () => {
-      state.sketchNotes = [];
-      updateStepButtons();
-      updateSketchInfo();
-    });
-    document.getElementById("downloadWavBtn").addEventListener("click", downloadLoopWav);
-
-    document.getElementById("instrumentSelect").addEventListener("change", (e) => {
-      state.selectedInstrumentId = e.target.value;
-    });
-
-    document.getElementById("randomInstrumentBtn").addEventListener("click", () => {
-      const pick = INSTRUMENTS[Math.floor(Math.random() * INSTRUMENTS.length)];
-      state.selectedInstrumentId = pick.id;
-      document.getElementById("instrumentSelect").value = pick.id;
-    });
-
-    document.getElementById("reverseSketchBtn").addEventListener("click", (e) => {
-      state.reverseSketch = !state.reverseSketch;
-      e.currentTarget.textContent = state.reverseSketch ? "⏪ Ters Çal: Açık" : "⏪ Ters Çal: Kapalı";
-      e.currentTarget.classList.toggle("active-toggle", state.reverseSketch);
-      updateSketchInfo();
-    });
-
-    document.getElementById("robotModeCheckbox").addEventListener("change", (e) => {
-      state.micRobot = e.target.checked;
-      updateSketchInfo();
-    });
-
-    document.getElementById("recordMicBtn").addEventListener("click", toggleMicRecording);
-    document.getElementById("previewMicBtn").addEventListener("click", () => {
-      playVocalBuffer(state.micBuffer, {
-        reverse: state.micReverse,
-        robot: state.micRobot,
-        sourceBpm: state.micBpm,
-        targetBpm: state.bpm
+    function playImitateTarget() {
+      const stepMs = (60 / app.bpm) * 1000;
+      const isRhythm = app.room?.settings?.mode === "rhythm";
+      app.imitateTarget.forEach((item) => {
+        setTimeout(() => {
+          const k = PIANO_KEYS.find((x) => x.id === item.keyId) || PIANO_KEYS[0];
+          playNoteSound(k, isRhythm ? "snare_drum" : app.instrumentId, 0.28);
+          flashPianoKey(k.id);
+        }, item.beat * stepMs);
       });
-    });
-    document.getElementById("reverseMicBtn").addEventListener("click", (e) => {
-      state.micReverse = !state.micReverse;
-      e.currentTarget.classList.toggle("active-toggle", state.micReverse);
-      updateSketchInfo();
-    });
-    document.getElementById("clearMicBtn").addEventListener("click", () => {
-      state.micBuffer = null;
-      state.micReverse = false;
-      document.getElementById("previewMicBtn").disabled = true;
-      document.getElementById("reverseMicBtn").disabled = true;
-      document.getElementById("clearMicBtn").disabled = true;
-      document.getElementById("micStatusText").textContent = "Vokal silindi. Mikrofon hazır.";
-      updateSketchInfo();
-    });
+    }
 
-    // Başlangıç
-    document.getElementById("modeDescriptionBox").innerHTML = MODE_DESCRIPTIONS[state.mode];
-    initPlayersLobby();
-    renderInstruments();
-    renderPiano();
+    function checkImitateScore() {
+      if (!app.imitateTarget.length) return;
+      const isRhythm = app.room?.settings?.mode === "rhythm";
+      let hit = 0;
+      app.imitateTarget.forEach((t) => {
+        const ok = app.currentTakeNotes.some((n) =>
+          isRhythm ? n.beat === t.beat : n.beat === t.beat && n.keyId === t.keyId
+        );
+        if (ok) hit++;
+      });
+      document.getElementById("imitateScore").textContent = `%${Math.round((hit / app.imitateTarget.length) * 100)}`;
+    }
+
+    function renderBeatDots() {
+      const wrap = document.getElementById("beatDots");
+      if (wrap.children.length === app.beats) return;
+      wrap.innerHTML = "";
+      for (let i = 0; i < app.beats; i++) {
+        const d = document.createElement("div");
+        d.className = "beat-dot";
+        d.textContent = i + 1;
+        wrap.appendChild(d);
+      }
+    }
+
+    // Eski canlı looping mantığı: döngü çalarken basılan notalar o anki vuruşa kaydedilir
+    function onPianoKeyPlay(keyObj) {
+      playNoteSound(keyObj, app.instrumentId, 0.32);
+      flashPianoKey(keyObj.id);
+      sendWs({ type: "live_note", keyId: keyObj.id, instrumentId: app.instrumentId });
+
+      if (app.isLoopRecording) {
+        const beatIndex = app.isPlaying ? app.currentBeat : app.currentTakeNotes.length % app.beats;
+        app.currentTakeNotes.push({
+          beat: beatIndex,
+          keyId: keyObj.id,
+          instrumentId: app.instrumentId
+        });
+        document.getElementById("takeStatus").textContent = `Canlı kayıtta ${app.currentTakeNotes.length} nota yakalandı.`;
+        if (app.room?.settings?.mode === "rhythm" || app.room?.settings?.mode === "melody") {
+          checkImitateScore();
+        }
+      }
+    }
+
+    function tickLoop() {
+      const dots = document.querySelectorAll(".beat-dot");
+      dots.forEach((d, idx) => d.classList.toggle("active", idx === app.currentBeat));
+
+      const takeBeat = app.reverseTake ? app.beats - 1 - app.currentBeat : app.currentBeat;
+      app.currentTakeNotes
+        .filter((n) => n.beat === takeBeat)
+        .forEach((n) => {
+          const k = PIANO_KEYS.find((x) => x.id === n.keyId) || PIANO_KEYS[0];
+          playNoteSound(k, n.instrumentId, 0.28);
+          flashPianoKey(k.id);
+        });
+
+      (app.room?.layers || []).forEach((layer) => {
+        if (layer.muted) return;
+        const effBeat = layer.reverse ? app.beats - 1 - app.currentBeat : app.currentBeat;
+        (layer.notes || [])
+          .filter((n) => n.beat === effBeat)
+          .forEach((n) => {
+            const k = PIANO_KEYS.find((x) => x.id === n.keyId) || PIANO_KEYS[0];
+            playNoteSound(k, n.instrumentId, 0.28);
+          });
+      });
+
+      if (app.currentBeat === 0 && app.micBuffer) {
+        playVocal(app.micBuffer, {
+          reverse: app.micReverse,
+          robot: app.micRobot,
+          sourceBpm: app.micBpm,
+          targetBpm: app.bpm
+        });
+      }
+
+      pulseLights(app.currentBeat === 0 ? 1 : 0.65);
+      app.currentBeat = (app.currentBeat + 1) % app.beats;
+    }
+
+    function restartLoopClock() {
+      clearInterval(app.loopTimer);
+      if (!app.isPlaying) return;
+      app.loopTimer = setInterval(tickLoop, (60 / app.bpm) * 1000);
+    }
+
+    function renderLayersList() {
+      const list = document.getElementById("layersList");
+      const layers = app.room?.layers || [];
+      document.getElementById("layerCountText").textContent = `${layers.length} katman`;
+
+      if (!layers.length) {
+        list.innerHTML = `<p class="muted">Henüz katman eklenmedi.</p>`;
+        return;
+      }
+
+      list.innerHTML = "";
+      layers.forEach((layer) => {
+        const row = document.createElement("div");
+        row.className = "layer-row" + (layer.muted ? " muted" : "");
+        row.innerHTML = `<div><span>${layer.avatar}</span> <strong>${layer.playerName}</strong> <span class="muted">— ${layer.notes.length} nota (${layer.instrumentName})</span></div>`;
+
+        const btns = document.createElement("div");
+        btns.style.display = "flex";
+        btns.style.gap = "6px";
+
+        const muteBtn = document.createElement("button");
+        muteBtn.className = "btn btn-secondary" + (layer.muted ? " active" : "");
+        muteBtn.textContent = layer.muted ? "🔇 Susturuldu" : "🔊 Sustur";
+        muteBtn.onclick = () => sendWs({ type: "toggle_mute", layerId: layer.id });
+
+        const revBtn = document.createElement("button");
+        revBtn.className = "btn btn-secondary" + (layer.reverse ? " active" : "");
+        revBtn.textContent = layer.reverse ? "⏪ Ters: Açık" : "⏪ Ters";
+        revBtn.onclick = () => sendWs({ type: "toggle_reverse", layerId: layer.id });
+
+        const delBtn = document.createElement("button");
+        delBtn.className = "btn btn-secondary";
+        delBtn.textContent = "🗑️";
+        delBtn.onclick = () => sendWs({ type: "delete_layer", layerId: layer.id });
+
+        btns.append(muteBtn, revBtn, delBtn);
+        row.appendChild(btns);
+        list.appendChild(row);
+      });
+    }
+
+    function playVocal(buffer, { reverse = false, robot = false, sourceBpm = 115, targetBpm = 115 }) {
+      if (!buffer) return;
+      const ctx = getAudioCtx();
+      let buf = buffer;
+      if (reverse) {
+        const copy = ctx.createBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
+        for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
+          const s = buffer.getChannelData(ch);
+          const d = copy.getChannelData(ch);
+          for (let i = 0; i < s.length; i++) d[i] = s[s.length - 1 - i];
+        }
+        buf = copy;
+      }
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.playbackRate.value = Math.min(2, Math.max(0.5, targetBpm / Math.max(45, sourceBpm)));
+
+      if (robot) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "square";
+        osc.frequency.value = 48;
+        gain.gain.value = 0.5;
+        osc.connect(gain.gain);
+        src.connect(gain).connect(ctx.destination);
+        osc.start();
+        src.onended = () => { try { osc.stop(); } catch (_) {} };
+      } else {
+        src.connect(ctx.destination);
+      }
+      src.start();
+    }
+
+    async function toggleMic() {
+      const btn = document.getElementById("micRecBtn");
+      const st = document.getElementById("micStatus");
+      if (!app.isMicRecording) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: { echoCancellation: true, noiseSuppression: true, latency: 0.01 }
+          });
+          app.micChunks = [];
+          app.mediaRecorder = new MediaRecorder(stream);
+          app.mediaRecorder.ondataavailable = (e) => { if (e.data.size) app.micChunks.push(e.data); };
+          app.mediaRecorder.onstop = async () => {
+            stream.getTracks().forEach((t) => t.stop());
+            const blob = new Blob(app.micChunks, { type: "audio/webm" });
+            const ctx = getAudioCtx();
+            app.micBuffer = await ctx.decodeAudioData(await blob.arrayBuffer());
+            app.micBpm = app.bpm;
+            app.micReverse = false;
+            document.getElementById("micPlayBtn").disabled = false;
+            document.getElementById("micRevBtn").disabled = false;
+            document.getElementById("micDelBtn").disabled = false;
+            st.textContent = `Kayıt hazır (${app.micBuffer.duration.toFixed(1)} sn).`;
+          };
+          app.mediaRecorder.start();
+          app.isMicRecording = true;
+          btn.textContent = "⏹️ Kaydı Durdur";
+          st.textContent = "Kayıt alınıyor...";
+        } catch (_) {
+          st.textContent = "Mikrofon izni alınamadı.";
+        }
+      } else {
+        app.isMicRecording = false;
+        btn.textContent = "⏺️ Ses Kaydet";
+        if (app.mediaRecorder && app.mediaRecorder.state !== "inactive") app.mediaRecorder.stop();
+      }
+    }
+
+    function downloadWav() {
+      const notes = [
+        ...app.currentTakeNotes,
+        ...(app.room?.layers || []).filter((l) => !l.muted).flatMap((l) => l.notes || [])
+      ];
+      if (!notes.length) {
+        alert("İndirilecek nota bulunamadı.");
+        return;
+      }
+      const sr = 22050;
+      const stepSec = 60 / app.bpm;
+      const len = Math.floor(sr * Math.max(1, app.beats * stepSec));
+      const pcm = new Float32Array(len);
+      notes.forEach((n) => {
+        const k = PIANO_KEYS.find((x) => x.id === n.keyId) || PIANO_KEYS[0];
+        const start = Math.floor(n.beat * stepSec * sr);
+        const dur = Math.min(len - start, Math.floor(0.3 * sr));
+        for (let i = 0; i < dur; i++) {
+          const t = i / sr;
+          pcm[start + i] = Math.max(-1, Math.min(1, pcm[start + i] + Math.sin(2 * Math.PI * k.freq * t) * Math.exp(-t * 8) * 0.35));
+        }
+      });
+      const buf = new ArrayBuffer(44 + pcm.length * 2);
+      const v = new DataView(buf);
+      const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+      w(0, "RIFF"); v.setUint32(4, 36 + pcm.length * 2, true); w(8, "WAVE"); w(12, "fmt ");
+      v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+      v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+      w(36, "data"); v.setUint32(40, pcm.length * 2, true);
+      for (let i = 0, off = 44; i < pcm.length; i++, off += 2) {
+        const s = Math.max(-1, Math.min(1, pcm[i]));
+        v.setInt16(off, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+      }
+      const url = URL.createObjectURL(new Blob([buf], { type: "audio/wav" }));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "kollay-gelsin.wav";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Başlangıç UI kurulumu
+    (function init() {
+      const avGrid = document.getElementById("avatarGrid");
+      AVATARS.forEach((av, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "avatar-btn" + (idx === 0 ? " selected" : "");
+        btn.textContent = av;
+        btn.onclick = () => {
+          app.myAvatar = av;
+          document.querySelectorAll(".avatar-btn").forEach((b) => b.classList.remove("selected"));
+          btn.classList.add("selected");
+        };
+        avGrid.appendChild(btn);
+      });
+
+      const instSel = document.getElementById("instrumentSelect");
+      INSTRUMENTS.forEach((i) => {
+        const opt = document.createElement("option");
+        opt.value = i.id;
+        opt.textContent = i.name;
+        instSel.appendChild(opt);
+      });
+
+      const board = document.getElementById("pianoBoard");
+      const whites = PIANO_KEYS.filter((k) => !k.isBlack);
+      const blacks = PIANO_KEYS.filter((k) => k.isBlack);
+      const wPct = 100 / whites.length;
+
+      whites.forEach((k) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "white-key";
+        btn.dataset.key = k.id;
+        btn.textContent = k.label;
+        btn.onpointerdown = () => onPianoKeyPlay(k);
+        board.appendChild(btn);
+      });
+
+      blacks.forEach((k) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "black-key";
+        btn.dataset.key = k.id;
+        btn.style.left = `${(k.afterWhite + 1) * wPct}%`;
+        btn.textContent = k.label;
+        btn.onpointerdown = (e) => { e.stopPropagation(); onPianoKeyPlay(k); };
+        board.appendChild(btn);
+      });
+
+      document.getElementById("uiThemeSelect").onchange = (e) => {
+        document.documentElement.setAttribute("data-theme", e.target.value);
+      };
+
+      document.getElementById("createRoomBtn").onclick = () => {
+        const name = document.getElementById("myNameInput").value.trim() || "Oyuncu";
+        sendWs({
+          type: "create_room",
+          player: { name, avatar: app.myAvatar },
+          settings: { mode: "collab", bpm: 115, beats: 8, turnDuration: 0 }
+        });
+      };
+
+      document.getElementById("joinRoomBtn").onclick = () => {
+        const name = document.getElementById("myNameInput").value.trim() || "Oyuncu";
+        const code = document.getElementById("roomCodeInput").value.trim().toUpperCase();
+        if (!code) return;
+        sendWs({
+          type: "join_room",
+          code,
+          player: { name, avatar: app.myAvatar }
+        });
+      };
+
+      ["modeSelect", "lobbyBpm", "lobbyBeats", "lobbyTimer"].forEach((id) => {
+        document.getElementById(id).oninput = () => {
+          const bpm = Number(document.getElementById("lobbyBpm").value) || 115;
+          document.getElementById("lobbyBpmVal").textContent = bpm;
+          sendWs({
+            type: "update_settings",
+            settings: {
+              mode: document.getElementById("modeSelect").value,
+              bpm,
+              beats: Number(document.getElementById("lobbyBeats").value) || 8,
+              turnDuration: Number(document.getElementById("lobbyTimer").value) || 0
+            }
+          });
+        };
+      });
+
+      document.getElementById("startGameBtn").onclick = () => {
+        sendWs({ type: "start_game", concept: nextRandomConcept() });
+      };
+
+      document.getElementById("restartGameBtn").onclick = () => {
+        app.currentTakeNotes = [];
+        sendWs({ type: "restart_game" });
+      };
+
+      document.getElementById("loopToggleBtn").onclick = (e) => {
+        app.isPlaying = !app.isPlaying;
+        if (app.isPlaying) {
+          getAudioCtx();
+          app.currentBeat = 0;
+          e.currentTarget.textContent = "⏹️ Döngüyü Durdur";
+          tickLoop();
+          restartLoopClock();
+        } else {
+          clearInterval(app.loopTimer);
+          document.querySelectorAll(".beat-dot").forEach((d) => d.classList.remove("active"));
+          e.currentTarget.textContent = "▶️ Döngüyü Başlat";
+        }
+      };
+
+      document.getElementById("recLoopBtn").onclick = (e) => {
+        app.isLoopRecording = !app.isLoopRecording;
+        e.currentTarget.textContent = app.isLoopRecording ? "⏹️ Kayıt Açık (Bitir)" : "⏺️ Döngüye Canlı Kaydet";
+        if (app.isLoopRecording && !app.isPlaying) {
+          document.getElementById("loopToggleBtn").click();
+        }
+      };
+
+      document.getElementById("clearTakeBtn").onclick = () => {
+        app.currentTakeNotes = [];
+        document.getElementById("takeStatus").textContent = "Mevcut kayıt temizlendi.";
+      };
+
+      document.getElementById("saveTurnBtn").onclick = () => {
+        const me = (app.room?.players || []).find((p) => p.id === app.myId) || { name: "Oyuncu", avatar: app.myAvatar };
+        const inst = INSTRUMENTS.find((i) => i.id === app.instrumentId);
+        if (app.currentTakeNotes.length) {
+          sendWs({
+            type: "add_layer",
+            nextConcept: nextRandomConcept(),
+            layer: {
+              id: "l_" + Date.now(),
+              playerName: me.name,
+              avatar: me.avatar,
+              instrumentName: inst ? inst.name : "Piyano",
+              notes: app.currentTakeNotes,
+              reverse: app.reverseTake,
+              muted: false
+            }
+          });
+          app.currentTakeNotes = [];
+          app.reverseTake = false;
+          document.getElementById("reverseTakeBtn").classList.remove("active");
+          document.getElementById("takeStatus").textContent = "Katkı eklendi ve sıra devredildi.";
+        } else {
+          sendWs({ type: "skip_turn", nextConcept: nextRandomConcept() });
+        }
+      };
+
+      document.getElementById("skipTurnBtn").onclick = () => {
+        sendWs({ type: "skip_turn", nextConcept: nextRandomConcept() });
+      };
+
+      document.getElementById("newConceptBtn").onclick = () => {
+        sendWs({ type: "new_concept", concept: nextRandomConcept() });
+      };
+
+      document.getElementById("playTargetBtn").onclick = playImitateTarget;
+      document.getElementById("newTargetBtn").onclick = buildImitateTarget;
+
+      document.getElementById("liveBpmSlider").oninput = (e) => {
+        app.bpm = Number(e.target.value) || 115;
+        document.getElementById("liveBpmText").textContent = app.bpm;
+        restartLoopClock();
+      };
+
+      instSel.onchange = (e) => { app.instrumentId = e.target.value; };
+      document.getElementById("randomInstBtn").onclick = () => {
+        const pick = INSTRUMENTS[Math.floor(Math.random() * INSTRUMENTS.length)];
+        app.instrumentId = pick.id;
+        instSel.value = pick.id;
+      };
+
+      document.getElementById("reverseTakeBtn").onclick = (e) => {
+        app.reverseTake = !app.reverseTake;
+        e.currentTarget.classList.toggle("active", app.reverseTake);
+      };
+
+      document.getElementById("robotCheck").onchange = (e) => { app.micRobot = e.target.checked; };
+      document.getElementById("micRecBtn").onclick = toggleMic;
+      document.getElementById("micPlayBtn").onclick = () =>
+        playVocal(app.micBuffer, { reverse: app.micReverse, robot: app.micRobot, sourceBpm: app.micBpm, targetBpm: app.bpm });
+      document.getElementById("micRevBtn").onclick = (e) => {
+        app.micReverse = !app.micReverse;
+        e.currentTarget.classList.toggle("active", app.micReverse);
+      };
+      document.getElementById("micDelBtn").onclick = () => {
+        app.micBuffer = null;
+        document.getElementById("micPlayBtn").disabled = true;
+        document.getElementById("micRevBtn").disabled = true;
+        document.getElementById("micDelBtn").disabled = true;
+        document.getElementById("micStatus").textContent = "Silindi.";
+      };
+
+      document.getElementById("downloadWavBtn").onclick = downloadWav;
+
+      connectSocket();
+    })();
   </script>
 </body>
 </html>
