@@ -1,7 +1,7 @@
 {
   "name": "kollay-gelsin-studio",
-  "version": "2.1.0",
-  "description": "Çok oyunculu tarayıcı müzik ve parti stüdyosu",
+  "version": "1.0.0",
+  "description": "Çok Oyunculu Müzik & Parti Stüdyosu",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
