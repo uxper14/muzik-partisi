@@ -1,15 +1,13 @@
 {
-  "name": "kollay-gelsin-studio",
-  "version": "1.0.0",
-  "description": "Çok Oyunculu Müzik & Parti Stüdyosu",
+  "name": "kollay-gelsin",
+  "version": "2.6.0",
+  "description": "Kollay Gelsin! Çok oyunculu web tabanlı müzik ve parti oyunu",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "ws": "^8.18.0"
-  },
-  "engines": {
-    "node": ">=18.0.0"
+    "express": "^4.19.2",
+    "ws": "^8.17.1"
   }
 }
