@@ -4394,8 +4394,8 @@
         `;
 
         if (isHost) {
-          row.querySelector('[data-act="mute"]').onclick = () => sendWs({ type: "toggle_mute", layerId: layer.id });
-          row.querySelector('[data-act="rev"]').onclick = () => sendWs({ type: "toggle_reverse", layerId: layer.id });
+          row.querySelector('[data-act="mute"]').onclick = () => sendWs({ type: "toggle_layer_mute", layerId: layer.id });
+          row.querySelector('[data-act="rev"]').onclick = () => sendWs({ type: "toggle_layer_reverse", layerId: layer.id });
           row.querySelector('[data-act="del"]').onclick = () => sendWs({ type: "delete_layer", layerId: layer.id });
         }
         list.appendChild(row);
@@ -4732,17 +4732,15 @@
       sendWs({
         type: "add_layer",
         nextConcept,
-        layer: {
-          instrumentId: instId,
-          instrumentName: instName,
-          reverse: app.reverseTake || app.micReverse,
-          notes: sanitizedNotes,
-          hasVocal: Boolean(app.micBuffer),
-          vocalData: app.micBase64 || null,
-          vocalEffect: app.micEffect,
-          recordedBpm: app.bpm,
-          recordedBeats: app.beats
-        }
+        instrumentId: instId,
+        instrumentName: instName,
+        reverse: app.reverseTake || app.micReverse,
+        notes: sanitizedNotes,
+        hasVocal: Boolean(app.micBuffer),
+        vocalData: app.micBase64 || null,
+        vocalEffect: app.micEffect,
+        recordedBpm: app.bpm,
+        recordedBeats: app.beats
       });
 
       resetDraftStudioTake();
@@ -4954,12 +4952,12 @@
       document.getElementById("restartGameBtn").onclick = () => {
         if (!isHostUser()) return;
         stopLocalLoop();
-        sendWs({ type: "restart_to_lobby" });
+        sendWs({ type: "return_to_lobby" });
       };
       document.getElementById("resultsBackLobbyBtn").onclick = () => {
         if (!isHostUser()) return;
         stopLocalLoop();
-        sendWs({ type: "restart_to_lobby" });
+        sendWs({ type: "return_to_lobby" });
       };
 
       document.getElementById("finishVotingBtn").onclick = () => {
@@ -5032,7 +5030,7 @@
 
       document.getElementById("newConceptBtn").onclick = () => {
         if (!isHostUser()) return;
-        sendWs({ type: "change_concept", concept: nextRandomConcept() });
+        sendWs({ type: "new_concept", concept: nextRandomConcept() });
       };
 
       document.querySelectorAll("#djButtonsWrap button").forEach((btn) => {
@@ -5053,7 +5051,7 @@
         app.bpm = Number(e.target.value);
         document.getElementById("liveBpmText").textContent = app.bpm;
         clearTimeout(app.bpmSendTimer);
-        app.bpmSendTimer = setTimeout(() => sendWs({ type: "set_bpm", bpm: app.bpm }), 120);
+        app.bpmSendTimer = setTimeout(() => sendWs({ type: "update_live_bpm", bpm: app.bpm }), 120);
       };
 
       document.getElementById("instrumentSelect").onchange = (e) => {
