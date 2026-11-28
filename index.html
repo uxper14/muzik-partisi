@@ -675,6 +675,30 @@
       height: 60%;
     }
 
+    .kb-hint {
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 5px;
+      background: rgba(124, 92, 255, 0.16);
+      color: #4c1d95;
+      pointer-events: none;
+      font-family: ui-monospace, Consolas, monospace;
+    }
+    .black-key .kb-hint { background: rgba(255, 255, 255, 0.16); color: #e0e7ff; }
+    .white-key, .black-key { position: relative; }
+    .black-key { position: absolute; }
+    .kb-legend { font-size: 0.78rem; margin-top: 6px; }
+    .kb-legend kbd {
+      display: inline-block; padding: 0 5px; border-radius: 4px;
+      border: 1px solid var(--card-border); background: rgba(255,255,255,0.07);
+      font-family: ui-monospace, Consolas, monospace; font-size: 0.74rem;
+    }
+
     .perc-pad-row {
       display: flex;
       flex-wrap: wrap;
@@ -1356,6 +1380,11 @@
       <div class="piano-scroll" id="pianoScrollWrap">
         <div class="piano" id="pianoBoard"></div>
       </div>
+      <div class="kb-legend muted" id="kbLegend">
+        ⌨️ Klavyeyle çal: alt sıra <kbd>Z</kbd>–<kbd>M</kbd> (siyahlar <kbd>S D G H J</kbd>) •
+        üst sıra <kbd>Q</kbd>–<kbd>I</kbd> (siyahlar <kbd>2 3 5 6 7</kbd>) •
+        oktav <kbd>←</kbd>/<kbd>→</kbd> • akor modu <kbd>Tab</kbd>
+      </div>
 
       <div id="studioPercWrap" class="perc-pad-row">
         <button type="button" class="perc-pad-btn" data-perc="handshake">🤝 Handshake</button>
@@ -1990,6 +2019,22 @@
       { slot: "B1", label: "Si", semi: 23, isBlack: false },
       { slot: "C2", label: "Do", semi: 24, isBlack: false }
     ];
+
+    // Fiziksel tuş konumu (e.code) kullanılır: Türkçe Q, F ve İngilizce düzenlerde aynı yerde çalışır.
+    const KEYBOARD_NOTE_MAP = {
+      KeyZ: "C0", KeyS: "Cs0", KeyX: "D0", KeyD: "Ds0", KeyC: "E0", KeyV: "F0",
+      KeyG: "Fs0", KeyB: "G0", KeyH: "Gs0", KeyN: "A0", KeyJ: "As0", KeyM: "B0",
+      Comma: "C1",
+      KeyQ: "C1", Digit2: "Cs1", KeyW: "D1", Digit3: "Ds1", KeyE: "E1", KeyR: "F1",
+      Digit5: "Fs1", KeyT: "G1", Digit6: "Gs1", KeyY: "A1", Digit7: "As1", KeyU: "B1",
+      KeyI: "C2"
+    };
+    const SLOT_HINT_LABEL = {
+      C0: "Z", Cs0: "S", D0: "X", Ds0: "D", E0: "C", F0: "V", Fs0: "G", G0: "B",
+      Gs0: "H", A0: "N", As0: "J", B0: "M", C1: "Q", Cs1: "2", D1: "W", Ds1: "3",
+      E1: "E", F1: "R", Fs1: "5", G1: "T", Gs1: "6", A1: "Y", As1: "7", B1: "U", C2: "I"
+    };
+    const kbHeld = new Map(); // e.code -> { keyObj, btn }
 
     function normalizeBeats(raw) {
       const num = Number(raw);
@@ -3039,9 +3084,99 @@
       }
     }
 
+    function appendKbHint(btn, slot) {
+      const hint = SLOT_HINT_LABEL[slot];
+      if (!hint) return;
+      const span = document.createElement("span");
+      span.className = "kb-hint";
+      span.textContent = hint;
+      btn.appendChild(span);
+    }
+
+    function isTypingTarget() {
+      const el = document.activeElement;
+      if (!el) return false;
+      const tag = (el.tagName || "").toLowerCase();
+      return tag === "input" || tag === "textarea" || tag === "select" || el.isContentEditable;
+    }
+
+    function isPianoPlayable() {
+      const board = document.getElementById("pianoBoard");
+      const wrap = document.getElementById("pianoScrollWrap");
+      if (!board || !wrap || !board.children.length) return false;
+      if (board.offsetParent === null) return false; // gizli görünüm
+      if (wrap.style.pointerEvents === "none") return false; // sıra sende değil / kanal kilitli
+      return true;
+    }
+
+    function findPianoKeyBySlot(slot) {
+      return getPianoKeysForOctave(app.octave).find((k) => k.slot === slot) || null;
+    }
+
+    function releaseKeyboardNote(code) {
+      const held = kbHeld.get(code);
+      if (!held) return;
+      kbHeld.delete(code);
+      // Aynı slotu tutan başka tuş (Virgül/Q = Do) basılıysa sesi kesme
+      const stillHeld = [...kbHeld.values()].some((h) => h.keyObj.slot === held.keyObj.slot);
+      if (stillHeld) return;
+      if (held.btn) held.btn.classList.remove("active");
+      onPianoKeyRelease(held.keyObj);
+    }
+
+    function releaseAllKeyboardNotes() {
+      [...kbHeld.keys()].forEach((code) => releaseKeyboardNote(code));
+    }
+
+    function handlePianoKeyDown(e) {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (isTypingTarget()) return;
+      const code = e.code;
+
+      if (code === "ArrowLeft" || code === "ArrowRight") {
+        if (!isPianoPlayable()) return;
+        const btn = document.getElementById(code === "ArrowLeft" ? "octDownBtn" : "octUpBtn");
+        e.preventDefault();
+        if (!e.repeat && btn && !btn.disabled) btn.click();
+        return;
+      }
+
+      if (code === "Tab") {
+        const chordBtn = document.getElementById("chordModeToggleBtn");
+        const bar = document.getElementById("chordModeBar");
+        if (!isPianoPlayable() || !chordBtn || chordBtn.disabled || (bar && bar.classList.contains("hidden"))) return;
+        e.preventDefault();
+        if (!e.repeat) { releaseAllKeyboardNotes(); chordBtn.click(); }
+        return;
+      }
+
+      const slot = KEYBOARD_NOTE_MAP[code];
+      if (!slot) return;
+      if (!isPianoPlayable()) return;
+      e.preventDefault();
+      if (e.repeat || kbHeld.has(code)) return;
+
+      const keyObj = findPianoKeyBySlot(slot);
+      if (!keyObj) return;
+      const btn = document.querySelector(`#pianoBoard [data-slot="${slot}"]`);
+      const alreadySounding = [...kbHeld.values()].some((h) => h.keyObj.slot === slot);
+      kbHeld.set(code, { keyObj, btn });
+      if (alreadySounding) return;
+      if (btn) btn.classList.add("active");
+      onPianoKeyPressDown(keyObj);
+    }
+
+    function handlePianoKeyUp(e) {
+      if (kbHeld.has(e.code)) {
+        e.preventDefault();
+        releaseKeyboardNote(e.code);
+      }
+    }
+
     function buildPianoBoard(force = true) {
       const board = document.getElementById("pianoBoard");
       if (!force && app.pianoBuiltOctave === app.octave && board.children.length) return;
+      releaseAllKeyboardNotes();
       releaseAllHeldVoices();
       app.pianoBuiltOctave = app.octave;
       board.innerHTML = "";
@@ -3074,6 +3209,7 @@
         btn.className = "white-key";
         btn.dataset.slot = k.slot;
         btn.textContent = k.label;
+        appendKbHint(btn, k.slot);
         attachHoldHandlers(btn, k);
         board.appendChild(btn);
       });
@@ -3085,6 +3221,7 @@
         btn.dataset.slot = k.slot;
         btn.style.left = `${(k.afterWhite + 1) * wPct}%`;
         btn.textContent = k.label;
+        appendKbHint(btn, k.slot);
         attachHoldHandlers(btn, k);
         board.appendChild(btn);
       });
@@ -3452,6 +3589,41 @@
       }
     }
 
+    // ─── Yeniden bağlanma oturumu ───────────────────────────────────────────
+    const SESSION_KEY = "kollay_session_v1";
+    function saveSession() {
+      if (!app.myId || !app.myToken || !app.room?.code) return;
+      try {
+        localStorage.setItem(SESSION_KEY, JSON.stringify({
+          playerId: app.myId, token: app.myToken, roomCode: app.room.code, ts: Date.now()
+        }));
+      } catch (_) {}
+    }
+    function loadSession() {
+      try {
+        const s = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+        if (!s || !s.playerId || !s.token || !s.roomCode) return null;
+        if (Date.now() - (s.ts || 0) > 10 * 60 * 1000) return null; // çok eski
+        return s;
+      } catch (_) { return null; }
+    }
+    function clearSession() {
+      try { localStorage.removeItem(SESSION_KEY); } catch (_) {}
+    }
+    function setConnBanner(text) {
+      let el = document.getElementById("connBanner");
+      if (!el) {
+        el = document.createElement("div");
+        el.id = "connBanner";
+        el.style.cssText = "position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:9999;" +
+          "padding:8px 16px;border-radius:999px;background:rgba(239,68,68,0.92);color:#fff;" +
+          "font-weight:700;font-size:0.85rem;box-shadow:0 6px 20px rgba(0,0,0,0.35);display:none";
+        document.body.appendChild(el);
+      }
+      el.textContent = text || "";
+      el.style.display = text ? "block" : "none";
+    }
+
     function connectSocket() {
       if (app.ws && (app.ws.readyState === WebSocket.OPEN || app.ws.readyState === WebSocket.CONNECTING)) return;
       const errEl0 = document.getElementById("entryError");
@@ -3475,11 +3647,17 @@
         const errEl = document.getElementById("entryError");
         if (errEl) errEl.classList.add("hidden");
         app.wsRetryMs = 1000;
-        if (app.wsEverOpened && app.room && app.lastJoin) {
-          app.pendingWsQueue.unshift({ type: "join_room", ...app.lastJoin, code: app.room.code });
-        }
         app.wsEverOpened = true;
-        flushPendingWs();
+        const saved = loadSession();
+        if (saved) {
+          // Bekleyen mesajları, kimliğimiz geri gelene kadar beklet
+          app.awaitingReconnect = true;
+          setConnBanner("🔄 Odaya yeniden bağlanılıyor...");
+          ws.send(JSON.stringify({ type: "reconnect", playerId: saved.playerId, token: saved.token, roomCode: saved.roomCode }));
+        } else {
+          setConnBanner("");
+          flushPendingWs();
+        }
       };
 
       ws.onerror = () => {
@@ -3498,7 +3676,36 @@
           app.clockOffsetMs = msg.serverNow - Date.now();
         }
         if (msg.type === "welcome") {
+          if (!app.awaitingReconnect) {
+            app.myId = msg.playerId;
+            app.myToken = msg.token || null;
+          } else {
+            app.tempWelcome = { playerId: msg.playerId, token: msg.token || null };
+          }
+        } else if (msg.type === "reconnected") {
+          const saved = loadSession();
           app.myId = msg.playerId;
+          if (saved) app.myToken = saved.token;
+          app.awaitingReconnect = false;
+          app.tempWelcome = null;
+          setConnBanner("");
+          flushPendingWs();
+        } else if (msg.type === "reconnect_failed") {
+          clearSession();
+          app.awaitingReconnect = false;
+          if (app.tempWelcome) {
+            app.myId = app.tempWelcome.playerId;
+            app.myToken = app.tempWelcome.token;
+            app.tempWelcome = null;
+          }
+          app.pendingWsQueue = [];
+          setConnBanner("");
+          if (app.room) {
+            // Oda kaybedildi (süre doldu ya da sunucu yeniden başladı) → temiz giriş ekranı
+            try { sessionStorage.setItem("kollay_reconnect_failed", "1"); } catch (_) {}
+            location.reload();
+            return;
+          }
         } else if (msg.type === "error_msg") {
           const errEl = document.getElementById("entryError");
           errEl.textContent = msg.message;
@@ -3508,6 +3715,7 @@
           if (errEl) errEl.classList.add("hidden");
           if (msg.viewerId) app.myId = msg.viewerId;
           app.room = msg.room;
+          saveSession();
           renderRoomState();
         } else if (msg.type === "live_note") {
           if ((msg.playerId || msg.fromId) && (msg.playerId || msg.fromId) === app.myId) return;
@@ -3520,6 +3728,8 @@
 
       ws.onclose = () => {
         if (app.ws !== ws) return;
+        if (app.room) setConnBanner("📴 Bağlantı koptu, yeniden bağlanılıyor...");
+        releaseAllKeyboardNotes();
         const wait = app.wsRetryMs;
         app.wsRetryMs = Math.min(15000, app.wsRetryMs * 1.6);
         setTimeout(connectSocket, wait);
@@ -3527,7 +3737,7 @@
     }
 
     function sendWs(payload) {
-      if (app.ws && app.ws.readyState === WebSocket.OPEN) {
+      if (app.ws && app.ws.readyState === WebSocket.OPEN && !app.awaitingReconnect) {
         app.ws.send(JSON.stringify(payload));
       } else {
         app.pendingWsQueue.push(payload);
@@ -3849,7 +4059,8 @@
         room.players.forEach((p) => {
           const chip = document.createElement("div");
           chip.className = "player-chip";
-          chip.innerHTML = `${renderAvatarInline(p.avatar)} <strong>${escapeHtml(p.name)}</strong>${p.id === room.hostId ? " 👑" : ""}`;
+          chip.innerHTML = `${renderAvatarInline(p.avatar)} <strong>${escapeHtml(p.name)}</strong>${p.id === room.hostId ? " 👑" : ""}${p.offline ? ' <span title="Bağlantısı koptu, 30 sn içinde dönebilir">📴</span>' : ""}`;
+          if (p.offline) chip.style.opacity = "0.55";
           pList.appendChild(chip);
         });
         return;
@@ -4394,8 +4605,8 @@
         `;
 
         if (isHost) {
-          row.querySelector('[data-act="mute"]').onclick = () => sendWs({ type: "toggle_layer_mute", layerId: layer.id });
-          row.querySelector('[data-act="rev"]').onclick = () => sendWs({ type: "toggle_layer_reverse", layerId: layer.id });
+          row.querySelector('[data-act="mute"]').onclick = () => sendWs({ type: "toggle_mute", layerId: layer.id });
+          row.querySelector('[data-act="rev"]').onclick = () => sendWs({ type: "toggle_reverse", layerId: layer.id });
           row.querySelector('[data-act="del"]').onclick = () => sendWs({ type: "delete_layer", layerId: layer.id });
         }
         list.appendChild(row);
@@ -4732,15 +4943,17 @@
       sendWs({
         type: "add_layer",
         nextConcept,
-        instrumentId: instId,
-        instrumentName: instName,
-        reverse: app.reverseTake || app.micReverse,
-        notes: sanitizedNotes,
-        hasVocal: Boolean(app.micBuffer),
-        vocalData: app.micBase64 || null,
-        vocalEffect: app.micEffect,
-        recordedBpm: app.bpm,
-        recordedBeats: app.beats
+        layer: {
+          instrumentId: instId,
+          instrumentName: instName,
+          reverse: app.reverseTake || app.micReverse,
+          notes: sanitizedNotes,
+          hasVocal: Boolean(app.micBuffer),
+          vocalData: app.micBase64 || null,
+          vocalEffect: app.micEffect,
+          recordedBpm: app.bpm,
+          recordedBeats: app.beats
+        }
       });
 
       resetDraftStudioTake();
@@ -4952,12 +5165,12 @@
       document.getElementById("restartGameBtn").onclick = () => {
         if (!isHostUser()) return;
         stopLocalLoop();
-        sendWs({ type: "return_to_lobby" });
+        sendWs({ type: "restart_to_lobby" });
       };
       document.getElementById("resultsBackLobbyBtn").onclick = () => {
         if (!isHostUser()) return;
         stopLocalLoop();
-        sendWs({ type: "return_to_lobby" });
+        sendWs({ type: "restart_to_lobby" });
       };
 
       document.getElementById("finishVotingBtn").onclick = () => {
@@ -5030,7 +5243,7 @@
 
       document.getElementById("newConceptBtn").onclick = () => {
         if (!isHostUser()) return;
-        sendWs({ type: "new_concept", concept: nextRandomConcept() });
+        sendWs({ type: "change_concept", concept: nextRandomConcept() });
       };
 
       document.querySelectorAll("#djButtonsWrap button").forEach((btn) => {
@@ -5051,7 +5264,7 @@
         app.bpm = Number(e.target.value);
         document.getElementById("liveBpmText").textContent = app.bpm;
         clearTimeout(app.bpmSendTimer);
-        app.bpmSendTimer = setTimeout(() => sendWs({ type: "update_live_bpm", bpm: app.bpm }), 120);
+        app.bpmSendTimer = setTimeout(() => sendWs({ type: "set_bpm", bpm: app.bpm }), 120);
       };
 
       document.getElementById("instrumentSelect").onchange = (e) => {
@@ -5221,11 +5434,25 @@
       };
       document.addEventListener("pointerdown", unlockAudio, true);
       document.addEventListener("keydown", unlockAudio, true);
+      document.addEventListener("keydown", handlePianoKeyDown);
+      document.addEventListener("keyup", handlePianoKeyUp);
+      window.addEventListener("blur", releaseAllKeyboardNotes);
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) releaseAllKeyboardNotes();
+      });
 
       updateLobbyModeFields("collab");
     }
 
     initUI();
+    try {
+      if (sessionStorage.getItem("kollay_reconnect_failed")) {
+        sessionStorage.removeItem("kollay_reconnect_failed");
+        const errEl = document.getElementById("entryError");
+        errEl.textContent = "⚠️ Odaya geri dönülemedi (bağlantı 30 saniyeden uzun koptu ya da sunucu yeniden başladı). Yeni oda kurabilir veya koda tekrar katılabilirsin.";
+        errEl.classList.remove("hidden");
+      }
+    } catch (_) {}
     connectSocket();
   </script>
 </body>
