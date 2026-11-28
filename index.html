@@ -857,7 +857,12 @@
       color: #fde047;
     }
 
+    .octave-box button, .chord-pill-btn, .perc-pad-btn, .big-tap-btn, .mode-card { color: var(--text); }
+    .octave-box button:disabled, .chord-pill-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .big-tap-btn:disabled { opacity: 0.45; cursor: not-allowed; }
     @media (max-width: 860px) {
+      .piano { min-width: 560px; }
+      .settings-grid, .synth-knobs-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
       .entry-grid, .studio-row { grid-template-columns: 1fr; }
       .avatar-grid { grid-template-columns: repeat(4, minmax(46px, 1fr)); }
     }
@@ -1446,6 +1451,10 @@
         svg: `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="14" fill="#1e293b"/><path d="M31 29.5A11 11 0 0118.5 17c0-2.5.8-4.8 2.2-6.6A12.5 12.5 0 1037.6 31.3c-1.8 1.4-4.1 2.2-6.6 2.2z" fill="#facc15"/><circle cx="34" cy="14" r="1.8" fill="#38bdf8"/></svg>`
       }
     ];
+
+    function escapeHtml(v) {
+      return String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
 
     function getAvatarById(id) {
       return AVATARS.find((a) => a.id === id) || AVATARS[0];
@@ -2102,7 +2111,16 @@
       micProcessorNode: null,
       micSourceNode: null,
       micRecordedChunks: [],
-      micRecordTimer: null
+      micRecordTimer: null,
+      micStartTimer: null,
+      failedSamples: new Set(),
+      pianoBuiltOctave: null,
+      turnTimerKey: null,
+      lastStarted: false,
+      voteAutoDoneSent: false,
+      wsRetryMs: 1000,
+      wsEverOpened: false,
+      lastJoin: null
     };
 
     let audioCtx = null;
@@ -2291,7 +2309,7 @@
       await Promise.all(
         cfg.notes.map(async (noteName) => {
           const cacheKey = `${instrumentId}:${noteName}`;
-          if (app.sampleBuffers.has(cacheKey) || app.loadingSamples.has(cacheKey)) return;
+          if (app.sampleBuffers.has(cacheKey) || app.loadingSamples.has(cacheKey) || app.failedSamples.has(cacheKey)) return;
           app.loadingSamples.add(cacheKey);
           const fileSlug = noteName.replace("#", "%23");
           for (const base of SAMPLE_BASES) {
@@ -2308,6 +2326,7 @@
               break;
             } catch (_) {}
           }
+          if (!app.sampleBuffers.has(cacheKey)) app.failedSamples.add(cacheKey);
           app.loadingSamples.delete(cacheKey);
         })
       );
@@ -2864,7 +2883,7 @@
         src.buffer = sampleHit.buffer;
         const semiDiff = targetMidi - sampleHit.midi;
         src.playbackRate.setValueAtTime(Math.pow(2, semiDiff / 12), now);
-        src.detune.setValueAtTime(detuneCents, now);
+        if (src.detune) src.detune.setValueAtTime(detuneCents, now);
         master.gain.setValueAtTime(0.0001, now);
         master.gain.linearRampToValueAtTime(0.32, now + 0.006);
 
@@ -3020,8 +3039,11 @@
       }
     }
 
-    function buildPianoBoard() {
+    function buildPianoBoard(force = true) {
       const board = document.getElementById("pianoBoard");
+      if (!force && app.pianoBuiltOctave === app.octave && board.children.length) return;
+      releaseAllHeldVoices();
+      app.pianoBuiltOctave = app.octave;
       board.innerHTML = "";
       const keys = getPianoKeysForOctave(app.octave);
       const whites = keys.filter((k) => !k.isBlack);
@@ -3160,13 +3182,16 @@
       getAudioCtx();
       const mode = app.room?.settings?.mode;
       if (mode === "melody") {
+        if (!app.room?.started || app.room?.finished || app.room?.submissions?.[app.myId]) return;
         const guessId = document.getElementById("melodyGuessSelect").value || "grand_piano";
         beginHoldVoice(`melody:${keyObj.slot}`, keyObj.freq, guessId, false);
+        const realOct = Math.floor(keyObj.midi / 12) - 1;
         app.melodyPlayed.push({
           slot: keyObj.slot,
-          octave: app.octave,
+          midi: keyObj.midi,
+          octave: realOct,
           freq: keyObj.freq,
-          label: `${keyObj.label} (Oktav ${app.octave})`,
+          label: `${keyObj.label} (Oktav ${realOct})`,
           t: performance.now()
         });
         document.getElementById("takeStatus").textContent = `${app.melodyPlayed.length} nota çalındı (Oktav ${app.octave}).`;
@@ -3274,7 +3299,7 @@
       }
 
       const inst = MELODIC_INSTRUMENTS[Math.floor(Math.random() * MELODIC_INSTRUMENTS.length)];
-      const chosenOctave = 1 + Math.floor(Math.random() * 7);
+      const chosenOctave = 2 + Math.floor(Math.random() * 5);
       const octKeys = getPianoKeysForOctave(chosenOctave).slice(0, 12);
       const count = 4;
       const notes = [];
@@ -3357,8 +3382,10 @@
       let noteHits = 0;
       targetNotes.forEach((tn, idx) => {
         if (played[idx]) {
-          const sameNote = played[idx].slot.replace(/[012]$/, "") === tn.slot.replace(/[012]$/, "");
-          const sameOct = played[idx].octave === tn.octave;
+          const pMidi = Number.isFinite(played[idx].midi) ? played[idx].midi : Math.round(freqToMidi(played[idx].freq));
+          const tMidi = Math.round(freqToMidi(tn.freq));
+          const sameNote = ((pMidi % 12) + 12) % 12 === ((tMidi % 12) + 12) % 12;
+          const sameOct = pMidi === tMidi;
           if (sameNote && sameOct) noteHits += 1;
           else if (sameNote) noteHits += 0.5;
         }
@@ -3426,18 +3453,47 @@
     }
 
     function connectSocket() {
+      if (app.ws && (app.ws.readyState === WebSocket.OPEN || app.ws.readyState === WebSocket.CONNECTING)) return;
+      const errEl0 = document.getElementById("entryError");
+      if (!location.host) {
+        errEl0.textContent = "⚠️ Bu oyun bir WebSocket sunucusu üzerinden açılmalı (dosyayı doğrudan açtığında oda kurulamaz).";
+        errEl0.classList.remove("hidden");
+        return;
+      }
       const proto = location.protocol === "https:" ? "wss:" : "ws:";
-      const ws = new WebSocket(`${proto}//${location.host}`);
+      let ws;
+      try {
+        ws = new WebSocket(`${proto}//${location.host}`);
+      } catch (err) {
+        errEl0.textContent = "⚠️ Sunucuya bağlanılamadı.";
+        errEl0.classList.remove("hidden");
+        return;
+      }
       app.ws = ws;
 
       ws.onopen = () => {
         const errEl = document.getElementById("entryError");
         if (errEl) errEl.classList.add("hidden");
+        app.wsRetryMs = 1000;
+        if (app.wsEverOpened && app.room && app.lastJoin) {
+          app.pendingWsQueue.unshift({ type: "join_room", ...app.lastJoin, code: app.room.code });
+        }
+        app.wsEverOpened = true;
         flushPendingWs();
       };
 
+      ws.onerror = () => {
+        const errEl = document.getElementById("entryError");
+        if (errEl && !app.room) {
+          errEl.textContent = "⚠️ Sunucu bağlantısı kurulamadı, tekrar deneniyor...";
+          errEl.classList.remove("hidden");
+        }
+      };
+
       ws.onmessage = (ev) => {
-        const msg = JSON.parse(ev.data);
+        let msg;
+        try { msg = JSON.parse(ev.data); } catch (_) { return; }
+        if (!msg || typeof msg !== "object") return;
         if (typeof msg.serverNow === "number") {
           app.clockOffsetMs = msg.serverNow - Date.now();
         }
@@ -3454,6 +3510,7 @@
           app.room = msg.room;
           renderRoomState();
         } else if (msg.type === "live_note") {
+          if ((msg.playerId || msg.fromId) && (msg.playerId || msg.fromId) === app.myId) return;
           getAudioCtx();
           const durSec = Math.min(10.0, Math.max(0.34, (Number(msg.holdMs) || 480) / 1000));
           playFreqSound(msg.freq, msg.instrumentId, durSec, true, msg.synthParams);
@@ -3462,7 +3519,10 @@
       };
 
       ws.onclose = () => {
-        setTimeout(connectSocket, 1200);
+        if (app.ws !== ws) return;
+        const wait = app.wsRetryMs;
+        app.wsRetryMs = Math.min(15000, app.wsRetryMs * 1.6);
+        setTimeout(connectSocket, wait);
       };
     }
 
@@ -3471,7 +3531,7 @@
         app.ws.send(JSON.stringify(payload));
       } else {
         app.pendingWsQueue.push(payload);
-        if (!app.ws || app.ws.readyState === WebSocket.CLOSED) {
+        if (!app.ws || app.ws.readyState === WebSocket.CLOSED || app.ws.readyState === WebSocket.CLOSING) {
           connectSocket();
         }
       }
@@ -3479,10 +3539,12 @@
 
     function startChallengeTimer(mode) {
       clearInterval(app.challengeTimer);
+      app.challengeTimer = null;
       const sec = Number(app.room?.settings?.turnDuration) || 0;
       const lbl = document.getElementById(mode === "rhythm" ? "rhythmTimerLabel" : "melodyTimerLabel");
       if (!sec) {
         lbl.textContent = "";
+        app.challengeTimer = "untimed";
         return;
       }
       app.remainingSec = sec;
@@ -3491,6 +3553,7 @@
         app.remainingSec--;
         if (app.remainingSec <= 0) {
           clearInterval(app.challengeTimer);
+          app.challengeTimer = null;
           lbl.textContent = "⏱️ Süre doldu";
           if (!app.room?.submissions?.[app.myId]) {
             const acc = mode === "rhythm" ? calculateRhythmAccuracy() : calculateMelodyAccuracy();
@@ -3527,8 +3590,15 @@
           clearInterval(app.tabuTimer);
           app.tabuTimer = null;
           lbl.textContent = "⏱️ Süre doldu, sıra geçiyor...";
-          if (amITeller || isHostUser()) {
+          if (amITeller) {
             sendWs({ type: "tabu_next_turn", nextCard: nextTabuCard() });
+          } else if (isHostUser()) {
+            // fallback only if the teller's client did not advance (e.g. disconnected)
+            setTimeout(() => {
+              if (app.room?.tabu?.turnToken === turnToken && app.activeTabuToken === turnToken) {
+                sendWs({ type: "tabu_next_turn", nextCard: nextTabuCard() });
+              }
+            }, 2500);
           }
         } else {
           lbl.textContent = `⏱️ ${app.remainingSec} sn`;
@@ -3598,13 +3668,13 @@
             <div style="display:flex; align-items:center; gap:12px;">
               ${renderAvatarInline(w.avatar, "avatar-lg")}
               <div>
-                <div class="winner-title">🏆 Kazanan: ${w.name} (${maxVotes} oy)</div>
+                <div class="winner-title">🏆 Kazanan: ${escapeHtml(w.name)} (${maxVotes} oy)</div>
                 <div class="muted">Oylama tamamlandı ve kazanan açıklandı!</div>
               </div>
             </div>
           `;
         } else {
-          const names = winners.map((w) => w.name).join(" & ");
+          const names = winners.map((w) => escapeHtml(w.name)).join(" & ");
           winnerBody.innerHTML = `
             <div class="winner-title">🏆 Ortak Kazananlar: ${names} (${maxVotes} oy)</div>
             <div class="muted">Eşit oyla zirveyi paylaştılar!</div>
@@ -3623,6 +3693,13 @@
         }
         const leftSec = Math.max(0, Math.ceil((room.votingEndsServerMs - estimatedServerNow()) / 1000));
         timerBadge.textContent = `⏱️ ${leftSec} sn`;
+        if (leftSec <= 0) {
+          clearInterval(app.voteUiTimer);
+          if (!app.voteAutoDoneSent && !(room.myVoteDone || room.voteDone?.[app.myId])) {
+            app.voteAutoDoneSent = true;
+            sendWs({ type: "finish_voting" });
+          }
+        }
       };
       updateVoteCountdown();
       app.voteUiTimer = setInterval(updateVoteCountdown, 500);
@@ -3658,7 +3735,7 @@
         const isPicked = myChoice === p.id;
         btn.className = "btn btn-secondary" + (isPicked ? " active" : "");
         btn.disabled = myDone;
-        btn.innerHTML = `${renderAvatarInline(p.avatar)} <span>${p.name}</span>${isPicked ? " ✅" : ""}`;
+        btn.innerHTML = `${renderAvatarInline(p.avatar)} <span>${escapeHtml(p.name)}</span>${isPicked ? " ✅" : ""}`;
         btn.onclick = () => {
           if (myDone) return;
           sendWs({ type: "cast_vote", targetPlayerId: p.id });
@@ -3712,6 +3789,18 @@
         resetDraftStudioTake();
       }
 
+      if (room.started && !app.lastStarted) {
+        // fresh game: reset per-game client state (server may not send a new gameSessionId)
+        app.rhythmTaps = [];
+        app.melodyPlayed = [];
+        app.voteAutoDoneSent = false;
+        app.turnTimerKey = null;
+        clearInterval(app.challengeTimer);
+        app.challengeTimer = null;
+        document.getElementById("rhythmTapInfo").textContent = "Henüz vuruş yapılmadı";
+      }
+      app.lastStarted = Boolean(room.started);
+
       if (!room.started) {
         stopLocalLoop();
         releaseAllHeldVoices();
@@ -3719,6 +3808,10 @@
         clearInterval(app.challengeTimer);
         clearInterval(app.tabuTimer);
         clearInterval(app.voteUiTimer);
+        app.turnTimer = null;
+        app.challengeTimer = null;
+        app.tabuTimer = null;
+        app.turnTimerKey = null;
         app.activeTabuToken = null;
         hideAllGameViews();
 
@@ -3729,10 +3822,10 @@
         document.getElementById("lobbyRoomCode").textContent = room.code;
         document.getElementById("lobbyPlayerCount").textContent = room.players.length;
         document.getElementById("lobbyRounds").value = room.settings.totalRounds || 2;
-        document.getElementById("lobbyBpm").value = room.settings.bpm;
-        document.getElementById("lobbyBpmVal").textContent = room.settings.bpm;
+        document.getElementById("lobbyBpm").value = room.settings.bpm || 110;
+        document.getElementById("lobbyBpmVal").textContent = room.settings.bpm || 110;
         document.getElementById("lobbyBeats").value = String(app.beats);
-        document.getElementById("lobbyTimer").value = room.settings.turnDuration;
+        document.getElementById("lobbyTimer").value = String(room.settings.turnDuration ?? 0);
         document.getElementById("lobbyVoteTimer").value = room.settings.voteDuration || 30;
         document.getElementById("lobbySecretToggle").checked = Boolean(room.settings.secretMode);
 
@@ -3756,7 +3849,7 @@
         room.players.forEach((p) => {
           const chip = document.createElement("div");
           chip.className = "player-chip";
-          chip.innerHTML = `${renderAvatarInline(p.avatar)} <strong>${p.name}</strong>${p.id === room.hostId ? " 👑" : ""}`;
+          chip.innerHTML = `${renderAvatarInline(p.avatar)} <strong>${escapeHtml(p.name)}</strong>${p.id === room.hostId ? " 👑" : ""}`;
           pList.appendChild(chip);
         });
         return;
@@ -3766,6 +3859,15 @@
       document.getElementById("uiThemeSelect").classList.add("hidden");
       document.getElementById("restartGameBtn").classList.toggle("hidden", !isHost);
       hideAllGameViews();
+      if (!["collab", "theme"].includes(mode) || room.finished) {
+        clearInterval(app.turnTimer);
+        app.turnTimer = null;
+        app.turnTimerKey = null;
+      }
+      if (room.finished) {
+        clearInterval(app.challengeTimer);
+        app.challengeTimer = null;
+      }
 
       if (mode === "rhythm") {
         if (room.finished) {
@@ -3802,7 +3904,7 @@
         document.getElementById("pianoScrollWrap").style.pointerEvents = "auto";
         document.getElementById("octDownBtn").disabled = false;
         document.getElementById("octUpBtn").disabled = false;
-        buildPianoBoard();
+        buildPianoBoard(false);
 
         const submitted = Boolean(room.submissions?.[app.myId]);
         const doneCount = Object.keys(room.submissions || {}).length;
@@ -3826,7 +3928,7 @@
           startTabuTimer(tabuData.turnToken, amITeller);
         }
 
-        document.getElementById("tabuTellerTitle").innerHTML = `${renderAvatarInline(teller?.avatar)} Anlatıcı: ${teller?.name || "-"}`;
+        document.getElementById("tabuTellerTitle").innerHTML = `${renderAvatarInline(teller?.avatar)} Anlatıcı: ${escapeHtml(teller?.name || "-")}`;
         document.getElementById("tabuRoleHint").textContent = amITeller
           ? "Yasaklı kelimeleri söylemeden anlat!"
           : "Anlatıcıyı dinle ve kelimeyi tahmin et — yasaklı kelime duyarsan TABU bas!";
@@ -3837,7 +3939,7 @@
           const pts = tabuData.scores?.[p.id] ?? 0;
           const chip = document.createElement("div");
           chip.className = "player-chip";
-          chip.innerHTML = `${renderAvatarInline(p.avatar)} <strong>${p.name}:</strong> ${pts} puan`;
+          chip.innerHTML = `${renderAvatarInline(p.avatar)} <strong>${escapeHtml(p.name)}:</strong> ${pts} puan`;
           scoresBar.appendChild(chip);
         });
 
@@ -3863,7 +3965,7 @@
         (tabuData.guesses || []).forEach((g) => {
           const item = document.createElement("div");
           item.className = "guess-item" + (g.correct ? " correct" : "");
-          item.innerHTML = `${renderAvatarInline(g.avatar)} <strong>${g.name}:</strong> ${g.text} ${g.correct ? "✅ DOĞRU!" : ""}`;
+          item.innerHTML = `${renderAvatarInline(g.avatar)} <strong>${escapeHtml(g.name)}:</strong> ${escapeHtml(g.text)} ${g.correct ? "✅ DOĞRU!" : ""}`;
           gList.appendChild(item);
         });
         gList.scrollTop = gList.scrollHeight;
@@ -3889,7 +3991,7 @@
       document.getElementById("studioInstWrap").classList.remove("hidden");
       document.getElementById("studioPercWrap").classList.remove("hidden");
       document.getElementById("chordModeBar").classList.remove("hidden");
-      buildPianoBoard();
+      buildPianoBoard(false);
 
       document.getElementById("studioRoundBadge").textContent = `TUR ${room.currentRound || 1} / ${totalRounds}`;
       document.getElementById("turnAvatar").innerHTML = getAvatarById(activePlayer?.avatar).svg;
@@ -3940,7 +4042,11 @@
       updateBeatDots();
       renderLayersList();
       syncLoopStateWithRoom(room);
-      setupStudioTurnTimer(room, isMyTurn);
+      // only restart the turn timer when the turn actually changes (not on every room_state)
+      if (app.turnTimerKey !== app.lastTurnKey) {
+        app.turnTimerKey = app.lastTurnKey;
+        setupStudioTurnTimer(room, isMyTurn);
+      }
     }
 
     function renderResultsView(title, subtitle, showCorrectMelody, isStudioFinal = false) {
@@ -3952,6 +4058,7 @@
       if (isStudioFinal && app.room) {
         renderVotingAndWinnerPanel(app.room);
       } else {
+        clearInterval(app.voteUiTimer);
         document.getElementById("votingSection").classList.add("hidden");
         document.getElementById("winnerBanner").classList.add("hidden");
       }
@@ -3978,7 +4085,7 @@
         layers.forEach((l, idx) => {
           const row = document.createElement("div");
           row.className = "result-row";
-          row.innerHTML = `<div>${renderAvatarInline(l.avatar)} <strong>#${idx + 1} ${l.playerName}</strong> — ${l.instrumentName}</div>
+          row.innerHTML = `<div>${renderAvatarInline(l.avatar)} <strong>#${idx + 1} ${escapeHtml(l.playerName)}</strong> — ${escapeHtml(l.instrumentName)}</div>
                            <span class="muted">${l.notes?.length || 0} ses ${l.hasVocal ? "+ 🎙️ Vokal" : ""}</span>`;
           list.appendChild(row);
         });
@@ -3990,12 +4097,12 @@
         const row = document.createElement("div");
         row.className = "result-row";
         const notesLine = e.playedNotesText
-          ? `<div class="played-notes-line">🎹 Çaldığı Notalar: <strong>${e.playedNotesText}</strong></div>`
+          ? `<div class="played-notes-line">🎹 Çaldığı Notalar: <strong>${escapeHtml(e.playedNotesText)}</strong></div>`
           : "";
         row.innerHTML = `
           <div>
-            ${renderAvatarInline(e.avatar)} <strong>#${idx + 1} ${e.name}</strong>
-            <span class="muted">(${e.detail || ""})</span>
+            ${renderAvatarInline(e.avatar)} <strong>#${idx + 1} ${escapeHtml(e.name)}</strong>
+            <span class="muted">(${escapeHtml(e.detail || "")})</span>
             ${notesLine}
           </div>
           <div class="result-score">%${e.accuracy}</div>`;
@@ -4017,6 +4124,7 @@
         app.remainingSec--;
         if (app.remainingSec <= 0) {
           clearInterval(app.turnTimer);
+          app.turnTimer = null;
           lbl.textContent = "Süre doldu!";
           if (isMyTurn) saveMyLayerAndAdvance();
         } else {
@@ -4081,8 +4189,6 @@
       const ctx = getAudioCtx();
       const cycleMs = getCycleDurationMs();
       const nowServer = estimatedServerNow();
-      const dj = app.room?.djEffect || app.djEffect || "normal";
-      const out = routeThroughDjBus(ctx, getMasterDestination(), dj);
       const layers = (app.room?.layers || []).filter((l) => !l.muted && !l.hiddenUntilEnd);
 
       const activeLayerCount = layers.length + (app.currentTakeNotes.length ? 1 : 0);
@@ -4269,7 +4375,7 @@
         row.className = "layer-row" + (layer.muted ? " muted" : "");
         const desc = layer.hiddenUntilEnd
           ? "🔒 Finalde açıklanacak"
-          : `${layer.instrumentName} • ${layer.notes?.length || 0} ses${layer.hasVocal ? " + 🎙️ Vokal" : ""}`;
+          : `${escapeHtml(layer.instrumentName)} • ${layer.notes?.length || 0} ses${layer.hasVocal ? " + 🎙️ Vokal" : ""}`;
 
         const hostControls = isHost
           ? `
@@ -4281,7 +4387,7 @@
 
         row.innerHTML = `
           <div>
-            ${renderAvatarInline(layer.avatar)} <strong>#${i + 1} ${layer.playerName}</strong>
+            ${renderAvatarInline(layer.avatar)} <strong>#${i + 1} ${escapeHtml(layer.playerName)}</strong>
             <span class="muted">(${desc})</span>
           </div>
           <div class="controls-cluster">${hostControls}</div>
@@ -4296,7 +4402,19 @@
       });
     }
 
-    function encodeFloat32ToWavBase64(samples, sampleRate) {
+    function encodeFloat32ToWavBase64(srcSamples, srcRate) {
+      let samples = srcSamples;
+      let sampleRate = srcRate;
+      if (srcRate > 24000) {
+        const factor = Math.max(1, Math.round(srcRate / 22050));
+        sampleRate = Math.round(srcRate / factor);
+        samples = new Float32Array(Math.floor(srcSamples.length / factor));
+        for (let i = 0; i < samples.length; i++) {
+          let acc = 0;
+          for (let j = 0; j < factor; j++) acc += srcSamples[i * factor + j];
+          samples[i] = acc / factor;
+        }
+      }
       const buffer = new ArrayBuffer(44 + samples.length * 2);
       const view = new DataView(buffer);
       const writeStr = (offset, str) => {
@@ -4322,8 +4440,8 @@
       }
       const bytes = new Uint8Array(buffer);
       let binary = "";
-      for (let i = 0; i < bytes.byteLength; i++) {
-        binary += String.fromCharCode(bytes[i]);
+      for (let i = 0; i < bytes.byteLength; i += 0x8000) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
       }
       return btoa(binary);
     }
@@ -4331,6 +4449,8 @@
     function stopMicRecordingNow() {
       clearTimeout(app.micRecordTimer);
       app.micRecordTimer = null;
+      clearTimeout(app.micStartTimer);
+      app.micStartTimer = null;
       if (app.micProcessorNode) {
         try { app.micProcessorNode.disconnect(); } catch (_) {}
         app.micProcessorNode = null;
@@ -4358,8 +4478,17 @@
       const recBtn = document.getElementById("micRecBtn");
       const statusEl = document.getElementById("micStatus");
 
-      if (app.micPhase === "recording") {
+      if (app.micPhase === "recording" || app.micPhase === "waiting") {
         finishMicCapture();
+        return;
+      }
+
+      if (app.selectedChannel && app.selectedChannel !== "mic") {
+        statusEl.textContent = "⚠️ Bu turda kayıt kanalın zaten seçili. Mikrofon için önce 'Kaydı Sil & Denemeye Dön'e bas.";
+        return;
+      }
+      if (!navigator.mediaDevices?.getUserMedia) {
+        statusEl.textContent = "⚠️ Tarayıcı mikrofon erişimini desteklemiyor (HTTPS veya localhost gerekir).";
         return;
       }
 
@@ -4380,12 +4509,31 @@
 
         app.micStream = stream;
         app.micRecordedChunks = [];
-        app.micPhase = "recording";
-        recBtn.textContent = "⏹️ Kaydı Bitir (Kayıtta...)";
         recBtn.classList.add("active");
 
         const cycleMs = Math.max(1200, Math.min(16000, getCycleDurationMs()));
-        statusEl.textContent = `🔴 Kayıt başladı! (${(cycleMs / 1000).toFixed(1)} sn boyunca konuş/şarkı söyle)...`;
+        // align the capture to the next loop cycle start, since vocal playback is scheduled at cycle start
+        let waitMs = 0;
+        if (app.isPlaying) {
+          const anchor = Number(app.room?.loopAnchorServerMs) || app.currentCycleStartServerMs || estimatedServerNow();
+          const realCycle = getCycleDurationMs();
+          const nowS = estimatedServerNow();
+          waitMs = getCycleStartForServerTime(anchor, nowS, realCycle) + realCycle - nowS;
+          if (waitMs < 60) waitMs += realCycle;
+        }
+        const beginCapture = () => {
+          app.micStartTimer = null;
+          if (app.micPhase !== "waiting") return;
+          app.micPhase = "recording";
+          recBtn.textContent = "⏹️ Kaydı Bitir (Kayıtta...)";
+          statusEl.textContent = `🔴 Kayıt başladı! (${(cycleMs / 1000).toFixed(1)} sn boyunca konuş/şarkı söyle)...`;
+          app.micRecordTimer = setTimeout(() => {
+            if (app.micPhase === "recording") finishMicCapture();
+          }, cycleMs);
+        };
+        app.micPhase = "waiting";
+        recBtn.textContent = "⏹️ İptal (Döngü başı bekleniyor...)";
+        statusEl.textContent = `⏳ Döngü başında kayıt başlayacak (${(waitMs / 1000).toFixed(1)} sn)...`;
 
         const source = ctx.createMediaStreamSource(stream);
         const processor = ctx.createScriptProcessor(4096, 1, 1);
@@ -4405,11 +4553,8 @@
         app.micSourceNode = source;
         app.micProcessorNode = processor;
 
-        app.micRecordTimer = setTimeout(() => {
-          if (app.micPhase === "recording") {
-            finishMicCapture();
-          }
-        }, cycleMs);
+        if (waitMs > 0) app.micStartTimer = setTimeout(beginCapture, waitMs);
+        else beginCapture();
       } catch (err) {
         stopMicRecordingNow();
         statusEl.textContent = "⚠️ Mikrofon izni verilmedi veya cihazda mikrofon bulunamadı.";
@@ -4541,6 +4686,8 @@
 
     function saveMyLayerAndAdvance() {
       if (!canIEditStudio()) return;
+      if (app.micPhase === "recording") finishMicCapture();
+      else if (app.micPhase === "waiting") stopMicRecordingNow();
       flushAllPendingHoldDurations();
       const mode = app.room?.settings?.mode;
       const nextConcept = mode === "theme" ? nextRandomConcept() : undefined;
@@ -4764,6 +4911,7 @@
       document.getElementById("createRoomBtn").onclick = () => {
         getAudioCtx();
         const name = document.getElementById("myNameInput").value.trim() || "Oyuncu";
+        app.lastJoin = { name, avatar: app.myAvatar };
         sendWs({ type: "create_room", name, avatar: app.myAvatar });
       };
 
@@ -4771,6 +4919,13 @@
         getAudioCtx();
         const name = document.getElementById("myNameInput").value.trim() || "Oyuncu";
         const code = document.getElementById("roomCodeInput").value.trim().toUpperCase();
+        if (!code) {
+          const errEl = document.getElementById("entryError");
+          errEl.textContent = "Lütfen bir oda kodu gir.";
+          errEl.classList.remove("hidden");
+          return;
+        }
+        app.lastJoin = { name, avatar: app.myAvatar };
         sendWs({ type: "join_room", name, avatar: app.myAvatar, code });
       };
 
@@ -4814,8 +4969,8 @@
       document.getElementById("rhythmListenBtn").onclick = playCurrentChallenge;
       document.getElementById("rhythmTapBtn").onpointerdown = () => {
         const ch = app.room?.challenge;
-        if (!ch) return;
         const btn = document.getElementById("rhythmTapBtn");
+        if (!ch || btn.disabled || app.room?.submissions?.[app.myId]) return;
         btn.classList.add("hit");
         setTimeout(() => btn.classList.remove("hit"), 120);
         playFreqSound(ch.freq || 261.63, ch.instrumentId, 0.25, false);
@@ -4827,7 +4982,9 @@
         document.getElementById("rhythmTapInfo").textContent = "Sıfırlandı, tekrar vurabilirsin.";
       };
       document.getElementById("rhythmFinishBtn").onclick = () => {
+        if (app.room?.submissions?.[app.myId]) return;
         clearInterval(app.challengeTimer);
+        app.challengeTimer = "done";
         const acc = calculateRhythmAccuracy();
         sendWs({ type: "submit_challenge", accuracy: acc, detail: `${app.rhythmTaps.length} vuruş` });
       };
@@ -4839,7 +4996,9 @@
         document.getElementById("takeStatus").textContent = "Çalınan notalar sıfırlandı.";
       };
       document.getElementById("melodyFinishBtn").onclick = () => {
+        if (app.room?.submissions?.[app.myId]) return;
         clearInterval(app.challengeTimer);
+        app.challengeTimer = "done";
         const acc = calculateMelodyAccuracy();
         const guessName = INSTRUMENTS.find((i) => i.id === document.getElementById("melodyGuessSelect").value)?.name || "-";
         const playedText = app.melodyPlayed.map((n) => n.label).join(" → ") || "Nota çalınmadı";
@@ -4893,7 +5052,8 @@
         if (!isHostUser()) return;
         app.bpm = Number(e.target.value);
         document.getElementById("liveBpmText").textContent = app.bpm;
-        sendWs({ type: "set_bpm", bpm: app.bpm });
+        clearTimeout(app.bpmSendTimer);
+        app.bpmSendTimer = setTimeout(() => sendWs({ type: "set_bpm", bpm: app.bpm }), 120);
       };
 
       document.getElementById("instrumentSelect").onchange = (e) => {
@@ -5038,6 +5198,31 @@
           playProcessedVocalBuffer(app.micBuffer, app.micReverse, app.micEffect);
         }
       };
+
+      document.getElementById("lobbyBpm").oninput = () => {
+        document.getElementById("lobbyBpmVal").textContent = document.getElementById("lobbyBpm").value;
+      };
+      document.getElementById("tabuGuessInput").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("tabuSendGuessBtn").click();
+      });
+      document.getElementById("roomCodeInput").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("joinRoomBtn").click();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.repeat || e.code !== "Space") return;
+        const tag = (document.activeElement?.tagName || "").toLowerCase();
+        if (tag === "input" || tag === "select" || tag === "textarea") return;
+        const view = document.getElementById("rhythmGameView");
+        const tapBtn = document.getElementById("rhythmTapBtn");
+        if (view.classList.contains("hidden") || tapBtn.disabled) return;
+        e.preventDefault();
+        tapBtn.onpointerdown();
+      });
+      const unlockAudio = () => {
+        if (audioCtx && audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+      };
+      document.addEventListener("pointerdown", unlockAudio, true);
+      document.addEventListener("keydown", unlockAudio, true);
 
       updateLobbyModeFields("collab");
     }
