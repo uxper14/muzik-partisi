@@ -26,55 +26,16 @@ function makeToken() {
   return crypto.randomBytes(16).toString("hex");
 }
 
-const ALLOWED_MODES = new Set(["collab", "theme", "rhythm", "melody", "tabu"]);
-const ALLOWED_DJ_EFFECTS = new Set(["normal", "slowed", "underwater", "radio", "cave"]);
+const ALLOWED_MODES = new Set(["collab", "rhythm", "melody"]);
 
-// ─── Tabu Kart Destesi (sunucu tarafında) ─────────────────────────────────────
-// FIX: Kartlar artık istemciden kabul edilmiyor; sunucu kendi listesinden seçiyor.
-const TABU_CARDS = [
-  { word: "PİYANO",      forbidden: ["Tuş", "Siyah", "Beyaz", "Müzik", "Çalmak"] },
-  { word: "GİTAR",       forbidden: ["Tel", "Akustik", "Elektrik", "Müzisyen", "Çalmak"] },
-  { word: "DAVUL",       forbidden: ["Ritim", "Vur", "Baget", "Perküsyon", "Ses"] },
-  { word: "KEMANİ",      forbidden: ["Yay", "Klasik", "Orkestra", "Çalmak", "Tiz"] },
-  { word: "FLÜT",        forbidden: ["Nefes", "Üfle", "Klasik", "Uzun", "Ses"] },
-  { word: "BATERI",      forbidden: ["Davul", "Ritim", "Baget", "Ses", "Vur"] },
-  { word: "MİKROFON",    forbidden: ["Ses", "Şarkı", "Sahne", "Konser", "Kayıt"] },
-  { word: "KONSER",      forbidden: ["Sahne", "Müzik", "İzleyici", "Şarkı", "Bilet"] },
-  { word: "NOTA",        forbidden: ["Müzik", "Ses", "Do", "Re", "Mi"] },
-  { word: "MELODİ",      forbidden: ["Şarkı", "Ses", "Müzik", "Ritim", "Nota"] },
-  { word: "RİTİM",       forbidden: ["Davul", "Tempo", "Vur", "Ses", "Bateri"] },
-  { word: "ŞARKI",       forbidden: ["Söyle", "Ses", "Müzik", "Kelime", "Türkü"] },
-  { word: "KULAKLIK",    forbidden: ["Ses", "Müzik", "Dinle", "Kablo", "Kablosuz"] },
-  { word: "HOPARLÖR",    forbidden: ["Ses", "Müzik", "Çıkar", "Kablosuz", "Volüm"] },
-  { word: "STÜDYO",      forbidden: ["Kayıt", "Müzik", "Ses", "Mikrofon", "Prodüksiyon"] },
-  { word: "DJ",          forbidden: ["Müzik", "Karıştır", "Sahne", "Plak", "Gece"] },
-  { word: "KULÜP",       forbidden: ["Gece", "Dans", "Eğlence", "Müzik", "Bar"] },
-  { word: "DANS",        forbidden: ["Müzik", "Hareket", "Ritim", "Sahne", "Ayak"] },
-  { word: "TEMPO",       forbidden: ["Hız", "Ritim", "Müzik", "BPM", "Yavaş"] },
-  { word: "AKORDİYON",  forbidden: ["Körük", "Tuş", "Halk", "Çalmak", "Ses"] },
-  { word: "TROMPET",     forbidden: ["Nefes", "Üfle", "Caz", "Metal", "Ses"] },
-  { word: "SAKSOFON",    forbidden: ["Caz", "Nefes", "Üfle", "Metal", "Ses"] },
-  { word: "VİYOLA",      forbidden: ["Yay", "Keman", "Klasik", "Orkestra", "Ses"] },
-  { word: "ÇELLO",       forbidden: ["Yay", "Büyük", "Klasik", "Orkestra", "Keman"] },
-  { word: "UKULELE",     forbidden: ["Küçük", "Gitar", "Hawaii", "Tel", "Çalmak"] },
-  { word: "BAĞLAMA",     forbidden: ["Halk", "Tel", "Türk", "Saz", "Çalmak"] },
-  { word: "KAVAL",       forbidden: ["Üfle", "Halk", "Köy", "Tahta", "Ses"] },
-  { word: "ZİL",         forbidden: ["Dans", "El", "Ritim", "Metal", "Ses"] },
-  { word: "ORG",         forbidden: ["Kilise", "Tuş", "Piyano", "Büyük", "Müzik"] },
-  { word: "SENTEZLEYİCİ", forbidden: ["Elektronik", "Tuş", "Ses", "Dijital", "Müzik"] },
-  { word: "BEAT",        forbidden: ["Ritim", "Vur", "Müzik", "DJ", "Ses"] },
-  { word: "ALTI TEL",    forbidden: ["Gitar", "Tel", "Çalmak", "Müzik", "Enstrüman"] },
-  { word: "OSKARMONİKA", forbidden: ["Üfle", "Küçük", "Nefes", "Halk", "Ses"] },
-  { word: "TABLO",       forbidden: ["Hint", "Perküsyon", "El", "Vur", "Ritim"] },
-  { word: "LİR",         forbidden: ["Antik", "Tel", "Klasik", "Çalmak", "Müzik"] },
-];
-
-function getNextCard(usedWords = []) {
-  const available = TABU_CARDS.filter((c) => !usedWords.includes(c.word));
-  const pool = available.length ? available : TABU_CARDS; // deste biterse yeniden başla
-  return pool[Math.floor(Math.random() * pool.length)];
+// Yeniden dinleme hakkı: -1 = sonsuz, aksi halde 1-10
+function clampReplayLimit(v) {
+  const n = Number(v);
+  if (n === -1) return -1;
+  if (!Number.isFinite(n)) return 1;
+  return Math.min(10, Math.max(1, Math.round(n)));
 }
-// ──────────────────────────────────────────────────────────────────────────────
+const ALLOWED_DJ_EFFECTS = new Set(["normal", "slowed", "underwater", "radio", "cave"]);
 
 function makeId(len = 6) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -158,7 +119,8 @@ function createRoom(hostPlayer) {
       beats: 8,
       turnDuration: 0,
       voteDuration: 30,
-      secretMode: false
+      secretMode: false,
+      replayLimit: 1 // Melodiyi Taklit Et: ilk dinlemeden sonra kaç kez yeniden dinlenebilir (-1 = sonsuz)
     },
     started: false,
     finished: false,
@@ -167,7 +129,6 @@ function createRoom(hostPlayer) {
     loopBpm: 110,
     loopAnchorServerMs: Date.now(),
     djEffect: "normal",
-    concept: "Güneşli Piknik",
     layers: [],
     votes: {},
     voteDone: {},
@@ -175,19 +136,12 @@ function createRoom(hostPlayer) {
     votingEndsServerMs: null,
     votingTimeout: null,
     challenge: null,
-    submissions: {},
-    tabu: null
+    challengeListens: {},
+    submissions: {}
   };
 
   rooms.set(code, room);
   return room;
-}
-
-function normalizeText(str) {
-  return String(str || "")
-    .trim()
-    .toLocaleLowerCase("tr-TR")
-    .replace(/\s+/g, " ");
 }
 
 function sanitizeRoomForViewer(room, viewerId) {
@@ -208,22 +162,6 @@ function sanitizeRoomForViewer(room, viewerId) {
       notes: []
     };
   });
-
-  const isTabu = room.settings.mode === "tabu";
-  const currentTeller = room.players[room.turnIndex];
-  const isTeller = isTabu && currentTeller && currentTeller.id === viewerId;
-
-  let tabuPayload = null;
-  if (isTabu && room.tabu) {
-    tabuPayload = {
-      turnToken: room.tabu.turnToken || 1,
-      tellerId: currentTeller ? currentTeller.id : null,
-      scores: room.tabu.scores,
-      guesses: room.tabu.guesses.slice(-40),
-      // Kart yalnızca anlatan kişiye gönderiliyor (buzzCooldowns/usedWords açığa çıkmıyor)
-      card: isTeller ? room.tabu.card : null
-    };
-  }
 
   // FIX: Oyun bitmeden submission skorları gizle; sadece kimin gönderdiği görünür
   const submissionsForViewer = {};
@@ -250,7 +188,6 @@ function sanitizeRoomForViewer(room, viewerId) {
     loopBpm: room.loopBpm,
     loopAnchorServerMs: room.loopAnchorServerMs,
     djEffect: room.djEffect,
-    concept: room.concept,
     layers,
     votes: room.votingClosed ? { ...room.votes } : {},
     myVotedFor: room.votes[viewerId] || null,
@@ -259,8 +196,8 @@ function sanitizeRoomForViewer(room, viewerId) {
     votingClosed: Boolean(room.votingClosed),
     votingEndsServerMs: room.votingEndsServerMs,
     challenge: room.challenge,
-    submissions: submissionsForViewer,
-    tabu: tabuPayload
+    challengeListens: { ...(room.challengeListens || {}) },
+    submissions: submissionsForViewer
   };
 }
 
@@ -314,9 +251,8 @@ function resetRoomToLobby(room) {
   room.votingEndsServerMs = null;
   room.submissions = {};
   room.challenge = null;
-  room.tabu = null;
+  room.challengeListens = {};
   room.djEffect = "normal";
-  room.concept = "Güneşli Piknik"; // FIX: Lobiye dönünce concept sıfırlanır
   room.loopBpm = room.settings.bpm;
   room.loopAnchorServerMs = Date.now();
   // Not: settings.bpm ve loopBpm kasıtlı olarak ayrı tutulur.
@@ -362,7 +298,7 @@ function removePlayerFromRoom(room, playerId) {
 
   if (wasActive && room.started && !room.finished) {
     room.turnSeq = (room.turnSeq || 0) + 1;
-    if (["collab", "theme"].includes(room.settings.mode) && wrappedAround) {
+    if (room.settings.mode === "collab" && wrappedAround) {
       const totalRounds = clampTotalRounds(room.settings.totalRounds);
       if (room.currentRound < totalRounds) {
         room.currentRound += 1;
@@ -539,6 +475,9 @@ wss.on("connection", (ws) => {
       if (incoming.voteDuration !== undefined) {
         room.settings.voteDuration = clampVoteDuration(incoming.voteDuration);
       }
+      if (incoming.replayLimit !== undefined) {
+        room.settings.replayLimit = clampReplayLimit(incoming.replayLimit);
+      }
       if (incoming.secretMode !== undefined) {
         room.settings.secretMode = Boolean(incoming.secretMode);
       }
@@ -568,33 +507,12 @@ wss.on("connection", (ws) => {
       room.settings.totalRounds = clampTotalRounds(room.settings.totalRounds);
       room.settings.voteDuration = clampVoteDuration(room.settings.voteDuration);
 
-      if (room.settings.mode === "theme") {
-        room.concept = String(msg.concept || "Güneşli Piknik");
-      }
-
+      room.challengeListens = {}; // Yeniden dinleme hakları her tur başında sıfırlanır
+      room.settings.replayLimit = clampReplayLimit(room.settings.replayLimit);
       if (room.settings.mode === "rhythm" || room.settings.mode === "melody") {
         room.challenge = msg.challenge || null;
       } else {
         room.challenge = null;
-      }
-
-      if (room.settings.mode === "tabu") {
-        const scores = {};
-        room.players.forEach((p) => {
-          scores[p.id] = 0;
-        });
-        const firstCard = getNextCard();
-        room.tabu = {
-          turnToken: 1,
-          scores,
-          guesses: [],
-          card: firstCard,
-          usedWords: [firstCard.word], // FIX: Kullanılan kelimeler sunucuda takip ediliyor
-          buzzCooldowns: {},            // FIX: Buzz spam koruması için cooldown haritası
-          lastGuessTime: {}             // FIX: Tahmin rate limiting için zaman haritası
-        };
-      } else {
-        room.tabu = null;
       }
 
       broadcastRoom(room);
@@ -731,13 +649,6 @@ wss.on("connection", (ws) => {
       return;
     }
 
-    if (msg.type === "new_concept") {
-      if (!isHost) return;
-      room.concept = String(msg.concept || "Güneşli Piknik");
-      broadcastRoom(room);
-      return;
-    }
-
     if (msg.type === "submit_challenge") {
       const sender = room.players.find((p) => p.id === playerId);
       if (!sender) return;
@@ -758,96 +669,28 @@ wss.on("connection", (ws) => {
       return;
     }
 
+    if (msg.type === "challenge_listen") {
+      if (!room.started || room.finished || !room.challenge) return;
+      if (room.settings.mode !== "melody") return;
+      if (!room.players.some((p) => p.id === playerId)) return;
+      if (!room.challengeListens) room.challengeListens = {};
+      const used = Number(room.challengeListens[playerId]) || 0;
+      const limit = clampReplayLimit(room.settings.replayLimit);
+      const allowed = limit < 0 ? Infinity : 1 + limit; // ilk dinleme + yeniden dinleme hakları
+      if (used >= allowed) {
+        broadcastRoom(room);
+        return;
+      }
+      room.challengeListens[playerId] = used + 1;
+      broadcastRoom(room);
+      return;
+    }
+
     if (msg.type === "force_end_challenge") {
       if (!isHost) return;
       room.finished = true;
       broadcastRoom(room);
       return;
-    }
-
-    if (room.settings.mode === "tabu" && room.tabu) {
-      const teller = room.players[room.turnIndex];
-      const isTeller = teller && teller.id === playerId;
-      const sender = room.players.find((p) => p.id === playerId);
-      const now = Date.now();
-
-      // FIX: Tahmin rate limiting — aynı oyuncu 800ms içinde iki kez gönderemez
-      if (msg.type === "tabu_guess" && !isTeller && sender) {
-        const lastGuess = room.tabu.lastGuessTime[playerId] || 0;
-        if (now - lastGuess < 800) return;
-        room.tabu.lastGuessTime[playerId] = now;
-
-        const text = String(msg.text || "").trim().slice(0, 60);
-        if (!text) return;
-        const target = normalizeText(room.tabu.card?.word);
-        const correct = Boolean(target && normalizeText(text) === target);
-
-        room.tabu.guesses.push({
-          name: sender.name,
-          avatar: sender.avatar,
-          text,
-          correct
-        });
-
-        if (correct) {
-          room.tabu.scores[sender.id] = (room.tabu.scores[sender.id] || 0) + 1;
-          if (teller) {
-            room.tabu.scores[teller.id] = (room.tabu.scores[teller.id] || 0) + 1;
-          }
-          // FIX: Sonraki kart sunucu seçiyor — istemciden nextCard kabul edilmiyor
-          room.tabu.usedWords.push(room.tabu.card.word);
-          room.tabu.card = getNextCard(room.tabu.usedWords);
-        }
-        broadcastRoom(room);
-        return;
-      }
-
-      if (msg.type === "tabu_correct" && isTeller) {
-        room.tabu.scores[teller.id] = (room.tabu.scores[teller.id] || 0) + 1;
-        // FIX: Kart sunucu seçiyor
-        room.tabu.usedWords.push(room.tabu.card.word);
-        room.tabu.card = getNextCard(room.tabu.usedWords);
-        broadcastRoom(room);
-        return;
-      }
-
-      if (msg.type === "tabu_pass" && isTeller) {
-        // FIX: Kart sunucu seçiyor
-        room.tabu.usedWords.push(room.tabu.card.word);
-        room.tabu.card = getNextCard(room.tabu.usedWords);
-        broadcastRoom(room);
-        return;
-      }
-
-      // FIX: Buzz spam koruması — aynı oyuncu 5 saniyede bir buzz yapabilir
-      if (msg.type === "tabu_buzz" && !isTeller && teller && sender) {
-        const lastBuzz = room.tabu.buzzCooldowns[playerId] || 0;
-        if (now - lastBuzz < 5000) return;
-        room.tabu.buzzCooldowns[playerId] = now;
-
-        room.tabu.scores[teller.id] = (room.tabu.scores[teller.id] || 0) - 1;
-        room.tabu.guesses.push({
-          name: sender.name,
-          avatar: sender.avatar,
-          text: "🚨 TABU! Yasaklı kelime (-1 puan)",
-          correct: false
-        });
-        // FIX: Kart sunucu seçiyor
-        room.tabu.usedWords.push(room.tabu.card.word);
-        room.tabu.card = getNextCard(room.tabu.usedWords);
-        broadcastRoom(room);
-        return;
-      }
-
-      if (msg.type === "tabu_next_turn" && (isTeller || isHost)) {
-        room.turnIndex = (room.turnIndex + 1) % room.players.length;
-        room.tabu.turnToken = (room.tabu.turnToken || 1) + 1;
-        // FIX: Kart sunucu seçiyor
-        room.tabu.usedWords.push(room.tabu.card.word);
-        room.tabu.card = getNextCard(room.tabu.usedWords);
-        broadcastRoom(room);
-        return;
-      }
     }
   });
 
