@@ -5,45 +5,108 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kollay Gelsin! — Çok Oyunculu Müzik &amp; Parti Stüdyosu</title>
   <style>
-    :root {
-      --bg-a: #090c18;
-      --bg-b: #131a34;
-      --card: rgba(20, 27, 52, 0.88);
-      --card-border: rgba(255, 255, 255, 0.11);
+    :root, [data-theme="midnight"] {
+      --bg-a: #0d0f1a;
+      --bg-b: #171b2e;
+      --card: rgba(26, 30, 52, 0.82);
+      --card-solid: #1b1f36;
+      --card-border: rgba(255, 255, 255, 0.10);
       --text: #f3f6ff;
-      --muted: #a3b0d4;
+      --muted: #a3acd0;
       --accent: #7c5cff;
       --accent-2: #22d3ee;
+      --accent-rgb: 124, 92, 255;
+      --accent2-rgb: 34, 211, 238;
+      --on-accent: #ffffff;
       --danger: #ef4444;
       --ok: #22c55e;
       --glow-a: rgba(124, 92, 255, 0.24);
-      --glow-b: rgba(34, 211, 238, 0.2);
+      --glow-b: rgba(34, 211, 238, 0.18);
     }
 
     [data-theme="sunset"] {
       --bg-a: #1a0b1d;
-      --bg-b: #33132b;
-      --card: rgba(45, 18, 42, 0.88);
-      --card-border: rgba(255, 196, 224, 0.14);
-      --text: #fff3f8;
-      --muted: #dfb5c8;
-      --accent: #ff5d8f;
-      --accent-2: #ffb703;
-      --glow-a: rgba(255, 93, 143, 0.28);
-      --glow-b: rgba(255, 183, 3, 0.22);
+      --bg-b: #2d1a0f;
+      --card: rgba(48, 24, 34, 0.82);
+      --card-solid: #301a24;
+      --card-border: rgba(255, 210, 180, 0.13);
+      --text: #fff5ef;
+      --muted: #e0b9a8;
+      --accent: #ff6b6b;
+      --accent-2: #ffd93d;
+      --accent-rgb: 255, 107, 107;
+      --accent2-rgb: 255, 217, 61;
+      --on-accent: #ffffff;
+      --glow-a: rgba(255, 107, 107, 0.26);
+      --glow-b: rgba(255, 217, 61, 0.16);
     }
 
-    [data-theme="mint"] {
-      --bg-a: #07191c;
-      --bg-b: #0e2f34;
-      --card: rgba(12, 42, 47, 0.88);
-      --card-border: rgba(153, 246, 228, 0.14);
-      --text: #edfffb;
-      --muted: #9fd4cb;
-      --accent: #10b981;
-      --accent-2: #38bdf8;
-      --glow-a: rgba(16, 185, 129, 0.26);
-      --glow-b: rgba(56, 189, 248, 0.22);
+    [data-theme="ocean"] {
+      --bg-a: #051926;
+      --bg-b: #0a2d42;
+      --card: rgba(10, 42, 62, 0.82);
+      --card-solid: #0c2c40;
+      --card-border: rgba(144, 224, 239, 0.14);
+      --text: #effbff;
+      --muted: #9cc7d6;
+      --accent: #00b4d8;
+      --accent-2: #48cae4;
+      --accent-rgb: 0, 180, 216;
+      --accent2-rgb: 72, 202, 228;
+      --on-accent: #ffffff;
+      --glow-a: rgba(0, 180, 216, 0.24);
+      --glow-b: rgba(72, 202, 228, 0.16);
+    }
+
+    [data-theme="forest"] {
+      --bg-a: #0a1a0d;
+      --bg-b: #162a1a;
+      --card: rgba(22, 44, 28, 0.82);
+      --card-solid: #172b1c;
+      --card-border: rgba(150, 230, 161, 0.14);
+      --text: #f0fff2;
+      --muted: #a6cdac;
+      --accent: #2d9e5f;
+      --accent-2: #96e6a1;
+      --accent-rgb: 45, 158, 95;
+      --accent2-rgb: 150, 230, 161;
+      --on-accent: #ffffff;
+      --glow-a: rgba(45, 158, 95, 0.26);
+      --glow-b: rgba(150, 230, 161, 0.14);
+    }
+
+    [data-theme="candy"] {
+      --bg-a: #1a0a2e;
+      --bg-b: #2d1b4e;
+      --card: rgba(48, 28, 80, 0.82);
+      --card-solid: #301c50;
+      --card-border: rgba(255, 190, 230, 0.15);
+      --text: #fff4fb;
+      --muted: #d6b4dc;
+      --accent: #ff6eb4;
+      --accent-2: #c77dff;
+      --accent-rgb: 255, 110, 180;
+      --accent2-rgb: 199, 125, 255;
+      --on-accent: #ffffff;
+      --glow-a: rgba(255, 110, 180, 0.24);
+      --glow-b: rgba(199, 125, 255, 0.2);
+    }
+
+    [data-theme="mono"] {
+      --bg-a: #111111;
+      --bg-b: #1e1e1e;
+      --card: rgba(36, 36, 36, 0.86);
+      --card-solid: #252525;
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text: #f5f5f5;
+      --muted: #a8a8a8;
+      --accent: #ffffff;
+      --accent-2: #aaaaaa;
+      --accent-rgb: 255, 255, 255;
+      --accent2-rgb: 170, 170, 170;
+      --on-accent: #111111;
+      --glow-a: rgba(255, 255, 255, 0.07);
+      --glow-b: rgba(170, 170, 170, 0.06);
     }
 
     * { box-sizing: border-box; }
@@ -794,63 +857,6 @@
       transform: scale(0.99);
     }
 
-    .tabu-word-box {
-      text-align: center;
-      padding: 16px;
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--card-border);
-      margin-bottom: 12px;
-    }
-
-    .tabu-word {
-      font-size: 1.8rem;
-      font-weight: 900;
-      letter-spacing: 0.06em;
-      color: var(--accent-2);
-    }
-
-    .tabu-forbidden {
-      list-style: none;
-      padding: 0;
-      margin: 10px 0 0;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .tabu-forbidden li {
-      padding: 5px 11px;
-      border-radius: 999px;
-      background: rgba(239, 68, 68, 0.18);
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-
-    .guesses-list {
-      max-height: 220px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 10px;
-    }
-
-    .guess-item {
-      padding: 8px 11px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.05);
-      font-size: 0.9rem;
-    }
-
-    .guess-item.correct {
-      background: rgba(34, 197, 94, 0.22);
-      border: 1px solid rgba(34, 197, 94, 0.5);
-      font-weight: 700;
-    }
-
     .result-row {
       display: flex;
       align-items: center;
@@ -917,10 +923,325 @@
       .settings-grid, .synth-knobs-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
       .entry-grid, .studio-row { grid-template-columns: 1fr; }
     }
+
+    /* ═════════════ UI v2 — havadar, oyun hisli tasarım ═════════════ */
+    body { transition: background 0.4s ease; }
+    h1, h2, h3 { letter-spacing: -0.02em; }
+    .app-wrap { max-width: 1240px; padding: 22px 22px 64px; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    @keyframes popIn { 0% { opacity: 0; transform: scale(0.92); } 100% { opacity: 1; transform: scale(1); } }
+    @keyframes floaty { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
+
+    #entryView:not(.hidden), #lobbyView:not(.hidden), #rhythmGameView:not(.hidden),
+    #melodyGameView:not(.hidden), #resultsView:not(.hidden), #studioGameView:not(.hidden) {
+      animation: fadeUp 0.45s cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    .card {
+      border-radius: 26px;
+      padding: 26px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+    .stack { gap: 22px; }
+    .section-head { margin-bottom: 18px; gap: 14px; }
+    .section-head h2 { font-size: 1.5rem; font-weight: 900; }
+    .section-head h3 { font-size: 1.18rem; font-weight: 800; }
+    .muted { line-height: 1.5; }
+
+    /* Topbar */
+    .topbar {
+      position: sticky; top: 10px; z-index: 20;
+      padding: 10px 14px 10px 12px;
+      border-radius: 22px;
+      background: color-mix(in srgb, var(--card-solid) 78%, transparent);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      margin-bottom: 26px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+    }
+    .brand h1 { font-size: 1.45rem; font-weight: 900; }
+    .brand-icon { width: 46px; height: 46px; border-radius: 15px; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .bpm-indicator {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 14px; border-radius: 999px;
+      background: rgba(var(--accent-rgb), 0.14);
+      border: 1px solid rgba(var(--accent-rgb), 0.35);
+      font-weight: 800; font-size: 0.88rem; font-variant-numeric: tabular-nums;
+    }
+    .pulse-heart {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.6);
+      transition: transform 0.09s ease-out, box-shadow 0.3s ease-out;
+    }
+    .pulse-heart.beat {
+      transform: scale(1.7);
+      box-shadow: 0 0 0 7px rgba(var(--accent-rgb), 0);
+      transition: transform 0.05s ease-out, box-shadow 0s;
+    }
+
+    .profile-btn { padding: 6px 14px 6px 6px !important; gap: 8px; }
+    .profile-btn .avatar-inline { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.08); }
+    .profile-btn .avatar-inline svg { width: 30px; height: 30px; }
+
+    /* Buttons — pill + scale */
+    .btn {
+      border-radius: 999px;
+      padding: 12px 22px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: 0.01em;
+      transition: transform 0.16s cubic-bezier(.3,1.6,.5,1), background 0.15s ease, border-color 0.15s ease, box-shadow 0.2s ease, opacity 0.15s ease;
+    }
+    .btn:hover:not(:disabled) { transform: scale(1.05); background: rgba(255, 255, 255, 0.12); }
+    .btn:active:not(:disabled) { transform: scale(0.96); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 55%, var(--accent-2)));
+      color: var(--on-accent);
+      box-shadow: 0 8px 22px rgba(var(--accent-rgb), 0.35);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 55%, var(--accent-2)));
+      box-shadow: 0 12px 28px rgba(var(--accent-rgb), 0.5);
+    }
+    .btn-success { box-shadow: 0 8px 22px rgba(34, 197, 94, 0.32); }
+    .btn-success:hover:not(:disabled) { background: linear-gradient(135deg, #16a34a, #22c55e); box-shadow: 0 12px 28px rgba(34, 197, 94, 0.45); }
+    .btn-danger:hover:not(:disabled) { background: linear-gradient(135deg, #dc2626, #ef4444); }
+    .btn-secondary.active {
+      background: rgba(var(--accent2-rgb), 0.22);
+      border-color: var(--accent-2);
+      box-shadow: 0 0 0 3px rgba(var(--accent2-rgb), 0.22);
+    }
+    .btn-xl { padding: 16px 30px; font-size: 1.08rem; }
+    .controls-cluster { gap: 10px; }
+
+    input[type="text"], select {
+      border-radius: 14px;
+      padding: 12px 15px;
+      font-size: 1rem;
+      background: rgba(0, 0, 0, 0.25);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    input[type="text"]:focus, select:focus {
+      border-color: var(--accent-2);
+      box-shadow: 0 0 0 4px rgba(var(--accent2-rgb), 0.18);
+    }
+    input[type="range"] { accent-color: var(--accent); }
+    input[type="checkbox"] { accent-color: var(--accent); width: 18px; height: 18px; }
+
+    .field-box { border-radius: 18px; padding: 14px 16px; gap: 9px; background: rgba(255, 255, 255, 0.035); }
+    .field-box label { font-size: 0.86rem; font-weight: 700; }
+    .settings-grid { gap: 14px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+
+    .badge-pill {
+      padding: 7px 14px; font-size: 0.85rem;
+      background: rgba(var(--accent-rgb), 0.2);
+      border-color: rgba(var(--accent-rgb), 0.45);
+    }
+
+    /* Entry */
+    .entry-wrap { display: flex; flex-direction: column; align-items: center; gap: 26px; }
+    .entry-hero { text-align: center; padding: 18px 10px 0; }
+    .entry-logo {
+      width: 104px; height: 104px; margin: 0 auto 16px;
+      border-radius: 32px; display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 20px 50px rgba(var(--accent-rgb), 0.45);
+      animation: floaty 4s ease-in-out infinite;
+    }
+    .entry-logo svg path, .entry-logo svg circle { stroke: var(--on-accent); }
+    .entry-logo svg circle { fill: var(--on-accent); }
+    .entry-title {
+      margin: 0; font-size: clamp(2.4rem, 6vw, 4rem); font-weight: 900; line-height: 1;
+      background: linear-gradient(135deg, var(--text) 30%, var(--accent-2));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .entry-sub { margin: 10px 0 0; color: var(--muted); font-size: 1.08rem; font-weight: 500; }
+    .entry-card { width: 100%; max-width: 760px; display: flex; flex-direction: column; gap: 22px; padding: 32px; }
+    .entry-step-label { font-size: 0.8rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .entry-name-input { width: 100%; font-size: 1.25rem !important; font-weight: 700; padding: 16px 20px !important; text-align: center; border-radius: 18px !important; }
+    .entry-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center; }
+    .entry-join { display: flex; gap: 8px; align-items: center; padding: 6px; border-radius: 999px; background: rgba(0,0,0,0.22); border: 1px solid var(--card-border); }
+    .entry-join input { border: none !important; background: transparent !important; box-shadow: none !important; width: 140px; text-align: center; font-weight: 800; letter-spacing: 0.18em; }
+    .entry-divider { color: var(--muted); font-weight: 700; font-size: 0.85rem; }
+    .entry-info { width: 100%; max-width: 760px; }
+    .entry-info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+    .info-tile { padding: 16px; border-radius: 18px; background: rgba(255,255,255,0.04); border: 1px solid var(--card-border); }
+    .info-tile .ico { font-size: 1.6rem; }
+    .info-tile strong { display: block; margin: 6px 0 4px; }
+    .info-tile span { font-size: 0.85rem; color: var(--muted); line-height: 1.45; }
+    .avatar-grid { gap: 12px; }
+    .avatar-btn { width: 88px; height: 100px; border-radius: 20px; }
+    .avatar-btn svg { width: 64px; height: 64px; }
+
+    /* Theme picker */
+    .theme-picker { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+    .theme-dot {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px 6px 6px; border-radius: 999px;
+      border: 2px solid var(--card-border); background: rgba(255,255,255,0.04);
+      cursor: pointer; color: var(--text); font-weight: 700; font-size: 0.85rem;
+      transition: transform 0.16s cubic-bezier(.3,1.6,.5,1), border-color 0.15s ease, background 0.15s ease;
+    }
+    .theme-dot:hover { transform: scale(1.07); }
+    .theme-dot .sw { width: 26px; height: 26px; border-radius: 50%; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.25); }
+    .theme-dot.selected { border-color: var(--accent-2); background: rgba(var(--accent2-rgb), 0.14); }
+
+    /* Lobby */
+    .lobby-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+    .lobby-code {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 1rem; font-weight: 700; color: var(--muted);
+    }
+    .lobby-code strong {
+      font-size: 1.8rem; font-weight: 900; letter-spacing: 0.16em; color: var(--text);
+      padding: 4px 16px; border-radius: 14px; background: rgba(var(--accent-rgb), 0.18);
+      border: 2px dashed rgba(var(--accent-rgb), 0.5);
+    }
+    .lobby-layout { display: grid; grid-template-columns: minmax(240px, 320px) minmax(0, 1fr); gap: 26px; align-items: start; }
+    .lobby-layout > * { min-width: 0; }
+    .lobby-section-title { margin: 0 0 12px; font-size: 1.05rem; font-weight: 900; display: flex; align-items: center; gap: 8px; }
+    .lobby-block { margin-bottom: 24px; }
+
+    .players-list.player-cards { flex-direction: column; flex-wrap: nowrap; gap: 10px; }
+    .player-card {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 16px 12px 12px; border-radius: 20px;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--card-border);
+      animation: popIn 0.35s cubic-bezier(.3,1.4,.5,1) both;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .player-card:hover { transform: translateX(4px); background: rgba(255,255,255,0.08); }
+    .player-card.me { border-color: rgba(var(--accent2-rgb), 0.55); background: rgba(var(--accent2-rgb), 0.08); }
+    .player-card.offline { opacity: 0.5; }
+    .player-card .avatar-lg { width: 54px; height: 54px; border-radius: 50%; background: rgba(255,255,255,0.06); }
+    .player-card .avatar-lg svg { width: 54px; height: 54px; }
+    .player-card .pc-name { flex: 1; min-width: 70px; font-weight: 800; font-size: 1.05rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .player-card .pc-sub { display: block; font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+    .pc-badges { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; flex-shrink: 0; max-width: 50%; }
+    .pc-badge { padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 800; background: rgba(250, 204, 21, 0.18); border: 1px solid rgba(250, 204, 21, 0.45); color: #fde68a; white-space: nowrap; }
+    .pc-badge.you { background: rgba(var(--accent2-rgb), 0.18); border-color: rgba(var(--accent2-rgb), 0.5); color: var(--text); }
+    .pc-badge.off { background: rgba(239,68,68,0.16); border-color: rgba(239,68,68,0.45); color: #fecaca; }
+    .players-empty-slot { padding: 14px; border-radius: 20px; border: 2px dashed var(--card-border); text-align: center; color: var(--muted); font-size: 0.86rem; font-weight: 600; }
+
+    .mode-cards-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 0; }
+    .mode-card {
+      padding: 20px; border-radius: 22px; gap: 8px; border-width: 2px;
+      background: rgba(255,255,255,0.04); position: relative; overflow: hidden;
+      transition: transform 0.18s cubic-bezier(.3,1.5,.5,1), border-color 0.15s ease, background 0.15s ease, box-shadow 0.2s ease;
+    }
+    .mode-card:hover:not(:disabled) { transform: translateY(-4px) scale(1.02); border-color: rgba(var(--accent2-rgb), 0.5); }
+    .mode-card.selected {
+      border-color: var(--accent-2);
+      background: linear-gradient(150deg, rgba(var(--accent-rgb), 0.28), rgba(var(--accent2-rgb), 0.12));
+      box-shadow: 0 12px 30px rgba(var(--accent-rgb), 0.3), 0 0 0 4px rgba(var(--accent2-rgb), 0.16);
+    }
+    .mode-card.selected::after {
+      content: "✓"; position: absolute; top: 12px; right: 14px;
+      width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+      background: var(--accent-2); color: #0b0b14; font-weight: 900; font-size: 0.85rem;
+      animation: popIn 0.25s ease both;
+    }
+    .mode-card:disabled { opacity: 0.7; }
+    .mode-card:disabled:not(.selected) { opacity: 0.45; }
+    .mode-card-emoji { font-size: 2.3rem; line-height: 1; }
+    .mode-card-title { font-size: 1.12rem; font-weight: 900; }
+    .mode-card-desc { font-size: 0.86rem; line-height: 1.45; }
+
+    .template-scroll {
+      display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 10px;
+      scroll-snap-type: x proximity; scrollbar-width: thin;
+    }
+    .template-scroll { scrollbar-color: rgba(var(--accent-rgb),0.5) transparent; }
+    .template-scroll::-webkit-scrollbar { height: 6px; }
+    .template-scroll::-webkit-scrollbar-track { background: transparent; }
+    .template-scroll::-webkit-scrollbar-thumb { background: rgba(var(--accent-rgb),0.5); border-radius: 999px; }
+    .template-pill {
+      flex: 0 0 auto; scroll-snap-align: start;
+      display: inline-flex; flex-direction: column; align-items: flex-start; gap: 2px;
+      padding: 12px 18px; border-radius: 20px; cursor: pointer;
+      border: 2px solid var(--card-border); background: rgba(255,255,255,0.05); color: var(--text);
+      transition: transform 0.16s cubic-bezier(.3,1.6,.5,1), border-color 0.15s ease, background 0.15s ease;
+    }
+    .template-pill:hover:not(:disabled) { transform: scale(1.05); border-color: rgba(var(--accent2-rgb), 0.5); }
+    .template-pill:disabled { cursor: not-allowed; opacity: 0.5; }
+    .template-pill .tp-name { font-weight: 900; font-size: 0.98rem; white-space: nowrap; }
+    .template-pill .tp-meta { font-size: 0.74rem; color: var(--muted); font-weight: 700; white-space: nowrap; }
+    .template-pill.active { border-color: var(--accent-2); background: rgba(var(--accent2-rgb), 0.16); }
+    .lobby-start-btn { padding: 16px 34px; font-size: 1.12rem; }
+
+    /* Game-screen polish */
+    .beat-dot { width: 30px; height: 30px; border-radius: 10px; transition: transform 0.08s ease, background 0.08s ease; }
+    .layer-row, .result-row { border-radius: 18px; padding: 14px 16px; }
+    .big-tap-btn { border-radius: 26px; min-height: 150px; font-size: 1.35rem; transition: transform 0.08s ease, background 0.1s ease; }
+    .big-tap-btn:active:not(:disabled) { transform: scale(0.97); }
+    .voting-panel-box, .winner-banner { border-radius: 24px; padding: 20px 22px; }
+    .winner-title { font-size: 1.45rem; }
+    .perc-pad-btn, .chord-pill-btn { border-radius: 999px; transition: transform 0.12s ease, background 0.12s ease; }
+    .perc-pad-btn { padding: 10px 15px; }
+    .perc-pad-btn:hover:not(:disabled), .chord-pill-btn:hover:not(:disabled) { transform: scale(1.06); }
+    .chord-pill-btn.active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+    .white-key { border-radius: 0 0 12px 12px; }
+    .synth-knob-card, .chord-bar { border-radius: 16px; }
+
+    /* BPM breathing circle (oyun ekranları) */
+    .bpm-breath {
+      position: fixed; left: 50%; top: 52%;
+      width: min(120vw, 1100px); height: min(120vw, 1100px);
+      margin-left: calc(min(120vw, 1100px) / -2); margin-top: calc(min(120vw, 1100px) / -2);
+      border-radius: 50%; pointer-events: none; z-index: 0;
+      background: radial-gradient(circle, var(--accent) 0%, var(--accent-2) 38%, transparent 68%);
+      opacity: 0; transform: scale(0.86);
+      transition: opacity 0.6s ease, transform var(--breath-dur, 0.45s) ease-out;
+    }
+    .bpm-breath.on { opacity: 0.08; }
+    .bpm-breath.on.beat { transform: scale(1); transition: opacity 0.6s ease, transform 0.06s ease-out; }
+
+    /* Profile modal */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px;
+      background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(6px);
+      animation: fadeIn 0.2s ease both;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal-box {
+      width: 100%; max-width: 620px; max-height: 90vh; overflow-y: auto;
+      background: var(--card-solid); border: 1px solid var(--card-border); border-radius: 28px;
+      padding: 28px; box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+      animation: popIn 0.28s cubic-bezier(.3,1.4,.5,1) both;
+    }
+    .modal-head { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; }
+    .modal-head .avatar-lg { width: 72px; height: 72px; border-radius: 50%; background: rgba(255,255,255,0.06); }
+    .modal-head .avatar-lg svg { width: 72px; height: 72px; }
+    .modal-head h2 { margin: 0; font-size: 1.6rem; font-weight: 900; }
+    .modal-close { margin-left: auto; width: 42px; height: 42px; padding: 0 !important; font-size: 1.1rem; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 22px; }
+    .stat-card { padding: 16px 18px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); }
+    .stat-card .st-ico { font-size: 1.4rem; }
+    .stat-card .st-val { font-size: 1.7rem; font-weight: 900; margin-top: 4px; line-height: 1.1; word-break: break-word; }
+    .stat-card .st-lbl { font-size: 0.8rem; color: var(--muted); font-weight: 700; margin-top: 4px; }
+    .stat-card.wide { grid-column: 1 / -1; }
+    .stat-card.hl { background: linear-gradient(140deg, rgba(var(--accent-rgb), 0.24), rgba(var(--accent2-rgb), 0.1)); border-color: rgba(var(--accent-rgb), 0.45); }
+
+    @media (max-width: 860px) {
+      .lobby-layout { grid-template-columns: 1fr; }
+      .topbar { position: static; }
+      .card { padding: 20px; border-radius: 22px; }
+      .entry-card { padding: 22px; }
+      .avatar-btn { width: 78px; height: 92px; }
+      .avatar-btn svg { width: 56px; height: 56px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
   </style>
 </head>
 <body>
   <div class="ambient-lights" id="ambientLights"></div>
+  <div class="bpm-breath" id="bpmBreath"></div>
 
   <div class="app-wrap">
     <header class="topbar">
@@ -938,126 +1259,157 @@
         </div>
       </div>
 
-      <div class="controls-cluster">
-        <select id="uiThemeSelect" title="Menü Teması">
-          <option value="midnight">Gece Moru</option>
-          <option value="sunset">Gün Batımı</option>
-          <option value="mint">Nane Esintisi</option>
-        </select>
+      <div class="topbar-right">
+        <div class="bpm-indicator hidden" id="bpmIndicator" title="Tempo">
+          <span class="pulse-heart" id="pulseHeart"></span>
+          <span id="bpmIndicatorText">110 BPM</span>
+        </div>
         <button id="restartGameBtn" class="btn btn-secondary hidden">🔄 Lobiye Dön</button>
+        <button id="profileBtn" class="btn btn-secondary profile-btn" type="button" title="Profil &amp; İstatistikler">
+          <span class="avatar-inline" id="profileBtnAvatar"></span> Profil
+        </button>
       </div>
     </header>
 
     <!-- GİRİŞ EKRANI -->
-    <section id="entryView" class="entry-grid">
-      <div class="card">
-        <h2>Odaya Katıl veya Oda Kur</h2>
-        <p class="muted">İsmini yaz, özel çizim avatarını seç ve arkadaşlarınla aynı odada buluş.</p>
+    <section id="entryView" class="entry-wrap">
+      <div class="entry-hero">
+        <div class="entry-logo">
+          <svg width="54" height="54" viewBox="0 0 24 24" fill="none">
+            <path d="M9 18V6l11-2v12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="6.5" cy="18" r="2.5" fill="#fff"/>
+            <circle cx="17.5" cy="16" r="2.5" fill="#fff"/>
+          </svg>
+        </div>
+        <h2 class="entry-title">Kollay Gelsin!</h2>
+        <p class="entry-sub">Arkadaşlarınla birlikte beste yap, ritim yakala, melodiyi bul 🎶</p>
+      </div>
 
-        <div class="field-box" style="margin-bottom: 12px;">
-          <label for="myNameInput">Takma Adın</label>
-          <input id="myNameInput" type="text" maxlength="20" placeholder="Örn: Deniz" />
+      <div class="card entry-card">
+        <div>
+          <div class="entry-step-label">1 · Takma Adın</div>
+          <input id="myNameInput" class="entry-name-input" type="text" maxlength="20" placeholder="Örn: Deniz" />
         </div>
 
-        <div class="field-box" style="margin-bottom: 14px;">
-          <label>Karakter Avatarı Seç</label>
+        <div>
+          <div class="entry-step-label">2 · Karakterini Seç</div>
           <div id="avatarGrid" class="avatar-grid"></div>
         </div>
 
-        <div class="controls-cluster">
-          <button id="createRoomBtn" class="btn btn-primary">✨ Yeni Oda Kur</button>
-          <input id="roomCodeInput" type="text" maxlength="6" placeholder="ODA KODU" style="width: 130px; text-transform: uppercase;" />
-          <button id="joinRoomBtn" class="btn btn-secondary">🚪 Odaya Gir</button>
+        <div>
+          <div class="entry-step-label">3 · Renk Teması</div>
+          <div class="theme-picker" data-theme-picker></div>
         </div>
-        <div id="entryError" class="error-text hidden"></div>
+
+        <div class="entry-actions">
+          <button id="createRoomBtn" class="btn btn-primary btn-xl">✨ Yeni Oda Kur</button>
+          <span class="entry-divider">ya da</span>
+          <div class="entry-join">
+            <input id="roomCodeInput" type="text" maxlength="6" placeholder="ODA KODU" style="text-transform: uppercase;" />
+            <button id="joinRoomBtn" class="btn btn-secondary">🚪 Odaya Gir</button>
+          </div>
+        </div>
+        <div id="entryError" class="error-text hidden" style="text-align:center;"></div>
       </div>
 
-      <div class="card">
-        <h3>Nasıl Çalışır?</h3>
-        <p class="muted">
-          - <strong>Ortak Döngü Hep Açık:</strong> Oyun başladığı andan itibaren ortak döngü sürekli akar; doğrudan üstüne ekleyebilirsin.<br /><br />
-          - <strong>Önce Dene, Sonra Kaydet:</strong> Sıran geldiğinde önce tüm sesleri ve synth ayarlarını serbestçe deneyebilirsin; <strong>Kayıt Modunu Başlat</strong> dediğinde seçtiğin kanal kilitlenir ve loop'a kaydedilir.<br /><br />
-          - <strong>Kurucu Kontrolü:</strong> Tempo, DJ efekti ve katman ayarları oda kurucusundadır.<br /><br />
-          - <strong>Final Oylaması:</strong> Beste bittiğinde tüm oyuncular favorisini oylar ve kazanan açıklanır.
-        </p>
+      <div class="card entry-info">
+        <h3 style="margin: 0 0 14px;">Nasıl Çalışır?</h3>
+        <div class="entry-info-grid">
+          <div class="info-tile"><div class="ico">🔁</div><strong>Ortak Döngü Hep Açık</strong><span>Oyun başladığı andan itibaren döngü akar; doğrudan üstüne eklersin.</span></div>
+          <div class="info-tile"><div class="ico">🎧</div><strong>Önce Dene, Sonra Kaydet</strong><span>Sıran gelince serbestçe dene; <b>Kayıt Modu</b> ile seçtiğin kanal loop'a kaydedilir.</span></div>
+          <div class="info-tile"><div class="ico">👑</div><strong>Kurucu Kontrolü</strong><span>Tempo, DJ efekti ve katman ayarları oda kurucusundadır.</span></div>
+          <div class="info-tile"><div class="ico">🗳️</div><strong>Final Oylaması</strong><span>Beste bitince herkes favorisini oylar, kazanan açıklanır.</span></div>
+        </div>
       </div>
     </section>
 
     <!-- LOBİ EKRANI -->
     <section id="lobbyView" class="card hidden">
-      <div class="section-head">
+      <div class="lobby-head">
         <div>
-          <h2>Lobi — Oda Kodu: <span id="lobbyRoomCode">----</span></h2>
-          <p class="muted">Oyuncular (<span id="lobbyPlayerCount">0</span>) hazır.</p>
+          <div class="lobby-code">Oda Kodu <strong id="lobbyRoomCode">----</strong></div>
+          <p class="muted" style="margin: 8px 0 0;" id="hostHintText"></p>
         </div>
-        <div class="controls-cluster">
-          <span class="muted" id="hostHintText"></span>
-          <button id="startGameBtn" class="btn btn-success hidden">🚀 Oyunu Başlat</button>
-        </div>
+        <button id="startGameBtn" class="btn btn-success lobby-start-btn hidden">🚀 Oyunu Başlat</button>
       </div>
 
-      <div id="modeCardsWrap" class="mode-cards-grid"></div>
-
-      <div class="settings-grid">
-        <div class="field-box" id="fieldRounds">
-          <label for="lobbyRounds">Tur Sayısı</label>
-          <select id="lobbyRounds">
-            <option value="1">1 Tur</option>
-            <option value="2" selected>2 Tur</option>
-            <option value="3">3 Tur</option>
-            <option value="4">4 Tur</option>
-          </select>
+      <div class="lobby-layout">
+        <div>
+          <h3 class="lobby-section-title">👥 Oyuncular (<span id="lobbyPlayerCount">0</span>)</h3>
+          <div id="lobbyPlayersList" class="players-list player-cards"></div>
         </div>
 
-        <div class="field-box" id="fieldBpm">
-          <label for="lobbyBpm">Tempo (BPM): <strong id="lobbyBpmVal">110</strong></label>
-          <input id="lobbyBpm" type="range" min="60" max="180" value="110" />
-        </div>
+        <div>
+          <div class="lobby-block">
+            <h3 class="lobby-section-title">🎮 Oyun Modu</h3>
+            <div id="modeCardsWrap" class="mode-cards-grid"></div>
+          </div>
 
-        <div class="field-box" id="fieldBeats">
-          <label for="lobbyBeats">Vuruş Sayısı (1–16)</label>
-          <select id="lobbyBeats"></select>
-        </div>
+          <div class="lobby-block" id="templateSection">
+            <h3 class="lobby-section-title">⚡ Hızlı Şablon Seç <span class="muted" style="font-weight:600; font-size:0.82rem;" id="templateFxText"></span></h3>
+            <div id="templatePills" class="template-scroll"></div>
+          </div>
 
-        <div class="field-box" id="fieldTimer">
-          <label for="lobbyTimer">Tur Süresi</label>
-          <select id="lobbyTimer">
-            <option value="0" selected>Süresiz</option>
-            <option value="10">10 Saniye</option>
-            <option value="15">15 Saniye</option>
-            <option value="20">20 Saniye</option>
-            <option value="30">30 Saniye</option>
-            <option value="45">45 Saniye</option>
-            <option value="60">60 Saniye</option>
-            <option value="90">90 Saniye</option>
-            <option value="120">120 Saniye</option>
-          </select>
-        </div>
+          <div class="lobby-block" style="margin-bottom:0;">
+            <h3 class="lobby-section-title">⚙️ Ayarlar</h3>
+          <div class="settings-grid">
+            <div class="field-box" id="fieldRounds">
+              <label for="lobbyRounds">Tur Sayısı</label>
+              <select id="lobbyRounds">
+                <option value="1">1 Tur</option>
+                <option value="2" selected>2 Tur</option>
+                <option value="3">3 Tur</option>
+                <option value="4">4 Tur</option>
+              </select>
+            </div>
 
-        <div class="field-box" id="fieldVoteTimer">
-          <label for="lobbyVoteTimer">Oylama Süresi</label>
-          <select id="lobbyVoteTimer">
-            <option value="15">15 Saniye</option>
-            <option value="20">20 Saniye</option>
-            <option value="30" selected>30 Saniye</option>
-            <option value="45">45 Saniye</option>
-            <option value="60">60 Saniye</option>
-            <option value="90">90 Saniye</option>
-          </select>
-        </div>
+            <div class="field-box" id="fieldBpm">
+              <label for="lobbyBpm">Tempo (BPM): <strong id="lobbyBpmVal">110</strong></label>
+              <input id="lobbyBpm" type="range" min="60" max="180" value="110" />
+            </div>
 
-        <div class="field-box" id="fieldSecretMode">
-          <label for="lobbySecretToggle">Gizli Kayıt Modu</label>
-          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--text);">
-            <input type="checkbox" id="lobbySecretToggle" />
-            <span>Katmanlar finalde açılsın</span>
-          </label>
-        </div>
-      </div>
+            <div class="field-box" id="fieldBeats">
+              <label for="lobbyBeats">Vuruş Sayısı (1–16)</label>
+              <select id="lobbyBeats"></select>
+            </div>
 
-      <div>
-        <h3 style="margin: 0 0 8px;">Odadaki Oyuncular</h3>
-        <div id="lobbyPlayersList" class="players-list"></div>
+            <div class="field-box" id="fieldTimer">
+              <label for="lobbyTimer">Tur Süresi</label>
+              <select id="lobbyTimer">
+                <option value="0" selected>Süresiz</option>
+                <option value="10">10 Saniye</option>
+                <option value="15">15 Saniye</option>
+                <option value="20">20 Saniye</option>
+                <option value="30">30 Saniye</option>
+                <option value="45">45 Saniye</option>
+                <option value="60">60 Saniye</option>
+                <option value="90">90 Saniye</option>
+                <option value="120">120 Saniye</option>
+              </select>
+            </div>
+
+            <div class="field-box" id="fieldVoteTimer">
+              <label for="lobbyVoteTimer">Oylama Süresi</label>
+              <select id="lobbyVoteTimer">
+                <option value="15">15 Saniye</option>
+                <option value="20">20 Saniye</option>
+                <option value="30" selected>30 Saniye</option>
+                <option value="45">45 Saniye</option>
+                <option value="60">60 Saniye</option>
+                <option value="90">90 Saniye</option>
+              </select>
+            </div>
+
+            <div class="field-box" id="fieldSecretMode">
+              <label for="lobbySecretToggle">Gizli Kayıt Modu</label>
+              <label style="display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--text);">
+                <input type="checkbox" id="lobbySecretToggle" />
+                <span>Katmanlar finalde açılsın</span>
+              </label>
+            </div>
+          </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1111,46 +1463,6 @@
       </div>
 
       <div id="melodyPianoMount"></div>
-    </section>
-
-    <!-- GERÇEK TABU -->
-    <section id="tabuGameView" class="card hidden">
-      <div class="section-head">
-        <div>
-          <h2 id="tabuTellerTitle">Anlatıcı: -</h2>
-          <p class="muted" id="tabuRoleHint"></p>
-        </div>
-        <span class="badge-pill" id="tabuTimerText"></span>
-      </div>
-
-      <div id="tabuScoresBar" class="players-list" style="margin-bottom: 14px;"></div>
-
-      <div id="tabuTellerCard" class="tabu-word-box hidden">
-        <div class="muted">ANLATILACAK KELİME</div>
-        <div id="tabuTargetWord" class="tabu-word">---</div>
-        <ul id="tabuForbiddenList" class="tabu-forbidden"></ul>
-      </div>
-
-      <div id="tabuGuesserBanner" class="tabu-word-box hidden">
-        <div class="tabu-word" style="font-size: 1.2rem;">🕵️ Tahmin Sırası Sende!</div>
-        <p class="muted" style="margin: 6px 0 0;">Anlatıcının ipuçlarına göre kelimeyi bul ve aşağıya yaz; yasaklı kelime duyarsan TABU bas!</p>
-      </div>
-
-      <div id="tabuControlsRow" class="controls-cluster" style="margin-bottom: 12px;">
-        <div id="tabuTellerControls" class="controls-cluster hidden">
-          <button id="tabuCorrectBtn" class="btn btn-success">✅ Doğru Bildi (+1 Puan)</button>
-          <button id="tabuPassBtn" class="btn btn-secondary">⏭️ Pas / Yeni Kart</button>
-          <button id="tabuNextTurnBtn" class="btn btn-secondary">🔁 Sırayı Geç</button>
-        </div>
-        <button id="tabuBuzzBtn" class="btn btn-danger">🚨 TABU! Yasaklı Kelime (-1 Puan)</button>
-      </div>
-
-      <div id="tabuGuessesList" class="guesses-list"></div>
-
-      <div id="tabuGuessInputRow" class="controls-cluster">
-        <input id="tabuGuessInput" type="text" placeholder="Tahminini yaz..." style="flex: 1;" />
-        <button id="tabuSendGuessBtn" class="btn btn-primary">Gönder</button>
-      </div>
     </section>
 
     <!-- SONUÇLAR & TOPLU DİNLEME & SÜRELİ OYLAMA & KAZANAN -->
@@ -1440,6 +1752,25 @@
     </section>
   </div>
 
+  <div id="profileModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle">
+    <div class="modal-box" id="profileModalBox">
+      <div class="modal-head">
+        <span class="avatar-lg" id="profileModalAvatar"></span>
+        <div>
+          <h2 id="profileModalTitle">Profil</h2>
+          <div class="muted" id="profileModalSub">Bu cihazda kayıtlı istatistiklerin</div>
+        </div>
+        <button class="btn btn-secondary modal-close" id="profileCloseBtn" type="button" aria-label="Kapat">✕</button>
+      </div>
+      <div class="stat-grid" id="profileStatGrid"></div>
+      <div class="entry-step-label">Renk Teması</div>
+      <div class="theme-picker" data-theme-picker style="justify-content:flex-start; margin-bottom: 20px;"></div>
+      <div style="display:flex; justify-content:flex-end;">
+        <button class="btn btn-secondary" id="profileResetBtn" type="button">🗑️ İstatistikleri Sıfırla</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const AVATARS = [
       { id: "hikari", name: "Hikari", svg: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="40" r="40" fill="#fff1c9"/><path d="M18 40 Q15 15 40 14 Q65 15 62 40 L63 58 Q58 62 55 56 L55 44 H25 L25 56 Q22 62 17 58 Z" fill="#e9a913"/><path d="M14 80 Q16 64 40 62 Q64 64 66 80 Z" fill="#f472b6"/><path d="M34 62 L40 69 L46 62" stroke="#fff" stroke-width="2" stroke-linejoin="round" fill="none"/><rect x="36" y="54" width="8" height="9" rx="3" fill="#f7c9ab"/><ellipse cx="40" cy="40" rx="20" ry="19.5" fill="#ffe4d0"/><ellipse cx="28" cy="49" rx="3.6" ry="2" fill="#fb7185" opacity="0.6"/><ellipse cx="52" cy="49" rx="3.6" ry="2" fill="#fb7185" opacity="0.6"/><ellipse cx="32" cy="42" rx="4.8" ry="5.9" fill="#fff"/><ellipse cx="32" cy="42.6" rx="4.2" ry="5.4" fill="#d97706"/><ellipse cx="32" cy="43.6" rx="2.3100000000000005" ry="3.24" fill="#7c2d12"/><ellipse cx="32" cy="45.6" rx="2.94" ry="1.3" fill="#fff" opacity="0.35"/><circle cx="30.4" cy="40.2" r="1.7" fill="#fff"/><circle cx="33.8" cy="44.4" r="0.8" fill="#fff"/><path d="M26.400000000000002 37.800000000000004 Q32 34.0 37.6 37.2" stroke="#2b1b17" stroke-width="1.8" stroke-linecap="round" fill="none"/><ellipse cx="48" cy="42" rx="4.8" ry="5.9" fill="#fff"/><ellipse cx="48" cy="42.6" rx="4.2" ry="5.4" fill="#d97706"/><ellipse cx="48" cy="43.6" rx="2.3100000000000005" ry="3.24" fill="#7c2d12"/><ellipse cx="48" cy="45.6" rx="2.94" ry="1.3" fill="#fff" opacity="0.35"/><circle cx="46.4" cy="40.2" r="1.7" fill="#fff"/><circle cx="49.8" cy="44.4" r="0.8" fill="#fff"/><path d="M42.4 37.800000000000004 Q48 34.0 53.6 37.2" stroke="#2b1b17" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M28 32 Q32 30.6 36 32" stroke="#c98a0b" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M44 32 Q48 30.6 52 32" stroke="#c98a0b" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M40 47.2 l-0.8 1.4 h1.4" stroke="#e0a080" stroke-width="1" stroke-linecap="round" fill="none"/><path d="M34.5 51 Q40 58.5 45.5 51 Z" fill="#9f1239"/><path d="M37 54.5 Q40 57 43 54.5 Q40 53 37 54.5Z" fill="#fb7185"/><path d="M19 38 Q18 15 40 15 Q62 15 61 38 Q58 30 54 32 Q52 25 46 30 Q42 22 37 30 Q31 24 28 32 Q23 29 19 38 Z" fill="#fcd34d"/><path d="M30 20 Q36 17 42 18" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity="0.55" fill="none"/><path d="M50 17 L58 12 L58 22 Z" fill="#ec4899"/><path d="M50 17 L42 12 L43 22 Z" fill="#ec4899"/><circle cx="50" cy="17" r="2.6" fill="#f9a8d4"/></svg>` },
@@ -1473,8 +1804,7 @@
       { id: "collab", title: "🤝 Herkes Bir Şey Eklesin", desc: "Ortak loop üstüne kendi katmanını ekle, gönderince sıra diğerine geçsin." },
       { id: "theme", title: "🎭 Temalı Beste", desc: "Sahne temasına göre yap, gönderince odada herkes dinlesin." },
       { id: "rhythm", title: "🥁 Ritmi Taklit Et", desc: "Rastgele üretilen ritmi dinle, yap, herkes bitince yüzdeleri gör." },
-      { id: "melody", title: "🎹 Melodiyi Taklit Et", desc: "Tek oktav melodiyi dinle, çal ve sonuçta kendi notalarını gör." },
-      { id: "tabu", title: "🗣️ Tabu", desc: "Yasaklı kelimelere dikkat; TABU basılırsa -1 puan ve yeni kart." }
+      { id: "melody", title: "🎹 Melodiyi Taklit Et", desc: "Tek oktav melodiyi dinle, çal ve sonuçta kendi notalarını gör." }
     ];
 
     const CHORD_MODES = [
@@ -1580,6 +1910,29 @@
       cave: "Mağara Yankısı"
     };
 
+    // ─── Renk temaları ───
+    const THEME_KEY = "kollay_theme";
+    const THEMES = [
+      { id: "midnight", name: "Gece", a: "#7c5cff", b: "#22d3ee" },
+      { id: "sunset", name: "Gün Batımı", a: "#ff6b6b", b: "#ffd93d" },
+      { id: "ocean", name: "Okyanus", a: "#00b4d8", b: "#48cae4" },
+      { id: "forest", name: "Orman", a: "#2d9e5f", b: "#96e6a1" },
+      { id: "candy", name: "Şeker", a: "#ff6eb4", b: "#c77dff" },
+      { id: "mono", name: "Mono", a: "#ffffff", b: "#aaaaaa" }
+    ];
+
+    // ─── Oda şablonları (DJ efekti sunucunun izin verdiği değerlerden) ───
+    const ROOM_TEMPLATES = [
+      { id: "jazz", name: "🎷 Caz Gecesi", bpm: 95, dj: "cave", beats: 8 },
+      { id: "retro", name: "👾 8-bit Retro", bpm: 140, dj: "normal", beats: 16 },
+      { id: "lofi", name: "☁️ Lofi Chill", bpm: 75, dj: "radio", beats: 8 },
+      { id: "club", name: "🔥 Club Gece", bpm: 128, dj: "underwater", beats: 16 },
+      { id: "classic", name: "🎻 Klasik", bpm: 85, dj: "normal", beats: 8 },
+      { id: "ambient", name: "🌊 Ambient", bpm: 60, dj: "cave", beats: 4 }
+    ];
+
+    const MODE_LABELS = { collab: "Herkes Bir Şey Eklesin", theme: "Temalı Beste", rhythm: "Ritmi Taklit Et", melody: "Melodiyi Taklit Et" };
+
     const CONCEPTS = [
       "Gergin Robot", "Yağmurda Koşmak", "Fırtına Geliyor", "Güneşli Piknik", "Karlı Gece",
       "Rüzgarlı Tepe", "Şelale Kenarı", "Sonbahar Yaprakları", "Yıldızlı Çöl", "Kayıp Ada",
@@ -1591,381 +1944,6 @@
       "Gece Nöbeti", "Kayıp Sinyal", "Gölge Avı", "Eski Kaset", "Gün Batımı",
       "Eski Dostlar", "Zafer Anı", "Hüzünlü Veda", "Umut Işığı", "Kutlama"
     ];
-
-    const RAW_TABU_PAIRS = [
-      ["PİYANO", ["Tuş", "Siyah", "Beyaz", "Müzik", "Çalmak"]],
-      ["UZAY", ["Gezegen", "Yıldız", "Astronot", "Roket", "Ay"]],
-      ["KAHVE", ["Fincan", "Sabah", "Kafein", "Türk", "İçmek"]],
-      ["GİTAR", ["Tel", "Müzik", "Akustik", "Elektro", "Çalmak"]],
-      ["DENİZ", ["Su", "Mavi", "Dalga", "Yüzmek", "Plaj"]],
-      ["KEDİ", ["Miyav", "Tüy", "Pati", "Köpek", "Hayvan"]],
-      ["TELEFON", ["Aramak", "Ekran", "Mesaj", "Şarj", "Mobil"]],
-      ["KİTAP", ["Sayfa", "Okumak", "Yazar", "Roman", "Kütüphane"]],
-      ["FUTBOL", ["Top", "Gol", "Kale", "Maç", "Hakem"]],
-      ["YAĞMUR", ["Bulut", "Islanmak", "Şemsiye", "Su", "Hava"]],
-      ["SİNEMA", ["Film", "Mısır", "Bilet", "Salon", "Perde"]],
-      ["ROBOT", ["Makine", "Metal", "Yapay", "Teknoloji", "İnsan"]],
-      ["KAMP", ["Çadır", "Ateş", "Orman", "Doğa", "Uyku"]],
-      ["BİSİKLET", ["Pedal", "Tekerlek", "Sürmek", "Kask", "İki"]],
-      ["AŞÇI", ["Yemek", "Mutfak", "Tencere", "Restoran", "Şef"]],
-      ["SAAT", ["Zaman", "Dakika", "Kol", "Yelkovan", "Akrep"]],
-      ["KORSAN", ["Gemi", "Hazine", "Deniz", "Göz", "Papağan"]],
-      ["KÜTÜPHANE", ["Kitap", "Sessiz", "Okumak", "Raf", "Ders"]],
-      ["DONDURMA", ["Yaz", "Soğuk", "Külah", "Tatlı", "Erimek"]],
-      ["UÇAK", ["Hava", "Kanat", "Pilot", "Yolcu", "Havalimanı"]],
-      ["RİTİM", ["Vuruş", "Tempo", "Davul", "Aksak", "Nabız"]],
-      ["AKOR", ["Aynı Anda", "Üçlü", "Majör", "Minör", "Armoni"]],
-      ["MELODİ", ["Ezgi", "Nota", "Akış", "Şarkı", "Mırıldanmak"]],
-      ["NAKARAT", ["Tekrar", "Nakış", "En Bilinen", "Koro", "Patlama"]],
-      ["KULAKLIK", ["Kafa", "Kablosuz", "Dışarısı", "Ses", "Kulağa"]],
-      ["YANKI", ["Mağara", "Geri Dönmek", "Boşluk", "Ses", "Tekrar"]],
-      ["SAHNE", ["Perde", "Işık", "Seyirci", "Alkış", "Gösteri"]],
-      ["TEMPO", ["Hız", "BPM", "Yavaş", "Hızlı", "Metronom"]],
-      ["OKTAV", ["Sekiz", "İnce", "Kalın", "Do", "Aralık"]],
-      ["ASANSÖR", ["Kat", "Düğme", "Yukarı", "Aşağı", "Bina"]],
-      ["VALİZ", ["Tatil", "Bavul", "Kıyafet", "Tekerlek", "Yolculuk"]],
-      ["ŞEMSİYE", ["Yağmur", "Güneş", "Açmak", "Islanmak", "Sap"]],
-      ["ALARM", ["Sabah", "Erken", "Çalmak", "Uyanmak", "Ertelemek"]],
-      ["AYNA", ["Yansıma", "Cam", "Bakmak", "Kendini", "Duvar"]],
-      ["DENİZ FENERİ", ["Kıyı", "Işık", "Gemi", "Kule", "Liman"]],
-      ["LUNAPARK", ["Dönme Dolap", "Çarpışan", "Bilet", "Eğlence", "Hız"]],
-      ["KİBRİT", ["Ateş", "Çakmak", "Kutu", "Kükürt", "Yakmak"]],
-      ["FENER", ["Karanlık", "Pil", "Işık", "Kamp", "El"]],
-      ["KARPUZ", ["Yaz", "Peynir", "Yeşil", "Kırmızı", "Çekirdek"]],
-      ["ÇİKOLATA", ["Kakao", "Tatlı", "Bitter", "Sütlü", "Paket"]],
-      ["POPCORN", ["Sinema", "Mısır", "Patlamak", "Tuzlu", "Kova"]],
-      ["LİMONATA", ["Ekşi", "Sarı", "Soğuk", "Nane", "İçecek"]],
-      ["TOST", ["Ekmek", "Kaşar", "Sucuk", "Makine", "Kahvaltı"]],
-      ["ŞİMŞEK", ["Gökyüzü", "Fırtına", "Çakmak", "Gök Gürültüsü", "Bulut"]],
-      ["SİS", ["Görüş", "Bulut", "Sabah", "Puslu", "Hava"]],
-      ["ŞELALE", ["Su", "Yüksek", "Akıntı", "Doğa", "Düşmek"]],
-      ["NOSTALJİ", ["Geçmiş", "Özlem", "Eski", "Anı", "Hatıra"]],
-      ["HEYECAN", ["Kalp", "Atmak", "Sabırsız", "Duygu", "Beklemek"]],
-      ["SÜRPRİZ", ["Beklenmedik", "Gizli", "Doğum Günü", "Hediye", "Şaşırmak"]],
-      ["GÖLGE", ["Güneş", "Karanlık", "Peşinde", "Işık", "Şekil"]],
-      ["MASKE", ["Yüz", "Gizlemek", "Baloya", "Karnaval", "Tiyatro"]],
-      ["SİNYAL", ["İşaret", "Dalga", "Çekmek", "Yön", "İletişim"]],
-      ["ZAMAN", ["Akıp Gitmek", "Saat", "Geçmiş", "Gelecek", "An"]],
-      ["ORMAN", ["Ağaç", "Yeşil", "Doğa", "Hayvan", "Yaprak"]],
-      ["AHTAPOT", ["Sekiz", "Kol", "Deniz", "Mürekkep", "Su"]],
-      ["PENGUEN", ["Buz", "Soğuk", "Kutup", "Kanat", "Yürümek"]],
-      ["EJDERHA", ["Ateş", "Kanat", "Efsane", "Masal", "Uçmak"]],
-      ["KASET", ["Eski", "Bant", "Kalem", "Müzik", "Çalar"]],
-      ["MİKROFON", ["Ses", "Konuşmak", "Şarkı", "Sahne", "Kayıt"]],
-      ["KARAVAN", ["Tekerlek", "Seyahat", "Ev", "Kamp", "Yol"]],
-      ["GÖZLÜK", ["Cam", "Görmek", "Numara", "Güneş", "Çerçeve"]],
-      ["YASTIK", ["Uyumak", "Yatak", "Baş", "Kılıf", "Gece"]],
-      ["TREN", ["Ray", "Vagon", "İstasyon", "Yolculuk", "Hızlı"]],
-      ["FOTOĞRAF", ["Kamera", "Çekmek", "Poz", "Albüm", "Makine"]],
-      ["ANAHTAR", ["Kapı", "Kilit", "Açmak", "Çelik", "Daire"]],
-      ["KAR", ["Kış", "Beyaz", "Soğuk", "Yağmak", "Kardan Adam"]],
-      ["HARİTA", ["Yol", "Ülke", "Şehir", "Pusula", "Gösterir"]],
-      ["PİZZA", ["İtalyan", "Dilim", "Hamur", "Peynir", "Fırın"]],
-      ["KÖPRÜ", ["Karşı", "Geçmek", "Boğaz", "Nehir", "Yol"]],
-      ["RÜYA", ["Uyumak", "Gece", "Görmek", "Kabus", "Bilinç"]],
-      ["BALIK", ["Deniz", "Yüzmek", "Olta", "Akvaryum", "Pul"]],
-      ["DÜĞÜN", ["Gelin", "Damat", "Evlenmek", "Halay", "Nikah"]],
-      ["BÜTÇE", ["Para", "Harcama", "Gelir", "Gider", "Tasarruf"]],
-      ["PİL", ["Şarj", "Enerji", "Kumanda", "Bitti", "Artı"]],
-      ["AYAKKABI", ["Giymek", "Bağcık", "Taban", "Yürümek", "Numara"]],
-      ["TİYATRO", ["Sahne", "Oyuncu", "Perde", "Alkış", "Oyun"]],
-      ["BALKON", ["Ev", "Dışarı", "Çamaşır", "Manzara", "Korkuluk"]],
-      ["MASAL", ["Uyku", "Çocuk", "Prens", "Ejderha", "Anlatmak"]],
-      ["SÖZLÜK", ["Kelime", "Anlam", "Harf", "Dil", "Sayfa"]],
-      ["VİTAMİN", ["Sağlık", "Portakal", "C", "Hap", "Bağışıklık"]],
-      ["KUTUP", ["Buz", "Penguen", "Kuzey", "Güney", "Soğuk"]],
-      ["PUSULA", ["Yön", "Kuzey", "İğne", "Harita", "Kaybolmak"]],
-      ["TERAZİ", ["Tartmak", "Kilo", "Ağırlık", "Denge", "Gram"]],
-      ["MÜZE", ["Tarih", "Eser", "Gezmek", "Sergi", "Bilet"]],
-      ["ŞİFRE", ["Gizli", "Parola", "Kırmak", "Güvenlik", "Harf"]],
-      ["ÇİZGİ FİLM", ["Animasyon", "Kare", "Karakter", "Çizmek", "Çocuk"]],
-      ["SENARYO", ["Film", "Dizi", "Yazmak", "Sahne", "Diyalog"]],
-      ["REKLAM", ["Tanıtım", "Televizyon", "Marka", "Ürün", "Süre"]],
-      ["PODCAST", ["Ses", "Bölüm", "Dinlemek", "Mikrofon", "Yayın"]],
-      ["TURNUVA", ["Yarışma", "Takım", "Şampiyon", "Eleme", "Kupa"]],
-      ["STRATEJİ", ["Plan", "Hamle", "Oyun", "Zeka", "Takım"]],
-      ["VOLKAN", ["Lav", "Dağ", "Patlamak", "Magma", "Kül"]],
-      ["GÖKKUŞAĞI", ["Renk", "Yağmur", "Güneş", "Gökyüzü", "Yedi"]],
-      ["METEOR", ["Uzay", "Düşmek", "Kayan Yıldız", "Atmosfer", "Taş"]],
-      ["DENEY", ["Laboratuvar", "Bilim", "Sonuç", "Tüp", "Hipotez"]],
-      ["İCAT", ["Yeni", "Bulmak", "Mucit", "Patent", "Geliştirmek"]],
-      ["PASAPORT", ["Yurt Dışı", "Vize", "Kimlik", "Sınır", "Seyahat"]],
-      ["LİMAN", ["Gemi", "Deniz", "İskele", "Tekne", "Kıyı"]],
-      ["ÇARŞI", ["Dükkan", "Alışveriş", "Esnaf", "Kalabalık", "Pazar"]],
-      ["FIRIN", ["Ekmek", "Sıcak", "Pişirmek", "Un", "Simit"]],
-      ["ZEYTİN", ["Kahvaltı", "Siyah", "Yeşil", "Yağ", "Ağaç"]],
-      ["TARÇIN", ["Baharat", "Kokulu", "Salep", "Kurabiye", "Kahverengi"]],
-      ["İSTİKRAR", ["Süreklilik", "Düzen", "Değişmeyen", "Denge", "Uzun"]],
-      ["İLHAM", ["Fikir", "Yaratıcılık", "Gelmek", "Sanat", "Esin"]],
-      ["ANKET", ["Soru", "Katılımcı", "Oy", "Araştırma", "Sonuç"]],
-      ["ARŞİV", ["Kayıt", "Eski", "Saklamak", "Dosya", "Geçmiş"]],
-      ["BATERİ", ["Davul", "Baget", "Zil", "Ritim", "Trampet"]],
-      ["KEMAN", ["Yay", "Tel", "Klasik", "Çene", "Orkestra"]],
-      ["FLÜT", ["Üflemek", "Metal", "Nota", "Yan", "Nefes"]],
-      ["KORO", ["Birlikte", "Şarkı", "Ses", "Topluluk", "Sahnede"]],
-      ["STÜDYO", ["Kayıt", "Ses", "Kulaklık", "Oda", "Müzik"]],
-      ["EFEKT", ["Yankı", "Filtre", "Ses", "Değiştirmek", "İşlem"]],
-      ["SOLO", ["Tek Başına", "Gitar", "Öne Çıkmak", "Çalmak", "Sahne"]],
-      ["METRONOM", ["Tık", "Tempo", "Hız", "Zaman", "Çalışmak"]],
-      ["KONSER", ["Sahne", "Seyirci", "Bilet", "Şarkıcı", "Kalabalık"]],
-      ["AFİŞ", ["Duvar", "Duyuru", "Poster", "Tasarım", "Etkinlik"]],
-      ["GALAKSİ", ["Yıldız", "Uzay", "Samanyolu", "Gezegen", "Evren"]],
-      ["BULUT", ["Gökyüzü", "Yağmur", "Beyaz", "Hava", "Uçmak"]],
-      ["DÜRBÜN", ["Uzak", "Bakmak", "Mercek", "Görmek", "İki Göz"]],
-      ["KUKLA", ["İp", "Oynamak", "Ahşap", "Sahne", "El"]],
-      ["FİLM", ["Sinema", "Yönetmen", "Kamera", "Senaryo", "İzlemek"]],
-      ["DÜĞME", ["Gömlek", "Basmak", "İlik", "Pantolon", "Küçük"]],
-      ["TAVŞAN", ["Kulak", "Havuç", "Zıplamak", "Beyaz", "Hızlı"]],
-      ["BALON", ["Uçmak", "Patlamak", "Helyum", "Şişirmek", "Parti"]],
-      ["KAVUN", ["Yaz", "Sarı", "Kavun İçi", "Karpuz", "Tatlı"]],
-      ["DÜDÜK", ["Hakem", "Maç", "Üflemek", "Faul", "Ses"]],
-      ["KALEM", ["Yazmak", "Silgi", "Kurşun", "Defter", "Uç"]],
-      ["MUM", ["Işık", "Alev", "Pasta", "Erimek", "Doğum Günü"]],
-      ["TİLKİ", ["Kurnaz", "Orman", "Kuyruk", "Turuncu", "Hayvan"]],
-      ["TARAK", ["Saç", "Diş", "Fırça", "Tarama", "Ayna"]],
-      ["SABUN", ["Köpük", "El", "Yıkamak", "Kokulu", "Banyo"]],
-      ["HAVLU", ["Kurulamak", "Banyo", "Pamuk", "Plaj", "Islak"]],
-      ["TERLİK", ["Ev", "Ayak", "Giymek", "Rahat", "Banyo"]],
-      ["ÇORAP", ["Ayak", "Giymek", "Çift", "Tek", "Yün"]],
-      ["ELDİVEN", ["El", "Kış", "Soğuk", "Parmak", "Giymek"]],
-      ["ŞAPKA", ["Baş", "Güneş", "Kış", "Takmak", "Siperlik"]],
-      ["KEMER", ["Bel", "Pantolon", "Toka", "Bağlamak", "Delik"]],
-      ["CÜZDAN", ["Para", "Kart", "Kimlik", "Cep", "Deri"]],
-      ["ÇANTA", ["Omuz", "Sırt", "Taşımak", "Fermuar", "Eşya"]],
-      ["SÜPÜRGE", ["Temizlik", "Yer", "Toz", "Sap", "Çalı"]],
-      ["KÜREK", ["Kazmak", "Toprak", "Kum", "Bahçe", "Sap"]],
-      ["ÇEKİÇ", ["Çivi", "Vurmak", "Tamir", "Sap", "Demir"]],
-      ["TORNAVİDA", ["Vida", "Çevirmek", "Tamir", "Uç", "Yıldız"]],
-      ["MAKAS", ["Kesmek", "Kağıt", "Uç", "Kumaş", "Açmak"]],
-      ["YAPIŞTIRICI", ["Yapıştırmak", "Kağıt", "Bant", "Tutkal", "Sıvı"]],
-      ["ZIMBA", ["Kağıt", "Tel", "Basmak", "Dosya", "Ofis"]],
-      ["MENDİL", ["Burun", "Kağıt", "Silmek", "Paket", "Cebinde"]],
-      ["ŞİŞE", ["Su", "Cam", "Plastik", "Kapak", "İçmek"]],
-      ["BARDAK", ["Su", "Çay", "Cam", "İçmek", "Kulp"]],
-      ["EKMEK", ["Un", "Fırın", "Dilim", "Kahvaltı", "Maya"]],
-      ["PEYNİR", ["Kahvaltı", "Beyaz", "Kaşar", "Süt", "Dilim"]],
-      ["YUMURTA", ["Kahvaltı", "Tavuk", "Haşlamak", "Omlet", "Kabuk"]],
-      ["ÇAY", ["Demlik", "Bardak", "İnce Belli", "Rize", "İçmek"]],
-      ["SÜT", ["Beyaz", "İnek", "Kahvaltı", "Kutu", "İçmek"]],
-      ["BAL", ["Arı", "Tatlı", "Kahvaltı", "Kovan", "Petek"]],
-      ["REÇEL", ["Kahvaltı", "Çilek", "Tatlı", "Kavanoz", "Meyve"]],
-      ["MAKARNA", ["Su", "Haşlamak", "Sos", "İtalyan", "Tencere"]],
-      ["PİLAV", ["Pirinç", "Tereyağı", "Tencere", "Tane", "Yemek"]],
-      ["ÇORBA", ["Kaşık", "Sıcak", "Kase", "Mercimek", "Başlangıç"]],
-      ["BÖREK", ["Yufka", "Fırın", "Peynirli", "Ispanaklı", "Tepsi"]],
-      ["POĞAÇA", ["Fırın", "Hamur", "Kahvaltı", "Açma", "Mayalı"]],
-      ["SİMİT", ["Susam", "Çay", "Fırın", "Yuvarlak", "Sokak"]],
-      ["KURABİYE", ["Fırın", "Tatlı", "Çay", "Hamur", "Damla Çikolata"]],
-      ["PASTA", ["Doğum Günü", "Kremalı", "Dilim", "Mum", "Tatlı"]],
-      ["DÖNER", ["Et", "Tavuk", "Lavaş", "Ekmek", "Şiş"]],
-      ["KEBAP", ["Et", "Acı", "Şiş", "Ocak", "Adana"]],
-      ["MANTI", ["Hamur", "Yoğurt", "Sarımsak", "Kayseri", "Küçük"]],
-      ["İSKENDER", ["Bursa", "Sos", "Tereyağı", "Et", "Yoğurt"]],
-      ["SALATA", ["Domates", "Salatalık", "Marul", "Limon", "Zeytinyağı"]],
-      ["ÇİLEK", ["Kırmızı", "Yaz", "Tatlı", "Meyve", "Kokulu"]],
-      ["MUZ", ["Sarı", "Kabuk", "Soymak", "Meyve", "Maymun"]],
-      ["PORTAKAL", ["Turuncu", "C Vitamini", "Sıkma", "Kabuk", "Meyve"]],
-      ["ELMA", ["Kırmızı", "Yeşil", "Meyve", "Ağaç", "Isırmak"]],
-      ["ÜZÜM", ["Salkım", "Bağ", "Mor", "Yeşil", "Meyve"]],
-      ["GÜNEŞ", ["Sıcak", "Sarı", "Gökyüzü", "Işık", "Sabah"]],
-      ["AY", ["Gece", "Gökyüzü", "Hilal", "Dolunay", "Yıldız"]],
-      ["YILDIZ", ["Gece", "Gökyüzü", "Parlamak", "Uzay", "Kaymak"]],
-      ["GÖL", ["Su", "Kıyı", "Balık", "Tatlı", "Tekne"]],
-      ["NEHİR", ["Su", "Akmak", "Yatak", "Köprü", "Dere"]],
-      ["DAĞ", ["Zirve", "Yüksek", "Kar", "Tırmanmak", "Yamaç"]],
-      ["ADA", ["Deniz", "Etrafı Su", "Tek Başına", "Sahil", "Tropikal"]],
-      ["ÇÖL", ["Kum", "Sıcak", "Deve", "Vaha", "Kurak"]],
-      ["MAĞARA", ["Karanlık", "Kaya", "İçerisi", "Yarasa", "Derin"]],
-      ["KUŞ", ["Uçmak", "Kanat", "Gaga", "Yuva", "Gökyüzü"]],
-      ["AT", ["Koşmak", "Eyer", "Nal", "Binmek", "Çiftlik"]],
-      ["İNEK", ["Süt", "Çiftlik", "Otlamak", "Manda", "Çan"]],
-      ["KOYUN", ["Yün", "Sürü", "Melemek", "Çoban", "Çiftlik"]],
-      ["TAVUK", ["Yumurta", "Horoz", "Kümes", "Kanat", "Yem"]],
-      ["ARI", ["Bal", "Kovan", "Vızıldamak", "Çiçek", "Sokmak"]],
-      ["KARINCA", ["Küçük", "Çalışkan", "Sıra", "Taşımak", "Yuva"]],
-      ["KURBAĞA", ["Yeşil", "Zıplamak", "Gölet", "Vıraklamak", "Su"]],
-      ["YILAN", ["Sürünmek", "Zehir", "Pullu", "Dil", "Uzun"]],
-      ["AYI", ["Orman", "Bal", "Kış Uykusu", "Büyük", "Pençe"]],
-      ["FİL", ["Hortum", "Büyük", "Gri", "Kulak", "Afrika"]],
-      ["ZÜRAFA", ["Uzun Boyun", "Lekeli", "Afrika", "Yaprak", "Yüksek"]],
-      ["MAYMUN", ["Muz", "Ağaç", "Dal", "Kuyruk", "Orman"]],
-      ["SOKAK", ["Cadde", "Yol", "Ev", "Yürümek", "Mahalle"]],
-      ["PARK", ["Salıncak", "Bank", "Çimen", "Çocuk", "Yeşil"]],
-      ["OKUL", ["Öğrenci", "Öğretmen", "Sınıf", "Ders", "Zil"]],
-      ["HASTANE", ["Doktor", "Hemşire", "Hasta", "İlaç", "Ambulans"]],
-      ["ECZANE", ["İlaç", "Reçete", "Eczacı", "Ağrı Kesici", "Sağlık"]],
-      ["BANKA", ["Para", "Kart", "Şube", "Hesap", "Kredi"]],
-      ["POSTANE", ["Kargo", "Mektup", "Pul", "Göndermek", "Zarf"]],
-      ["RESİM", ["Boya", "Fırça", "Tuval", "Çizmek", "Tablo"]],
-      ["HEYKEL", ["Taş", "Mermer", "Kil", "Şekil", "Müze"]],
-      ["ŞİİR", ["Mısra", "Kafiye", "Duygu", "Kitap", "Şair"]],
-      ["DANS", ["Müzik", "Adım", "Hareket", "Sahne", "Ritmik"]],
-      ["BALE", ["Parıltı", "Ayakkabı", "Sahne", "Dönmek", "Zarif"]],
-      ["ORKESTRA", ["Şef", "Çalgı", "Salon", "Keman", "Müzikal"]],
-      ["DAVUL", ["Vurmak", "Tokmak", "Ritim", "Davulcu", "Ramazan"]],
-      ["BİLMECE", ["Sormak", "Cevap", "İpucu", "Eğlence", "Çocuk"]],
-      ["KARNE", ["Not", "Okul", "Dönem", "Tatil", "Öğrenci"]],
-      ["BAYRAM", ["Tatil", "Şeker", "Ziyaret", "Aile", "Kutlama"]],
-      ["DOĞUM GÜNÜ", ["Pasta", "Mum", "Yaş", "Hediye", "Kutlamalar"]],
-      ["MUTLULUK", ["Gülmek", "Sevinç", "Neşe", "Yüz", "İyi"]],
-      ["ÜZÜNTÜ", ["Ağlamak", "Gözyaşı", "Keder", "Mutsuz", "Moral"]],
-      ["KORKU", ["Titremek", "Karanlık", "Gece", "Endişe", "Kaçmak"]],
-      ["ŞAŞKINLIK", ["Göz", "Ağzı Açık", "İnanamamak", "Beklenmedik", "Tepki"]],
-      ["ÖFKE", ["Kızmak", "Sinir", "Bağırmak", "Yüz", "Duygu"]],
-      ["UTANMAK", ["Yüz", "Kızarmak", "Baş", "Eğmek", "Mahcup"]],
-      ["MERAK", ["Sormak", "Öğrenmek", "Araştırmak", "Neden", "İlgi"]],
-      ["UMUT", ["Beklemek", "Yarın", "İnanç", "Güzel", "Gelecek"]],
-      ["ÖZLEM", ["Hasret", "Özlemek", "Uzak", "Ayrılık", "Görmek"]],
-      ["GURUR", ["Övünmek", "Başarı", "Gururlu", "Kibir", "Göğüs"]],
-      ["SABIR", ["Beklemek", "Sakin", "Zor", "Dayanmak", "Zaman"]],
-      ["CESARET", ["Korkmamak", "Kahraman", "Atılmak", "Yürek", "Risk"]],
-      ["ŞÜPHE", ["Güvenmemek", "Kuşku", "Soru", "İnanamamak", "Gizli"]],
-      ["HUZUR", ["Sakin", "Sessiz", "Rahat", "Dinlenmek", "Barış"]],
-      ["DOKTOR", ["Hastane", "Muayene", "Reçete", "Hasta", "Beyaz Önlük"]],
-      ["ÖĞRETMEN", ["Okul", "Sınıf", "Ders", "Öğrenci", "Tahta"]],
-      ["PİLOT", ["Uçak", "Kokpit", "Gökyüzü", "Kaptan", "Uçuş"]],
-      ["KAPTAN", ["Gemi", "Deniz", "Dümen", "Mürettebat", "Liman"]],
-      ["İTFAİYECİ", ["Yangın", "Alev", "Hortum", "Sireni", "Kurtarmak"]],
-      ["POLİS", ["Karakol", "Suç", "Kelepçe", "Devriye", "Asayiş"]],
-      ["MİMAR", ["Bina", "Çizim", "Proje", "Yapı", "Tasarım"]],
-      ["MÜHENDİS", ["Hesap", "Proje", "Teknik", "Makine", "Sistem"]],
-      ["AVUKAT", ["Mahkeme", "Dava", "Savunma", "Hukuk", "Hakim"]],
-      ["HAKİM", ["Mahkeme", "Karar", "Tokmak", "Cübbe", "Adalet"]],
-      ["GAZETECİ", ["Haber", "Muhabir", "Yazı", "Röportaj", "Basın"]],
-      ["FOTOĞRAFÇI", ["Makine", "Çekmek", "Poz", "Objektif", "Kare"]],
-      ["TERZİ", ["Dikiş", "Kumaş", "Makas", "İğne", "Ölçü"]],
-      ["KUAFÖR", ["Saç", "Makas", "Fön", "Boya", "Kesim"]],
-      ["BİLGİSAYAR", ["Klavye", "Fare", "Ekran", "Kasa", "Masaüstü"]],
-      ["KLAVYE", ["Tuş", "Yazmak", "Harf", "Boşluk", "Bilgisayar"]],
-      ["FARE", ["Tıklamak", "İmleç", "Kablo", "Kaydırmak", "Bilgisayar"]],
-      ["EKRAN", ["Görüntü", "Monitör", "Parlaklık", "Çözünürlük", "Piksel"]],
-      ["KAMERA", ["Çekmek", "Video", "Lens", "Kayıt", "Görüntü"]],
-      ["OTOBÜS", ["Yolcu", "Durak", "Şoför", "Şehir", "Bilet"]],
-      ["GEMİ", ["Deniz", "Liman", "Güverte", "Çapa", "Yolcu"]],
-      ["ROKET", ["Uzay", "Fırlatmak", "Yakıt", "Atmosfer", "Ay"]],
-      ["GEZEGEN", ["Uzay", "Güneş", "Yörünge", "Dünya", "Mars"]],
-      ["ASTRONOT", ["Uzay", "Roket", "Ay", "Kask", "Yerçekimi"]],
-      ["YATAK", ["Uyku", "Yastık", "Yorgan", "Oda", "Sabah"]],
-      ["KAPI", ["Açmak", "Kapatmak", "Kilit", "Anahtar", "Kol"]],
-      ["PENCERE", ["Cam", "Dışarı", "Açmak", "Perde", "Hava"]],
-      ["PERDE", ["Pencere", "Güneş", "Kumaş", "Korniş", "Çekmek"]],
-      ["TENCERE", ["Yemek", "Ocak", "Kapak", "Kaynamak", "Sap"]],
-      ["TAVA", ["Kızartmak", "Yumurta", "Sap", "Ocak", "Yağ"]],
-      ["BIÇAK", ["Kesmek", "Mutfak", "Keskin", "Sap", "Ekmek"]],
-      ["AĞAÇ", ["Yaprak", "Dal", "Kök", "Orman", "Gölge"]],
-      ["ÇİÇEK", ["Bahçe", "Koku", "Yaprak", "Renk", "Saksı"]],
-      ["KAMPÜS", ["Üniversite", "Fakülte", "Bahçe", "Öğrenci", "Bina"]],
-      ["SİHİRBAZ", ["Şapka", "Tavşan", "Hokus", "İllüzyon", "Sahne"]],
-      ["BALIKÇI", ["Tekne", "Olta", "Ağ", "Deniz", "Balık"]],
-      ["ÇİFTÇİ", ["Tarla", "Traktör", "Ekin", "Hasat", "Toprak"]],
-      ["DEDEKTİF", ["İz", "Büyüteç", "Gizem", "Şüpheli", "Soruşturma"]],
-      ["KAHRAMAN", ["Kurtarmak", "Güç", "Cesaret", "Cüppe", "Süper"]],
-      ["DENİZCİ", ["Gemi", "Dalga", "Pusula", "Liman", "Tayfa"]],
-      ["RÜZGAR", ["Esmek", "Yaprak", "Hava", "Uçurtma", "Serin"]],
-      ["KAR TANESİ", ["Kış", "Altıgen", "Soğuk", "Beyaz", "Erimek"]],
-      ["GÜNDÖNDÜ", ["Sarı", "Güneş", "Çiçek", "Tarla", "Dönmek"]],
-      ["KUM SAATİ", ["Kum", "Zaman", "Cam", "Akış", "Ters Çevirmek"]],
-      ["DÜNYA", ["Gezegen", "Kıta", "Okyanus", "İnsan", "Uzay"]],
-      ["GÖKDELEN", ["Yüksek", "Cam", "Kat", "Asansör", "Şehir"]],
-      ["İSTASYON", ["Tren", "Peron", "Bilet", "Beklemek", "Ray"]],
-      ["HAVALİMANI", ["Uçak", "Pist", "Pasaport", "Bagaj", "Kapı"]],
-      ["AKVARYUM", ["Balık", "Cam", "Su", "Yosun", "İzlemek"]],
-      ["SERA", ["Cam", "Bitki", "Sıcak", "Domates", "Büyümek"]],
-      ["KÖY", ["Muhtar", "Tarla", "Sakin", "Meydan", "Doğa"]],
-      ["ŞEHİR", ["Bina", "Trafik", "Kalabalık", "Cadde", "Metropol"]],
-      ["KALE", ["Sur", "Tarih", "Şövalye", "Yüksek", "Savunma"]],
-      ["SARAY", ["Padişah", "Sultan", "Taht", "Büyük", "Tarih"]],
-      ["ÇEŞME", ["Su", "Musluk", "Meydan", "Soğuk", "Taş"]],
-      ["HAMAM", ["Kese", "Köpük", "Sıcak", "Göbek Taşı", "Buhar"]],
-      ["FIRÇA", ["Boya", "Diş", "Saç", "Kıl", "Sürmek"]],
-      ["BOYA", ["Renk", "Fırça", "Duvar", "Tuval", "Kutu"]],
-      ["TUVAL", ["Resim", "Boya", "Sehpa", "Bez", "Sanat"]],
-      ["ALBÜM", ["Fotoğraf", "Anı", "Sayfa", "Müzik", "Kapak"]],
-      ["BAVUL", ["Valiz", "Tatil", "Eşya", "Kilit", "Yolculuk"]],
-      ["ÇADIR", ["Kamp", "İp", "Kazık", "Orman", "Uyku Tulumu"]],
-      ["KUPA", ["Şampiyon", "Kazanmak", "Final", "Ödül", "Kaldırmak"]],
-      ["MADALYA", ["Altın", "Gümüş", "Bronz", "Yarışma", "Boyun"]],
-      ["ANTRENMAN", ["Çalışmak", "Spor", "Hazırlık", "Ter", "Egzersiz"]],
-      ["HAKEM", ["Düdük", "Kart", "Maç", "Kural", "Saha"]],
-      ["KALECİ", ["Eldiven", "Kurtarmak", "Kale", "Penaltı", "Top"]],
-      ["PENALTI", ["Beyaz Nokta", "Kaleci", "Vuruş", "Gol", "Ceza Alanı"]],
-      ["KORNER", ["Köşe", "Bayrak", "Orta", "Top", "Vuruş"]],
-      ["BASKETBOL", ["Potaya", "Smaç", "Üçlük", "Parke", "Turuncu Top"]],
-      ["VOLEYBOL", ["File", "Smaç", "Pas", "Servis", "Altı Kişi"]],
-      ["TENİS", ["Raket", "Top", "Kort", "File", "Set"]],
-      ["YÜZME", ["Havuz", "Kulaç", "Deniz", "Bone", "Su"]],
-      ["KOŞU", ["Maraton", "Ayakkabı", "Hız", "Pist", "Nefes"]],
-      ["KAYAK", ["Kar", "Dağ", "Baston", "Pist", "Kış"]],
-      ["SÖRF", ["Dalga", "Tahta", "Deniz", "Denge", "Plaj"]],
-      ["PATEN", ["Tekerlek", "Buz", "Kaymak", "Denge", "Pist"]],
-      ["KAYKAY", ["Tahta", "Tekerlek", "Hareket", "Sokak", "Denge"]],
-      ["OKÇULUK", ["Yay", "Ok", "Hedef", "Nişan", "Kiriş"]],
-      ["ESKRİM", ["Kılıç", "Maske", "Hamle", "Piste", "Dokunmak"]],
-      ["GÜREŞ", ["Minder", "Kemer", "Güç", "Sırt", "Müsabaka"]],
-      ["BOKS", ["Eldiven", "Ring", "Yumruk", "Raunt", "Savunma"]],
-      ["JİMNASTİK", ["Esneklik", "Denge", "Takla", "Halka", "Minder"]],
-      ["BİLARDO", ["Istaka", "Top", "Masa", "Delik", "Vurmak"]],
-      ["BOVLİNG", ["Lobu", "Top", "Hat", "Devirmek", "Salon"]],
-      ["DART", ["Tahta", "Ok", "Hedef", "Puan", "Atmak"]],
-      ["OLTA", ["Balık", "İğne", "Misina", "Deniz", "Tutmak"]],
-      ["AV", ["Orman", "Tüfek", "İz", "Takip", "Doğa"]],
-      ["SAFARI", ["Afrika", "Aslan", "Jip", "Vahşi Doğa", "Gezi"]],
-      ["PİKNİK", ["Sepet", "Örtü", "Çimen", "Mangal", "Açık Hava"]],
-      ["MANGAL", ["Kömür", "Ateş", "Et", "Duman", "Şiş"]],
-      ["BARBEKÜ", ["Izgara", "Et", "Sos", "Bahçe", "Ateş"]],
-      ["KAHVALTI", ["Sabah", "Çay", "Peynir", "Zeytin", "Yumurta"]],
-      ["AKŞAM YEMEĞİ", ["Akşam", "Sofrası", "Aile", "Yemek", "Gün Sonu"]],
-      ["TATLI", ["Şeker", "Şerbet", "Kek", "Pastane", "Lezzet"]],
-      ["TUZ", ["Beyaz", "Deniz", "Yemek", "Tat", "Şeker"]],
-      ["ŞEKER", ["Tatlı", "Çay", "Küp", "Toz", "Pancar"]],
-      ["KARABİBER", ["Baharat", "Acı", "Siyah", "Öğütmek", "Yemek"]],
-      ["KİMYON", ["Baharat", "Köfte", "Koku", "Yemek", "Toz"]],
-      ["NANE", ["Yeşil", "Ferah", "Limon", "Yaprak", "Koku"]],
-      ["FESLEĞEN", ["Yeşil", "Koku", "Saksı", "Yaprak", "Bitki"]],
-      ["KAKAO", ["Çikolata", "Kahverengi", "Toz", "Acı", "Süt"]],
-      ["VANİLYA", ["Tatlı", "Koku", "Dondurma", "Pasta", "Çubuk"]],
-      ["TARHANA", ["Çorba", "Kış", "Kuru", "Yoğurt", "Un"]],
-      ["MERCİMEK", ["Çorba", "Sarı", "Kırmızı", "Baklagil", "Limon"]],
-      ["NOHUT", ["Baklagil", "Pilav", "Humus", "Haşlamak", "Tane"]],
-      ["FASULYE", ["Kuru", "Pilav", "Taze", "Baklagil", "Yemek"]],
-      ["PATATES", ["Kızartma", "Fırın", "Püre", "Toprak", "Dilim"]],
-      ["DOMATES", ["Kırmızı", "Salata", "Sos", "Biber", "Yaz"]],
-      ["SALATALIK", ["Yeşil", "Salata", "Cacık", "Su", "Dilim"]],
-      ["SOĞAN", ["Göz Yaşartmak", "Yemek", "Kabuk", "Sarımsak", "Doğramak"]],
-      ["SARIMSAK", ["Koku", "Diş", "Yoğurt", "Yemek", "Sağlık"]],
-      ["BİBER", ["Acı", "Tatlı", "Yeşil", "Kırmızı", "Dolma"]],
-      ["PATLICAN", ["Mor", "Közlemek", "Kızartmak", "Kebap", "Sebze"]],
-      ["KABAK", ["Yeşil", "Mücver", "Tatlı", "Dolma", "Sebze"]],
-      ["ISPANAK", ["Yeşil", "Demir", "Börek", "Yemek", "Yaprak"]],
-      ["HAVUÇ", ["Turuncu", "Tavşan", "Salata", "Göz", "Sebze"]],
-      ["BROKOLİ", ["Yeşil", "Ağaç", "Haşlamak", "Sebze", "Çiçek"]],
-      ["MANTAR", ["Şapka", "Orman", "Kremalı", "Sote", "Beyaz"]],
-      ["FINDIK", ["Karadeniz", "Kabuk", "Kavrulmuş", "Çikolata", "Kuruyemiş"]],
-      ["CEVİZ", ["Beyin", "Kabuk", "Ağaç", "Tatlı", "Kuruyemiş"]],
-      ["BADEM", ["Kuruyemiş", "Yeşil", "Süt", "Çiçek", "Kabuk"]],
-      ["ANTEP FISTIĞI", ["Yeşil", "Baklava", "Gaziantep", "Kuruyemiş", "Kabuk"]],
-      ["KESTANE", ["Kış", "Kebap", "Soba", "Kabuk", "Şeker"]],
-      ["KİRAZ", ["Yaz", "Kırmızı", "Sap", "Meyve", "Küpe"]],
-      ["ŞEFTALİ", ["Tüylü", "Yaz", "Tatlı", "Meyve", "Sulu"]],
-      ["KAYISI", ["Malatya", "Turuncu", "Kuru", "Meyve", "Çekirdek"]],
-      ["İNCİR", ["Yaz", "Tatlı", "Kuru", "Yaprak", "Meyve"]],
-      ["NAR", ["Kırmızı", "Tane", "Ekşi", "Meyve", "Bereket"]],
-      ["KİVİ", ["Yeşil", "Tüylü", "Ekşi", "Meyve", "Dilim"]],
-      ["ANANAS", ["Tropikal", "Sarı", "Dikenli", "Meyve", "Dilim"]],
-      ["HİNDİSTAN CEVİZİ", ["Tropikal", "Beyaz", "Sert", "Süt", "Koku"]]
-    ];
-
-    const TABU_CARDS = (() => {
-      const seen = new Set();
-      const out = [];
-      for (const [word, forbidden] of RAW_TABU_PAIRS) {
-        const cleanWord = String(word || "").trim().toLocaleUpperCase("tr-TR");
-        if (!cleanWord || seen.has(cleanWord)) continue;
-        seen.add(cleanWord);
-        out.push({ word: cleanWord, forbidden: forbidden.slice(0, 5) });
-      }
-      return out;
-    })();
 
     const BASE_KEYS = [
       { slot: "C0", label: "Do", semi: 0, isBlack: false },
@@ -2101,9 +2079,7 @@
       scheduledCycleIndexSet: new Set(),
       turnTimer: null,
       challengeTimer: null,
-      tabuTimer: null,
       voteUiTimer: null,
-      activeTabuToken: null,
       remainingSec: 0,
       instrumentId: "grand_piano",
       recordArmed: false,
@@ -2118,7 +2094,6 @@
       loadingSamples: new Set(),
       vocalBufferCache: new Map(),
       conceptHistory: [],
-      tabuHistory: [],
       rhythmTaps: [],
       melodyPlayed: [],
       micBuffer: null,
@@ -3302,6 +3277,7 @@
         if (!app.room?.started || app.room?.finished || app.room?.submissions?.[app.myId]) return;
         const guessId = document.getElementById("melodyGuessSelect").value || "grand_piano";
         beginHoldVoice(`melody:${keyObj.slot}`, keyObj.freq, guessId, false);
+        recordProfileNote(null);
         const realOct = Math.floor(keyObj.midi / 12) - 1;
         app.melodyPlayed.push({
           slot: keyObj.slot,
@@ -3326,6 +3302,7 @@
       const instSel = document.getElementById("instrumentSelect");
       if (instSel) instSel.value = activeInstId;
       const lockedSynth = cloneSynth(app.synth);
+      recordProfileNote(activeInstId);
 
       if (app.chordModeEnabled && mode !== "melody") {
         const chordNotes = getChordNotesForKey(keyObj, app.chordTypeId);
@@ -3533,15 +3510,6 @@
       return pick;
     }
 
-    function nextTabuCard() {
-      const avail = TABU_CARDS.filter((c) => !app.tabuHistory.includes(c.word));
-      const pool = avail.length ? avail : TABU_CARDS;
-      const pick = pool[Math.floor(Math.random() * pool.length)];
-      app.tabuHistory.push(pick.word);
-      if (app.tabuHistory.length > 120) app.tabuHistory.shift();
-      return pick;
-    }
-
     function updateLobbyModeFields(mode) {
       const isLoopMode = ["collab", "theme"].includes(mode);
       document.getElementById("fieldRounds").classList.toggle("hidden", !isLoopMode);
@@ -3556,7 +3524,6 @@
       document.getElementById("rhythmGameView").classList.add("hidden");
       document.getElementById("melodyGameView").classList.add("hidden");
       document.getElementById("resultsView").classList.add("hidden");
-      document.getElementById("tabuGameView").classList.add("hidden");
       document.getElementById("studioGameView").classList.add("hidden");
       document.getElementById("pianoCard").classList.add("hidden");
     }
@@ -3763,39 +3730,6 @@
       }, 1000);
     }
 
-    function startTabuTimer(turnToken, amITeller) {
-      clearInterval(app.tabuTimer);
-      app.activeTabuToken = turnToken;
-      const sec = Number(app.room?.settings?.turnDuration) || 0;
-      const lbl = document.getElementById("tabuTimerText");
-      if (!sec) {
-        lbl.textContent = "⏱️ Süresiz";
-        return;
-      }
-      app.remainingSec = sec;
-      lbl.textContent = `⏱️ ${app.remainingSec} sn`;
-      app.tabuTimer = setInterval(() => {
-        app.remainingSec--;
-        if (app.remainingSec <= 0) {
-          clearInterval(app.tabuTimer);
-          app.tabuTimer = null;
-          lbl.textContent = "⏱️ Süre doldu, sıra geçiyor...";
-          if (amITeller) {
-            sendWs({ type: "tabu_next_turn", nextCard: nextTabuCard() });
-          } else if (isHostUser()) {
-            // fallback only if the teller's client did not advance (e.g. disconnected)
-            setTimeout(() => {
-              if (app.room?.tabu?.turnToken === turnToken && app.activeTabuToken === turnToken) {
-                sendWs({ type: "tabu_next_turn", nextCard: nextTabuCard() });
-              }
-            }, 2500);
-          }
-        } else {
-          lbl.textContent = `⏱️ ${app.remainingSec} sn`;
-        }
-      }, 1000);
-    }
-
     function renderVotingAndWinnerPanel(room) {
       const voteSec = document.getElementById("votingSection");
       const wrap = document.getElementById("voteButtonsWrap");
@@ -3964,6 +3898,8 @@
       app.bpm = Math.min(200, Math.max(50, Number(room.loopBpm || room.settings.bpm) || 110));
       app.beats = normalizeBeats(room.settings.beats);
       app.djEffect = room.djEffect || "normal";
+      updateBpmPulse(room.started ? app.bpm : 0);
+      maybeRecordFinishedGame(room);
 
       const sessionId = room.gameSessionId || 1;
       const turnKey = `${sessionId}_${room.turnSeq || 0}_${room.currentRound}_${room.turnIndex}_${room.started}_${room.finished}`;
@@ -3996,17 +3932,13 @@
         releaseAllHeldVoices();
         clearInterval(app.turnTimer);
         clearInterval(app.challengeTimer);
-        clearInterval(app.tabuTimer);
         clearInterval(app.voteUiTimer);
         app.turnTimer = null;
         app.challengeTimer = null;
-        app.tabuTimer = null;
         app.turnTimerKey = null;
-        app.activeTabuToken = null;
         hideAllGameViews();
 
         document.getElementById("restartGameBtn").classList.add("hidden");
-        document.getElementById("uiThemeSelect").classList.remove("hidden");
         document.getElementById("lobbyView").classList.remove("hidden");
 
         document.getElementById("lobbyRoomCode").textContent = room.code;
@@ -4037,17 +3969,28 @@
         const pList = document.getElementById("lobbyPlayersList");
         pList.innerHTML = "";
         room.players.forEach((p) => {
-          const chip = document.createElement("div");
-          chip.className = "player-chip";
-          chip.innerHTML = `${renderAvatarInline(p.avatar)} <strong>${escapeHtml(p.name)}</strong>${p.id === room.hostId ? " 👑" : ""}${p.offline ? ' <span title="Bağlantısı koptu, 30 sn içinde dönebilir">📴</span>' : ""}`;
-          if (p.offline) chip.style.opacity = "0.55";
-          pList.appendChild(chip);
+          const card = document.createElement("div");
+          const isMe = p.id === app.myId;
+          card.className = "player-card" + (isMe ? " me" : "") + (p.offline ? " offline" : "");
+          const av = getAvatarById(p.avatar);
+          const badges = [];
+          if (p.id === room.hostId) badges.push('<span class="pc-badge">👑 Kurucu</span>');
+          if (isMe) badges.push('<span class="pc-badge you">Sen</span>');
+          if (p.offline) badges.push('<span class="pc-badge off" title="Bağlantısı koptu, 30 sn içinde dönebilir">📴 Koptu</span>');
+          card.innerHTML = `${renderAvatarInline(p.avatar, "avatar-lg")}<div class="pc-name">${escapeHtml(p.name)}<span class="pc-sub">${escapeHtml(av.name || "")}</span></div><div class="pc-badges">${badges.join("")}</div>`;
+          pList.appendChild(card);
         });
+        if (room.players.length < 2) {
+          const slot = document.createElement("div");
+          slot.className = "players-empty-slot";
+          slot.textContent = `Arkadaşlarını davet et — oda kodu: ${room.code}`;
+          pList.appendChild(slot);
+        }
+        renderTemplatePills(room, isHost);
         return;
       }
 
       document.getElementById("lobbyView").classList.add("hidden");
-      document.getElementById("uiThemeSelect").classList.add("hidden");
       document.getElementById("restartGameBtn").classList.toggle("hidden", !isHost);
       hideAllGameViews();
       if (!["collab", "theme"].includes(mode) || room.finished) {
@@ -4106,60 +4049,6 @@
         document.getElementById("melodyWaitText").textContent = `Gönderildi! Diğer oyuncular bekleniyor (${doneCount}/${room.players.length})...`;
         document.getElementById("melodyForceEndBtn").classList.toggle("hidden", !isHost);
         if (!app.challengeTimer) startChallengeTimer("melody");
-        return;
-      }
-
-      if (mode === "tabu") {
-        document.getElementById("tabuGameView").classList.remove("hidden");
-        const teller = room.players[room.turnIndex] || room.players[0];
-        const amITeller = teller?.id === app.myId;
-        const tabuData = room.tabu || {};
-
-        if (tabuData.turnToken && app.activeTabuToken !== tabuData.turnToken) {
-          startTabuTimer(tabuData.turnToken, amITeller);
-        }
-
-        document.getElementById("tabuTellerTitle").innerHTML = `${renderAvatarInline(teller?.avatar)} Anlatıcı: ${escapeHtml(teller?.name || "-")}`;
-        document.getElementById("tabuRoleHint").textContent = amITeller
-          ? "Yasaklı kelimeleri söylemeden anlat!"
-          : "Anlatıcıyı dinle ve kelimeyi tahmin et — yasaklı kelime duyarsan TABU bas!";
-
-        const scoresBar = document.getElementById("tabuScoresBar");
-        scoresBar.innerHTML = "";
-        room.players.forEach((p) => {
-          const pts = tabuData.scores?.[p.id] ?? 0;
-          const chip = document.createElement("div");
-          chip.className = "player-chip";
-          chip.innerHTML = `${renderAvatarInline(p.avatar)} <strong>${escapeHtml(p.name)}:</strong> ${pts} puan`;
-          scoresBar.appendChild(chip);
-        });
-
-        document.getElementById("tabuTellerCard").classList.toggle("hidden", !amITeller);
-        document.getElementById("tabuGuesserBanner").classList.toggle("hidden", amITeller);
-        document.getElementById("tabuTellerControls").classList.toggle("hidden", !amITeller);
-        document.getElementById("tabuBuzzBtn").classList.toggle("hidden", amITeller);
-        document.getElementById("tabuGuessInputRow").classList.toggle("hidden", amITeller);
-
-        if (amITeller && tabuData.card) {
-          document.getElementById("tabuTargetWord").textContent = tabuData.card.word;
-          const fList = document.getElementById("tabuForbiddenList");
-          fList.innerHTML = "";
-          (tabuData.card.forbidden || []).forEach((w) => {
-            const li = document.createElement("li");
-            li.textContent = "🚫 " + w;
-            fList.appendChild(li);
-          });
-        }
-
-        const gList = document.getElementById("tabuGuessesList");
-        gList.innerHTML = "";
-        (tabuData.guesses || []).forEach((g) => {
-          const item = document.createElement("div");
-          item.className = "guess-item" + (g.correct ? " correct" : "");
-          item.innerHTML = `${renderAvatarInline(g.avatar)} <strong>${escapeHtml(g.name)}:</strong> ${escapeHtml(g.text)} ${g.correct ? "✅ DOĞRU!" : ""}`;
-          gList.appendChild(item);
-        });
-        gList.scrollTop = gList.scrollHeight;
         return;
       }
 
@@ -4920,20 +4809,21 @@
         };
       });
 
+      // FIX: Sunucu add_layer alanlarını mesajın üst seviyesinde okuyor (msg.notes, msg.hasVocal...).
+      // Eskiden "layer: {...}" içine sarıldığı için notalar boş sayılıyor, kayıt silinip sıra geçiyordu.
       sendWs({
         type: "add_layer",
         nextConcept,
-        layer: {
-          instrumentId: instId,
-          instrumentName: instName,
-          reverse: app.reverseTake || app.micReverse,
-          notes: sanitizedNotes,
-          hasVocal: Boolean(app.micBuffer),
-          vocalData: app.micBase64 || null,
-          vocalEffect: app.micEffect,
-          recordedBpm: app.bpm,
-          recordedBeats: app.beats
-        }
+        instrumentId: instId,
+        instrumentName: instName,
+        reverse: Boolean(app.reverseTake || app.micReverse),
+        vocalReverse: Boolean(app.micReverse),
+        notes: sanitizedNotes,
+        hasVocal: Boolean(app.micBuffer && app.micBase64),
+        vocalData: app.micBase64 || null,
+        vocalEffect: app.micEffect,
+        recordedBpm: app.bpm,
+        recordedBeats: app.beats
       });
 
       resetDraftStudioTake();
@@ -5006,6 +4896,231 @@
       });
     }
 
+    // ═════════════ Tema ═════════════
+    function applyTheme(id) {
+      const theme = THEMES.find((t) => t.id === id) || THEMES[0];
+      document.documentElement.setAttribute("data-theme", theme.id);
+      try { localStorage.setItem(THEME_KEY, theme.id); } catch (_) {}
+      document.querySelectorAll(".theme-dot").forEach((d) => d.classList.toggle("selected", d.dataset.themeId === theme.id));
+    }
+
+    function renderThemePickers() {
+      const current = document.documentElement.getAttribute("data-theme") || "midnight";
+      document.querySelectorAll("[data-theme-picker]").forEach((wrap) => {
+        wrap.innerHTML = "";
+        THEMES.forEach((t) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "theme-dot" + (t.id === current ? " selected" : "");
+          btn.dataset.themeId = t.id;
+          btn.title = t.name;
+          btn.innerHTML = `<span class="sw" style="background: linear-gradient(135deg, ${t.a}, ${t.b});"></span>${t.name}`;
+          btn.onclick = () => applyTheme(t.id);
+          wrap.appendChild(btn);
+        });
+      });
+    }
+
+    // ═════════════ Oda şablonları ═════════════
+    function getActiveTemplateId(room) {
+      if (!room) return null;
+      const bpm = Number(room.settings?.bpm);
+      const beats = normalizeBeats(room.settings?.beats);
+      const dj = room.djEffect || "normal";
+      return ROOM_TEMPLATES.find((t) => t.bpm === bpm && t.beats === beats && t.dj === dj)?.id || null;
+    }
+
+    function renderTemplatePills(room, isHost) {
+      const section = document.getElementById("templateSection");
+      const wrap = document.getElementById("templatePills");
+      const isLoopMode = ["collab", "theme"].includes(room.settings?.mode);
+      section.classList.toggle("hidden", !isHost || !isLoopMode);
+      document.getElementById("templateFxText").textContent = `· Efekt: ${DJ_LABELS[room.djEffect || "normal"] || "Normal"}`;
+      const activeId = getActiveTemplateId(room);
+      if (!wrap.childElementCount) {
+        ROOM_TEMPLATES.forEach((t) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "template-pill";
+          btn.dataset.templateId = t.id;
+          btn.innerHTML = `<span class="tp-name">${t.name}</span><span class="tp-meta">${t.bpm} BPM · ${t.beats} vuruş · ${DJ_LABELS[t.dj].split(" ")[0]}</span>`;
+          btn.onclick = () => applyRoomTemplate(t);
+          wrap.appendChild(btn);
+        });
+      }
+      wrap.querySelectorAll(".template-pill").forEach((b) => {
+        b.classList.toggle("active", b.dataset.templateId === activeId);
+        b.disabled = !isHost;
+      });
+    }
+
+    function applyRoomTemplate(t) {
+      if (!isHostUser() || !app.room || app.room.started) return;
+      getAudioCtx();
+      document.getElementById("lobbyBpm").value = t.bpm;
+      document.getElementById("lobbyBpmVal").textContent = t.bpm;
+      document.getElementById("lobbyBeats").value = String(t.beats);
+      sendLobbySettingsUpdate();
+      sendWs({ type: "set_dj_effect", djEffect: t.dj });
+      document.querySelectorAll(".template-pill").forEach((b) => b.classList.toggle("active", b.dataset.templateId === t.id));
+    }
+
+    // ═════════════ BPM senkron görsel ═════════════
+    const bpmPulse = { timer: null, bpm: 0 };
+    function updateBpmPulse(bpm) {
+      const indicator = document.getElementById("bpmIndicator");
+      const breath = document.getElementById("bpmBreath");
+      const active = Number(bpm) > 0;
+      indicator.classList.toggle("hidden", !active);
+      breath.classList.toggle("on", active);
+      if (active) document.getElementById("bpmIndicatorText").textContent = `${Math.round(bpm)} BPM`;
+      if (bpmPulse.bpm === bpm && (active ? bpmPulse.timer : !bpmPulse.timer)) return;
+      clearInterval(bpmPulse.timer);
+      bpmPulse.timer = null;
+      bpmPulse.bpm = bpm;
+      if (!active) return;
+      const intervalMs = Math.max(200, 60000 / bpm);
+      breath.style.setProperty("--breath-dur", `${Math.round(intervalMs * 0.85)}ms`);
+      const heart = document.getElementById("pulseHeart");
+      const holdMs = Math.min(160, intervalMs * 0.35);
+      const tick = () => {
+        heart.classList.add("beat");
+        breath.classList.add("beat");
+        setTimeout(() => {
+          heart.classList.remove("beat");
+          breath.classList.remove("beat");
+        }, holdMs);
+      };
+      tick();
+      bpmPulse.timer = setInterval(tick, intervalMs);
+    }
+
+    // ═════════════ Profil & istatistik ═════════════
+    const PROFILE_KEY = "kollay_profile";
+    function defaultProfile() {
+      return {
+        totalGames: 0, wins: 0, totalNotes: 0,
+        favoriteInstrument: null, instrumentCounts: {},
+        bestScore: null, bestScoreMode: null,
+        mostVotes: 0, modeCounts: {}, lastPlayedAt: null, recordedKeys: []
+      };
+    }
+    function loadProfile() {
+      try {
+        const p = JSON.parse(localStorage.getItem(PROFILE_KEY) || "null");
+        return p && typeof p === "object" ? { ...defaultProfile(), ...p } : defaultProfile();
+      } catch (_) { return defaultProfile(); }
+    }
+    function saveProfile(p) {
+      try { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); } catch (_) {}
+    }
+    let profileState = loadProfile();
+    let profileSaveTimer = null;
+    function scheduleProfileSave() {
+      clearTimeout(profileSaveTimer);
+      profileSaveTimer = setTimeout(() => saveProfile(profileState), 800);
+    }
+
+    function recordProfileNote(instrumentId) {
+      if (!app.room?.started || app.room?.finished) return;
+      profileState.totalNotes = (profileState.totalNotes || 0) + 1;
+      if (instrumentId) {
+        const counts = profileState.instrumentCounts || (profileState.instrumentCounts = {});
+        counts[instrumentId] = (counts[instrumentId] || 0) + 1;
+        let best = null;
+        for (const [id, n] of Object.entries(counts)) if (!best || n > counts[best]) best = id;
+        profileState.favoriteInstrument = best;
+      }
+      scheduleProfileSave();
+    }
+
+    function maybeRecordFinishedGame(room) {
+      if (!room?.started || !room.finished) return;
+      const mode = room.settings?.mode;
+      const isVoteMode = mode === "collab" || mode === "theme";
+      if (isVoteMode && !room.votingClosed) return; // kazanan henüz belli değil
+      const key = `${room.code}:${room.gameSessionId || 1}`;
+      profileState = loadProfile();
+      if ((profileState.recordedKeys || []).includes(key)) return;
+      if (!room.players.some((p) => p.id === app.myId)) return;
+
+      let won = false;
+      if (isVoteMode) {
+        const counts = {};
+        room.players.forEach((p) => { counts[p.id] = 0; });
+        Object.entries(room.votes || {}).forEach(([voter, target]) => {
+          if (voter !== target && target in counts) counts[target] += 1;
+        });
+        const max = Math.max(0, ...Object.values(counts));
+        const mine = counts[app.myId] || 0;
+        won = max > 0 && mine === max;
+        profileState.mostVotes = Math.max(profileState.mostVotes || 0, mine);
+      } else {
+        const subs = Object.values(room.submissions || {});
+        const mine = subs.find((x) => x.playerId === app.myId);
+        if (mine && Number.isFinite(Number(mine.accuracy))) {
+          const acc = Number(mine.accuracy);
+          const max = Math.max(...subs.map((x) => Number(x.accuracy) || 0));
+          won = acc > 0 && acc === max;
+          if (profileState.bestScore === null || acc > profileState.bestScore) {
+            profileState.bestScore = acc;
+            profileState.bestScoreMode = mode;
+          }
+        }
+      }
+
+      profileState.totalGames = (profileState.totalGames || 0) + 1;
+      if (won) profileState.wins = (profileState.wins || 0) + 1;
+      profileState.modeCounts = profileState.modeCounts || {};
+      profileState.modeCounts[mode] = (profileState.modeCounts[mode] || 0) + 1;
+      profileState.lastPlayedAt = Date.now();
+      profileState.recordedKeys = [...(profileState.recordedKeys || []), key].slice(-50);
+      saveProfile(profileState);
+    }
+
+    function currentProfileName() {
+      return document.getElementById("myNameInput").value.trim() || app.lastJoin?.name || "Oyuncu";
+    }
+
+    function updateProfileButton() {
+      document.getElementById("profileBtnAvatar").innerHTML = getAvatarById(app.myAvatar).svg;
+    }
+
+    function renderProfileModal() {
+      const p = loadProfile();
+      profileState = p;
+      document.getElementById("profileModalAvatar").innerHTML = getAvatarById(app.myAvatar).svg;
+      document.getElementById("profileModalTitle").textContent = currentProfileName();
+      document.getElementById("profileModalSub").textContent = p.lastPlayedAt
+        ? `Son oyun: ${new Date(p.lastPlayedAt).toLocaleString("tr-TR")}`
+        : "Henüz oyun tamamlanmadı — ilk oyununu bitirince istatistikler burada!";
+      const winRate = p.totalGames ? Math.round((p.wins / p.totalGames) * 100) : 0;
+      const favInst = p.favoriteInstrument ? (INSTRUMENTS.find((i) => i.id === p.favoriteInstrument)?.name || p.favoriteInstrument) : "—";
+      const favMode = Object.entries(p.modeCounts || {}).sort((a, b) => b[1] - a[1])[0];
+      const cards = [
+        { ico: "🎮", val: p.totalGames || 0, lbl: "Toplam Oyun", cls: "hl" },
+        { ico: "🏆", val: p.wins || 0, lbl: "Galibiyet" },
+        { ico: "📈", val: `%${winRate}`, lbl: "Kazanma Oranı" },
+        { ico: "🎵", val: (p.totalNotes || 0).toLocaleString("tr-TR"), lbl: "Toplam Nota / Vuruş" },
+        { ico: "🎯", val: p.bestScore === null ? "—" : `%${p.bestScore}`, lbl: p.bestScoreMode ? `En İyi Skor · ${MODE_LABELS[p.bestScoreMode] || p.bestScoreMode}` : "En İyi Skor" },
+        { ico: "🗳️", val: p.mostVotes || 0, lbl: "Tek Oyunda En Çok Oy" },
+        { ico: "🎹", val: escapeHtml(favInst), lbl: "Favori Enstrüman", cls: "wide" },
+        { ico: "⭐", val: favMode ? escapeHtml(MODE_LABELS[favMode[0]] || favMode[0]) : "—", lbl: "En Çok Oynanan Mod", cls: "wide" }
+      ];
+      document.getElementById("profileStatGrid").innerHTML = cards.map((c) =>
+        `<div class="stat-card ${c.cls || ""}"><div class="st-ico">${c.ico}</div><div class="st-val">${c.val}</div><div class="st-lbl">${c.lbl}</div></div>`
+      ).join("");
+      renderThemePickers();
+    }
+
+    function openProfileModal() {
+      renderProfileModal();
+      document.getElementById("profileModal").classList.remove("hidden");
+    }
+    function closeProfileModal() {
+      document.getElementById("profileModal").classList.add("hidden");
+    }
+
     function initUI() {
       const avGrid = document.getElementById("avatarGrid");
       AVATARS.forEach((av, idx) => {
@@ -5018,6 +5133,7 @@
           app.myAvatar = av.id;
           document.querySelectorAll(".avatar-btn").forEach((b) => b.classList.remove("selected"));
           btn.classList.add("selected");
+          updateProfileButton();
         };
         avGrid.appendChild(btn);
       });
@@ -5028,7 +5144,8 @@
         card.type = "button";
         card.className = "mode-card" + (idx === 0 ? " selected" : "");
         card.dataset.mode = m.id;
-        card.innerHTML = `<div class="mode-card-title">${m.title}</div><div class="mode-card-desc">${m.desc}</div>`;
+        const [emoji, ...titleRest] = m.title.split(" ");
+        card.innerHTML = `<div class="mode-card-emoji">${emoji}</div><div class="mode-card-title">${titleRest.join(" ")}</div><div class="mode-card-desc">${m.desc}</div>`;
         card.onclick = () => {
           if (!isHostUser()) return;
           document.querySelectorAll(".mode-card").forEach((c) => c.classList.remove("selected"));
@@ -5096,9 +5213,6 @@
         buildPianoBoard();
       };
 
-      document.getElementById("uiThemeSelect").onchange = (e) => {
-        document.documentElement.setAttribute("data-theme", e.target.value);
-      };
 
       document.getElementById("createRoomBtn").onclick = () => {
         getAudioCtx();
@@ -5135,12 +5249,13 @@
         const payload = { type: "start_game" };
         if (mode === "rhythm" || mode === "melody") {
           payload.challenge = buildChallengeForMode(mode);
-        } else if (mode === "tabu") {
-          payload.tabuCard = nextTabuCard();
         } else if (mode === "theme") {
           payload.concept = nextRandomConcept();
         }
+        const lobbyDj = app.room?.djEffect || "normal";
         sendWs(payload);
+        // Sunucu start_game'de efekti "normal"e sıfırlıyor; şablonla seçilen efekti hemen yeniden uygula
+        if (lobbyDj !== "normal") sendWs({ type: "set_dj_effect", djEffect: lobbyDj });
       };
 
       document.getElementById("restartGameBtn").onclick = () => {
@@ -5167,6 +5282,7 @@
         setTimeout(() => btn.classList.remove("hit"), 120);
         playFreqSound(ch.freq || 261.63, ch.instrumentId, 0.25, false);
         app.rhythmTaps.push(performance.now());
+        recordProfileNote(null);
         document.getElementById("rhythmTapInfo").textContent = `${app.rhythmTaps.length} vuruş kaydedildi.`;
       };
       document.getElementById("rhythmResetBtn").onclick = () => {
@@ -5202,18 +5318,6 @@
         });
       };
       document.getElementById("melodyForceEndBtn").onclick = () => sendWs({ type: "force_end_challenge" });
-
-      document.getElementById("tabuCorrectBtn").onclick = () => sendWs({ type: "tabu_correct", nextCard: nextTabuCard() });
-      document.getElementById("tabuPassBtn").onclick = () => sendWs({ type: "tabu_pass", nextCard: nextTabuCard() });
-      document.getElementById("tabuNextTurnBtn").onclick = () => sendWs({ type: "tabu_next_turn", nextCard: nextTabuCard() });
-      document.getElementById("tabuBuzzBtn").onclick = () => sendWs({ type: "tabu_buzz", nextCard: nextTabuCard() });
-      document.getElementById("tabuSendGuessBtn").onclick = () => {
-        const inp = document.getElementById("tabuGuessInput");
-        const text = inp.value.trim();
-        if (!text) return;
-        sendWs({ type: "tabu_guess", text, nextCard: nextTabuCard() });
-        inp.value = "";
-      };
 
       document.getElementById("saveTurnBtn").onclick = saveMyLayerAndAdvance;
       document.getElementById("skipTurnBtn").onclick = () => {
@@ -5287,6 +5391,7 @@
           setTimeout(() => btn.classList.remove("hit"), 120);
 
           playFreqSound(261.63, percId, 0.34, true, lockedSynth);
+          recordProfileNote(percId);
 
           if (app.recordArmed) {
             const hk = `perc:${percId}:${performance.now()}`;
@@ -5394,9 +5499,6 @@
       document.getElementById("lobbyBpm").oninput = () => {
         document.getElementById("lobbyBpmVal").textContent = document.getElementById("lobbyBpm").value;
       };
-      document.getElementById("tabuGuessInput").addEventListener("keydown", (e) => {
-        if (e.key === "Enter") document.getElementById("tabuSendGuessBtn").click();
-      });
       document.getElementById("roomCodeInput").addEventListener("keydown", (e) => {
         if (e.key === "Enter") document.getElementById("joinRoomBtn").click();
       });
@@ -5423,6 +5525,32 @@
       });
 
       updateLobbyModeFields("collab");
+
+      // Tema
+      let savedTheme = "midnight";
+      try { savedTheme = localStorage.getItem(THEME_KEY) || "midnight"; } catch (_) {}
+      if (!THEMES.some((t) => t.id === savedTheme)) savedTheme = "midnight";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+      renderThemePickers();
+
+      // Profil
+      updateProfileButton();
+      document.getElementById("profileBtn").onclick = openProfileModal;
+      document.getElementById("profileCloseBtn").onclick = closeProfileModal;
+      document.getElementById("profileModal").addEventListener("click", (e) => {
+        if (e.target.id === "profileModal") closeProfileModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !document.getElementById("profileModal").classList.contains("hidden")) closeProfileModal();
+      });
+      document.getElementById("profileResetBtn").onclick = () => {
+        if (!confirm("Tüm istatistiklerin silinsin mi? Bu işlem geri alınamaz.")) return;
+        const keep = loadProfile().recordedKeys || [];
+        profileState = { ...defaultProfile(), recordedKeys: keep };
+        saveProfile(profileState);
+        renderProfileModal();
+      };
+      window.addEventListener("beforeunload", () => saveProfile(profileState));
     }
 
     initUI();
