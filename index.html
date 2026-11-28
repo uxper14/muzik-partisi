@@ -109,6 +109,58 @@
       --glow-b: rgba(170, 170, 170, 0.06);
     }
 
+    /* Renk körü dostu tema: lacivert / sarı / mavi / beyaz / turuncu — kırmızı-yeşil ayrımına dayanmaz */
+    [data-theme="colorblind"] {
+      --bg-primary: #0a1628;
+      --bg-secondary: #12233d;
+      --accent-secondary: #4FC3F7;
+      --text-primary: #FFFFFF;
+      --text-secondary: #c9d6ea;
+      --warning: #FF8C00;
+      --success: #00BCD4;
+      --bg-a: #0a1628;
+      --bg-b: #12233d;
+      --card: rgba(18, 35, 61, 0.92);
+      --card-solid: #12233d;
+      --card-border: rgba(255, 255, 255, 0.28);
+      --text: #FFFFFF;
+      --muted: #c9d6ea;
+      --accent: #FFD700;
+      --accent-2: #4FC3F7;
+      --accent-rgb: 255, 215, 0;
+      --accent2-rgb: 79, 195, 247;
+      --on-accent: #0a1628;
+      --danger: #FF8C00;
+      --ok: #00BCD4;
+      --glow-a: rgba(255, 215, 0, 0.12);
+      --glow-b: rgba(79, 195, 247, 0.14);
+    }
+    [data-theme="colorblind"] .btn-success,
+    [data-theme="colorblind"] .btn-success:hover:not(:disabled) {
+      background: linear-gradient(135deg, #0097a7, #00BCD4); color: #0a1628;
+      box-shadow: 0 8px 22px rgba(0, 188, 212, 0.32);
+    }
+    [data-theme="colorblind"] .btn-danger,
+    [data-theme="colorblind"] .btn-danger:hover:not(:disabled) {
+      background: linear-gradient(135deg, #e07b00, #FF8C00); color: #0a1628;
+    }
+    [data-theme="colorblind"] .channel-rule-bar.recording-mode {
+      background: rgba(255, 140, 0, 0.16); border-color: #FF8C00; border-style: dashed;
+    }
+    [data-theme="colorblind"] .channel-pill.active {
+      background: rgba(0, 188, 212, 0.24); border-color: #00BCD4; color: #FFFFFF;
+    }
+    [data-theme="colorblind"] .channel-pill.locked { color: #FF8C00; }
+    [data-theme="colorblind"] .answer-box {
+      background: rgba(0, 188, 212, 0.14); border-color: rgba(0, 188, 212, 0.6);
+    }
+    [data-theme="colorblind"] .pc-badge.off {
+      background: rgba(255, 140, 0, 0.18); border-color: #FF8C00; color: #FFFFFF;
+    }
+    [data-theme="colorblind"] #melodyReplayBadge.is-empty { border-color: #FF8C00; }
+    [data-theme="colorblind"] .theme-dot.selected,
+    [data-theme="colorblind"] .mode-card.selected { border-width: 3px; }
+
     * { box-sizing: border-box; }
 
     body {
@@ -558,10 +610,7 @@
       text-decoration: line-through;
     }
 
-    .theme-banner {
-      border-left: 4px solid var(--accent-2);
-      background: linear-gradient(90deg, rgba(34, 211, 238, 0.14), rgba(124, 92, 255, 0.08));
-    }
+    #melodyReplayBadge.is-empty { opacity: 0.6; border-color: rgba(239, 68, 68, 0.5); }
 
     .synth-knobs-grid {
       display: grid;
@@ -1400,6 +1449,23 @@
               </select>
             </div>
 
+            <div class="field-box hidden" id="fieldReplayLimit">
+              <label for="lobbyReplayLimit">Yeniden Dinleme Hakkı</label>
+              <select id="lobbyReplayLimit">
+                <option value="-1">♾️ Sonsuz</option>
+                <option value="1" selected>1 Hak</option>
+                <option value="2">2 Hak</option>
+                <option value="3">3 Hak</option>
+                <option value="4">4 Hak</option>
+                <option value="5">5 Hak</option>
+                <option value="6">6 Hak</option>
+                <option value="7">7 Hak</option>
+                <option value="8">8 Hak</option>
+                <option value="9">9 Hak</option>
+                <option value="10">10 Hak</option>
+              </select>
+            </div>
+
             <div class="field-box" id="fieldSecretMode">
               <label for="lobbySecretToggle">Gizli Kayıt Modu</label>
               <label style="display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--text);">
@@ -1451,6 +1517,7 @@
 
         <div class="controls-cluster" style="margin-bottom: 12px;">
           <button id="melodyListenBtn" class="btn btn-primary">👂 Melodiyi Dinle</button>
+          <span class="badge-pill" id="melodyReplayBadge" title="Kalan yeniden dinleme hakkı">🔁 Yeniden dinleme: 1</span>
           <select id="melodyGuessSelect" title="Çalgı Tahmini"></select>
           <button id="melodyResetBtn" class="btn btn-secondary">🔄 Çalınanı Sıfırla</button>
           <button id="melodyFinishBtn" class="btn btn-success">✅ Melodiyi Bitirdim</button>
@@ -1536,15 +1603,6 @@
         </div>
       </div>
 
-      <section id="themeBanner" class="card theme-banner hidden">
-        <div class="section-head" style="margin-bottom: 0;">
-          <div>
-            <span class="muted">SAHNE TEMASI</span>
-            <h2 id="conceptTitle" style="margin-top: 4px;">---</h2>
-          </div>
-          <button id="newConceptBtn" class="btn btn-secondary">🎲 Yeni Tema</button>
-        </div>
-      </section>
 
       <!-- KURUCU DJ PANELİ -->
       <section class="card" id="djPanelCard">
@@ -1802,7 +1860,6 @@
 
     const GAME_MODES = [
       { id: "collab", title: "🤝 Herkes Bir Şey Eklesin", desc: "Ortak loop üstüne kendi katmanını ekle, gönderince sıra diğerine geçsin." },
-      { id: "theme", title: "🎭 Temalı Beste", desc: "Sahne temasına göre yap, gönderince odada herkes dinlesin." },
       { id: "rhythm", title: "🥁 Ritmi Taklit Et", desc: "Rastgele üretilen ritmi dinle, yap, herkes bitince yüzdeleri gör." },
       { id: "melody", title: "🎹 Melodiyi Taklit Et", desc: "Tek oktav melodiyi dinle, çal ve sonuçta kendi notalarını gör." }
     ];
@@ -1832,30 +1889,6 @@
       "hihat_open", "hihat_pedal", "crash_cymbal", "ride_cymbal", "rimshot",
       "tom_drum", "shaker", "cowbell", "marimba", "kalimba"
     ];
-
-    const SAMPLE_BASES = [
-      "https://nbrosowsky.github.io/tonejs-instruments/samples/"
-    ];
-
-    const SAMPLE_INSTRUMENT_MAP = {
-      grand_piano: { folder: "piano", notes: ["C3", "F3", "A3", "C4", "F4", "A4", "C5", "F5", "A5"] },
-      upright_piano: { folder: "piano", notes: ["C3", "G3", "C4", "G4", "C5", "G5"] },
-      epiano: { folder: "electric_piano", notes: ["C3", "E3", "G3", "B3", "C4", "E4", "G4", "B4"] },
-      electric_guitar: { folder: "guitar-electric", notes: ["E2", "A2", "D3", "G3", "B3", "E4", "A4", "D5"] },
-      acoustic_guitar: { folder: "guitar-acoustic", notes: ["E2", "A2", "D3", "G3", "B3", "E4", "A4", "D5"] },
-      harp: { folder: "harp", notes: ["C3", "G3", "C4", "F4", "A4", "C5", "G5"] },
-      violin: { folder: "violin", notes: ["G3", "C4", "G4", "C5", "G5", "C6"] },
-      cello: { folder: "cello", notes: ["C2", "G2", "C3", "G3", "C4", "G4"] },
-      flute: { folder: "flute", notes: ["C4", "E4", "G4", "C5", "E5", "G5", "C6"] },
-      clarinet: { folder: "clarinet", notes: ["D3", "A3", "F4", "C5", "G5"] },
-      trumpet: { folder: "trumpet", notes: ["C4", "F4", "A4", "C5", "F5", "G5"] },
-      saxophone: { folder: "saxophone", notes: ["Db3", "Ab3", "Db4", "Ab4", "Db5", "F5"] },
-      marimba: { folder: "marimba", notes: ["C3", "C4", "C5", "C6"] },
-      vibraphone: { folder: "vibraphone", notes: ["C4", "F4", "A4", "C5", "F5", "A5"] },
-      church_organ: { folder: "organ", notes: ["C3", "G3", "C4", "G4", "C5", "G5"] },
-      bass_guitar: { folder: "bass-electric", notes: ["E1", "A1", "D2", "G2", "C3", "E3"] },
-      synth_lead: { folder: "harmonium", notes: ["C3", "G3", "C4", "G4", "C5"] }
-    };
 
     const INSTRUMENTS = [
       { id: "grand_piano", name: "Kuyruklu Piyano", type: "piano" },
@@ -1918,7 +1951,8 @@
       { id: "ocean", name: "Okyanus", a: "#00b4d8", b: "#48cae4" },
       { id: "forest", name: "Orman", a: "#2d9e5f", b: "#96e6a1" },
       { id: "candy", name: "Şeker", a: "#ff6eb4", b: "#c77dff" },
-      { id: "mono", name: "Mono", a: "#ffffff", b: "#aaaaaa" }
+      { id: "mono", name: "Mono", a: "#ffffff", b: "#aaaaaa" },
+      { id: "colorblind", name: "Renk Körü Dostu", a: "#FFD700", b: "#4FC3F7" }
     ];
 
     // ─── Oda şablonları (DJ efekti sunucunun izin verdiği değerlerden) ───
@@ -1931,19 +1965,7 @@
       { id: "ambient", name: "🌊 Ambient", bpm: 60, dj: "cave", beats: 4 }
     ];
 
-    const MODE_LABELS = { collab: "Herkes Bir Şey Eklesin", theme: "Temalı Beste", rhythm: "Ritmi Taklit Et", melody: "Melodiyi Taklit Et" };
-
-    const CONCEPTS = [
-      "Gergin Robot", "Yağmurda Koşmak", "Fırtına Geliyor", "Güneşli Piknik", "Karlı Gece",
-      "Rüzgarlı Tepe", "Şelale Kenarı", "Sonbahar Yaprakları", "Yıldızlı Çöl", "Kayıp Ada",
-      "Korsan Gemisi", "Gizli Mağara", "Uzay Gemisi", "Antik Tapınak", "Lunapark",
-      "Eski Tren", "Deniz Feneri", "Büyülü Orman", "Volkan Kenarı", "Hızlı Kaçış",
-      "Gizli Sızma", "Saklambaç", "Uçuş Zamanı", "Yokuş Aşağı", "Dans Pisti",
-      "Yarış Başlıyor", "Kaçan Kedi", "Uykulu Sabah", "Ters Dünya", "Bozuk Saat",
-      "Şaşkın Büyücü", "Karanlık Koridor", "Ayak Sesleri", "Sisli Liman", "Kilitli Kapı",
-      "Gece Nöbeti", "Kayıp Sinyal", "Gölge Avı", "Eski Kaset", "Gün Batımı",
-      "Eski Dostlar", "Zafer Anı", "Hüzünlü Veda", "Umut Işığı", "Kutlama"
-    ];
+    const MODE_LABELS = { collab: "Herkes Bir Şey Eklesin", rhythm: "Ritmi Taklit Et", melody: "Melodiyi Taklit Et" };
 
     const BASE_KEYS = [
       { slot: "C0", label: "Do", semi: 0, isBlack: false },
@@ -2090,10 +2112,9 @@
       takeAnchorPerf: null,
       pendingTakeByHoldKey: new Map(),
       activeHeldNotes: new Map(),
-      sampleBuffers: new Map(),
-      loadingSamples: new Set(),
+      activePreviewSources: new Set(), // deneme/kayıt sırasında çalan vokal önizleme kaynakları
+      modeSwitching: false,
       vocalBufferCache: new Map(),
-      conceptHistory: [],
       rhythmTaps: [],
       melodyPlayed: [],
       micBuffer: null,
@@ -2108,7 +2129,6 @@
       micRecordedChunks: [],
       micRecordTimer: null,
       micStartTimer: null,
-      failedSamples: new Set(),
       pianoBuiltOctave: null,
       turnTimerKey: null,
       lastStarted: false,
@@ -2167,8 +2187,146 @@
 
     function setRecordArmed(armed) {
       if (!canIEditStudio()) return;
-      app.recordArmed = Boolean(armed);
+      const next = Boolean(armed);
+      if (next === app.recordArmed) { updateChannelLockUI(); return; }
+      // FIX: Deneme ↔ Kayıt geçişinde eski dinleyiciler, buffer ve sesler temizlenir
+      cleanupStudioSession({ keepArmed: false });
+      app.recordArmed = next;
+      bindStudioInputHandlers();
       updateChannelLockUI();
+      const st = document.getElementById("takeStatus");
+      if (st) {
+        st.textContent = next
+          ? "🔴 Kayıt Modu: Temiz bir kayıt başladı. İlk bastığın kanal kilitlenecek."
+          : "🎧 Deneme Modu: Önceki kayıt temizlendi. İstediğin sesi dene!";
+      }
+    }
+
+    // Tüm aktif sesleri durdurur (tutulan notalar, klavye notaları, vokal önizlemeleri)
+    function stopAllActiveStudioAudio() {
+      releaseAllKeyboardNotes();
+      releaseAllHeldVoices();
+      app.activePreviewSources.forEach((src) => {
+        try { src.onended = null; src.stop(); } catch (_) {}
+        try { src.disconnect(); } catch (_) {}
+      });
+      app.activePreviewSources.clear();
+      document.querySelectorAll("#pianoBoard .active, #studioPercWrap .hit").forEach((el) => el.classList.remove("active", "hit"));
+      document.querySelectorAll("#pianoBoard [data-pressed]").forEach((el) => { el.dataset.pressed = ""; });
+    }
+
+    // Deneme/Kayıt oturumunu sıfırlar: buffer'lar, bayraklar, kanal kilidi, mikrofon, sesler
+    function cleanupStudioSession({ keepArmed = false } = {}) {
+      app.modeSwitching = true;
+      try {
+        stopMicRecordingNow();
+        stopAllActiveStudioAudio();
+        app.pendingTakeByHoldKey.clear();
+        app.currentTakeNotes = [];
+        app.takeAnchorPerf = null;
+        app.selectedChannel = null;
+        app.lockedMelodicId = null;
+        app.micRecordedChunks = [];
+        app.micBuffer = null;
+        app.micBase64 = null;
+        app.micReverse = false;
+        app.reverseTake = false;
+        if (!keepArmed) app.recordArmed = false;
+        const revTake = document.getElementById("reverseTakeBtn");
+        if (revTake) revTake.classList.remove("active");
+        const playBtn = document.getElementById("micPlayBtn");
+        const revBtn = document.getElementById("micRevBtn");
+        const delBtn = document.getElementById("micDelBtn");
+        if (playBtn) playBtn.disabled = true;
+        if (revBtn) { revBtn.disabled = true; revBtn.classList.remove("active"); }
+        if (delBtn) delBtn.disabled = true;
+      } finally {
+        app.modeSwitching = false;
+      }
+    }
+
+    // ─── Named event handler'lar (removeEventListener ile temizlenebilsin diye) ───
+    function onPianoKeyPointerDown(e) {
+      const btn = e.currentTarget;
+      e.stopPropagation();
+      const keyObj = findPianoKeyBySlot(btn.dataset.slot);
+      if (!keyObj) return;
+      try { btn.setPointerCapture(e.pointerId); } catch (_) {}
+      if (btn.dataset.pressed === "1") return; // çift tetiklemeyi engelle
+      btn.dataset.pressed = "1";
+      btn.classList.add("active");
+      onPianoKeyPressDown(keyObj);
+    }
+
+    function onPianoKeyPointerUp(e) {
+      const btn = e.currentTarget;
+      if (e) e.stopPropagation();
+      if (btn.dataset.pressed !== "1") return;
+      btn.dataset.pressed = "";
+      btn.classList.remove("active");
+      const keyObj = findPianoKeyBySlot(btn.dataset.slot);
+      if (keyObj) onPianoKeyRelease(keyObj);
+    }
+
+    const PIANO_POINTER_EVENTS = [
+      ["pointerdown", onPianoKeyPointerDown],
+      ["pointerup", onPianoKeyPointerUp],
+      ["pointercancel", onPianoKeyPointerUp],
+      ["lostpointercapture", onPianoKeyPointerUp]
+    ];
+
+    function unbindPianoKeyHandlers() {
+      document.querySelectorAll("#pianoBoard .white-key, #pianoBoard .black-key").forEach((btn) => {
+        PIANO_POINTER_EVENTS.forEach(([ev, fn]) => btn.removeEventListener(ev, fn));
+        btn.dataset.pressed = "";
+      });
+    }
+
+    function bindPianoKeyHandlers() {
+      unbindPianoKeyHandlers();
+      document.querySelectorAll("#pianoBoard .white-key, #pianoBoard .black-key").forEach((btn) => {
+        PIANO_POINTER_EVENTS.forEach(([ev, fn]) => btn.addEventListener(ev, fn));
+      });
+    }
+
+    function unbindPercPadHandlers() {
+      document.querySelectorAll("#studioPercWrap .perc-pad-btn").forEach((btn) => {
+        btn.removeEventListener("pointerdown", onPercPadPointerDown);
+        btn.onpointerdown = null;
+      });
+    }
+
+    function bindPercPadHandlers() {
+      unbindPercPadHandlers();
+      document.querySelectorAll("#studioPercWrap .perc-pad-btn").forEach((btn) => {
+        btn.addEventListener("pointerdown", onPercPadPointerDown);
+      });
+    }
+
+    function unbindKeyboardPianoHandlers() {
+      document.removeEventListener("keydown", handlePianoKeyDown);
+      document.removeEventListener("keyup", handlePianoKeyUp);
+      window.removeEventListener("blur", releaseAllKeyboardNotes);
+      document.removeEventListener("visibilitychange", onVisibilityReleaseNotes);
+    }
+
+    function bindKeyboardPianoHandlers() {
+      unbindKeyboardPianoHandlers(); // aynı handler iki kez eklenmesin
+      document.addEventListener("keydown", handlePianoKeyDown);
+      document.addEventListener("keyup", handlePianoKeyUp);
+      window.addEventListener("blur", releaseAllKeyboardNotes);
+      document.addEventListener("visibilitychange", onVisibilityReleaseNotes);
+    }
+
+    function onVisibilityReleaseNotes() {
+      if (document.hidden) releaseAllKeyboardNotes();
+    }
+
+    // Tüm stüdyo giriş dinleyicilerini önce kaldırıp tek kopya olarak yeniden bağlar
+    function bindStudioInputHandlers() {
+      bindPianoKeyHandlers();
+      bindPercPadHandlers();
+      bindKeyboardPianoHandlers();
     }
 
     function selectChannel(channelName, melodicInstId = null) {
@@ -2269,79 +2427,13 @@
     }
 
     function resetDraftStudioTake() {
-      releaseAllHeldVoices();
-      stopMicRecordingNow();
-      app.recordArmed = false;
-      app.currentTakeNotes = [];
-      app.pendingTakeByHoldKey.clear();
-      app.takeAnchorPerf = null;
-      app.selectedChannel = null;
-      app.lockedMelodicId = null;
-      app.micBuffer = null;
-      app.micBase64 = null;
-      app.micReverse = false;
-      const playBtn = document.getElementById("micPlayBtn");
-      const revBtn = document.getElementById("micRevBtn");
-      const delBtn = document.getElementById("micDelBtn");
+      cleanupStudioSession({ keepArmed: false });
+      bindStudioInputHandlers();
       const st = document.getElementById("takeStatus");
       const micSt = document.getElementById("micStatus");
-      if (playBtn) playBtn.disabled = true;
-      if (revBtn) {
-        revBtn.disabled = true;
-        revBtn.classList.remove("active");
-      }
-      if (delBtn) delBtn.disabled = true;
       if (st) st.textContent = "🎧 Deneme Modu: İstediğin sesi dene! Kaydetmek için yukarıdan 'Kayıt Modunu Başlat'a bas.";
       if (micSt) micSt.textContent = "Mikrofon kaydı yaparsan otomatik olarak Mikrofon kanalını seçer; istemezsen silip diğerlerini deneyebilirsin.";
       updateChannelLockUI();
-    }
-
-    async function loadInstrumentSamples(instrumentId) {
-      const cfg = SAMPLE_INSTRUMENT_MAP[instrumentId];
-      if (!cfg) return;
-      const ctx = getAudioCtx();
-
-      await Promise.all(
-        cfg.notes.map(async (noteName) => {
-          const cacheKey = `${instrumentId}:${noteName}`;
-          if (app.sampleBuffers.has(cacheKey) || app.loadingSamples.has(cacheKey) || app.failedSamples.has(cacheKey)) return;
-          app.loadingSamples.add(cacheKey);
-          const fileSlug = noteName.replace("#", "%23");
-          for (const base of SAMPLE_BASES) {
-            const url = `${base}${cfg.folder}/${fileSlug}.mp3`;
-            try {
-              const resp = await fetch(url);
-              if (!resp.ok) continue;
-              const arr = await resp.arrayBuffer();
-              const decoded = await ctx.decodeAudioData(arr);
-              app.sampleBuffers.set(cacheKey, {
-                buffer: decoded,
-                midi: noteNameToMidi(noteName)
-              });
-              break;
-            } catch (_) {}
-          }
-          if (!app.sampleBuffers.has(cacheKey)) app.failedSamples.add(cacheKey);
-          app.loadingSamples.delete(cacheKey);
-        })
-      );
-    }
-
-    function findClosestSample(instrumentId, targetMidi) {
-      const cfg = SAMPLE_INSTRUMENT_MAP[instrumentId];
-      if (!cfg) return null;
-      let best = null;
-      let bestDiff = Infinity;
-      for (const noteName of cfg.notes) {
-        const item = app.sampleBuffers.get(`${instrumentId}:${noteName}`);
-        if (!item) continue;
-        const diff = Math.abs(item.midi - targetMidi);
-        if (diff < bestDiff) {
-          bestDiff = diff;
-          best = item;
-        }
-      }
-      return best;
     }
 
     function createNoiseBuffer(ctx, duration = 0.4, fadeMs = 6) {
@@ -2858,6 +2950,7 @@
         }
       }
 
+      // ─── Tamamen Web Audio tabanlı melodik sentezleyici (CDN sample yok) ───
       const master = ctx.createGain();
       const filter = ctx.createBiquadFilter();
       filter.type = "lowpass";
@@ -2865,117 +2958,41 @@
       filter.Q.setValueAtTime(Math.max(0.6, Math.min(12, sp.resonance)), now);
       filter.connect(master).connect(stageOut);
 
-      loadInstrumentSamples(inst.id);
-
-      const targetMidi = freqToMidi(f);
-      let sampleHit = findClosestSample(inst.id, targetMidi);
-      // Seçilen enstrümanın sample'ları henüz yüklenmediyse sessiz kalmak yerine grand_piano'ya düş
-      if (!sampleHit && SAMPLE_INSTRUMENT_MAP[inst.id] && inst.id !== "grand_piano") {
-        loadInstrumentSamples("grand_piano");
-        sampleHit = findClosestSample("grand_piano", targetMidi);
-      }
-
-      const minNaturalHoldSec = 0.34 * durScale;
-      const naturalReleaseSec = 0.42 * durScale;
-
-      if (sampleHit) {
-        const src = ctx.createBufferSource();
-        src.buffer = sampleHit.buffer;
-        const semiDiff = targetMidi - sampleHit.midi;
-        src.playbackRate.setValueAtTime(Math.pow(2, semiDiff / 12), now);
-        if (src.detune) src.detune.setValueAtTime(detuneCents, now);
-        master.gain.setValueAtTime(0.0001, now);
-        master.gain.linearRampToValueAtTime(0.32, now + 0.006);
-
-        if (!isHoldMode) {
-          const activeSec = Math.max(minNaturalHoldSec, Math.min(10.0, timedDuration * durScale));
-          const endT = now + activeSec + naturalReleaseSec;
-          master.gain.setValueAtTime(0.3, Math.max(now + 0.01, now + activeSec));
-          master.gain.exponentialRampToValueAtTime(0.0001, endT);
-          src.connect(filter);
-          src.start(now);
-          src.stop(endT + 0.04);
-          return { release: () => {} };
-        }
-
-        src.connect(filter);
-        src.start(now);
-
-        let released = false;
-        return {
-          release: () => {
-            if (released) return;
-            released = true;
-            const relT = Math.max(ctx.currentTime, now + minNaturalHoldSec);
-            const stopT = relT + naturalReleaseSec;
-            try {
-              master.gain.cancelScheduledValues(relT);
-              master.gain.setValueAtTime(Math.max(0.0008, master.gain.value || 0.3), relT);
-              master.gain.exponentialRampToValueAtTime(0.0001, stopT);
-              const msLeft = Math.max(80, Math.ceil((stopT - ctx.currentTime) * 1000) + 40);
-              setTimeout(() => { try { src.stop(); } catch (_) {} }, msLeft);
-            } catch (_) {}
-          }
-        };
-      }
-
-      let attack = 0.006;
-      let peak = 0.25;
-      let partials = [
-        { ratio: 1, wave: "triangle", gain: 0.72, cents: -detuneCents * 0.25 },
-        { ratio: 2, wave: "sine", gain: 0.16, cents: detuneCents * 0.2 }
-      ];
-
-      if (inst.type === "brass") {
-        attack = 0.012; peak = 0.26;
-        partials = [
-          { ratio: 1, wave: "sawtooth", gain: 0.65, cents: -6 - detuneCents * 0.3 },
-          { ratio: 1, wave: "square", gain: 0.24, cents: 6 + detuneCents * 0.3 },
-          { ratio: 2, wave: "sawtooth", gain: 0.3, cents: 0 }
-        ];
-      } else if (inst.type === "strings" || inst.type === "cello") {
-        attack = 0.02; peak = 0.25;
-        const ratioBase = inst.type === "cello" ? 0.5 : 1;
-        partials = [
-          { ratio: ratioBase, wave: "sawtooth", gain: 0.56, cents: -10 - detuneCents * 0.4 },
-          { ratio: ratioBase, wave: "sawtooth", gain: 0.48, cents: 10 + detuneCents * 0.4 }
-        ];
-      } else if (inst.type === "flute" || inst.type === "clarinet" || inst.type === "sax") {
-        attack = 0.012; peak = 0.25;
-        partials = [
-          { ratio: 1, wave: "sine", gain: 0.8, cents: 0 },
-          { ratio: 2, wave: "triangle", gain: 0.22, cents: detuneCents * 0.2 }
-        ];
-      } else if (inst.type === "bass") {
-        attack = 0.005; peak = 0.28;
-        partials = [
-          { ratio: 1, wave: "sine", gain: 0.76, cents: 0 },
-          { ratio: 1, wave: "triangle", gain: 0.28, cents: detuneCents * 0.2 }
-        ];
-      }
+      const voice = buildMelodicVoice(ctx, filter, inst.type, f, now, detuneCents);
+      const env = voice.env;
+      const decaySec = env.decay * durScale;
+      const releaseSec = env.release * durScale;
+      const minHoldSec = Math.max(0.12, Math.min(0.34, env.attack + 0.1)) * durScale;
+      const sustainLvl = Math.max(0.0001, env.peak * env.sustain);
 
       master.gain.setValueAtTime(0.0001, now);
-      master.gain.linearRampToValueAtTime(peak, now + attack);
+      master.gain.linearRampToValueAtTime(env.peak, now + env.attack);
+      if (env.sustain <= 0.001) {
+        // Vurmalı/teli çekilen tınılar: tutulsa bile doğal olarak söner
+        master.gain.exponentialRampToValueAtTime(0.0001, now + env.attack + decaySec);
+      } else {
+        master.gain.setTargetAtTime(sustainLvl, now + env.attack, Math.max(0.02, decaySec / 3));
+      }
 
-      const oscs = partials.map((p) => {
-        const osc = ctx.createOscillator();
-        const g = ctx.createGain();
-        osc.type = p.wave;
-        osc.frequency.setValueAtTime(f * p.ratio, now);
-        if (p.cents) osc.detune.setValueAtTime(p.cents, now);
-        g.gain.value = p.gain;
-        osc.connect(g).connect(filter);
-        osc.start(now);
-        return osc;
-      });
+      const stopAll = (t) => voice.sources.forEach((s) => { try { s.stop(t); } catch (_) {} });
 
       if (!isHoldMode) {
-        const activeSec = Math.max(minNaturalHoldSec, Math.min(10.0, timedDuration * durScale));
-        const endT = now + activeSec + naturalReleaseSec;
-        master.gain.setValueAtTime(Math.max(0.001, peak * 0.85), Math.max(now + attack + 0.004, now + activeSec));
-        master.gain.exponentialRampToValueAtTime(0.0001, endT);
-        oscs.forEach((o) => o.stop(endT + 0.04));
+        const activeSec = Math.max(minHoldSec, Math.min(10.0, timedDuration * durScale));
+        if (env.sustain <= 0.001) {
+          const endT = now + env.attack + Math.min(decaySec, activeSec + releaseSec + decaySec);
+          stopAll(endT + 0.05);
+          return { release: () => {} };
+        }
+        const relT = now + activeSec;
+        const endT = relT + releaseSec;
+        master.gain.cancelScheduledValues(relT);
+        master.gain.setTargetAtTime(0.0001, relT, Math.max(0.015, releaseSec / 4));
+        stopAll(endT + 0.08);
         return { release: () => {} };
+      }
+
+      if (env.sustain <= 0.001) {
+        stopAll(now + env.attack + decaySec + 0.05);
       }
 
       let released = false;
@@ -2983,19 +3000,315 @@
         release: () => {
           if (released) return;
           released = true;
-          const relT = Math.max(ctx.currentTime, now + minNaturalHoldSec);
-          const stopT = relT + naturalReleaseSec;
+          if (env.sustain <= 0.001) return;
+          const relT = Math.max(ctx.currentTime, now + minHoldSec);
+          const stopT = relT + releaseSec;
           try {
             master.gain.cancelScheduledValues(relT);
-            master.gain.setValueAtTime(Math.max(0.0008, master.gain.value || peak * 0.85), relT);
+            master.gain.setValueAtTime(Math.max(0.0008, master.gain.value || sustainLvl), relT);
             master.gain.exponentialRampToValueAtTime(0.0001, stopT);
-            const msLeft = Math.max(80, Math.ceil((stopT - ctx.currentTime) * 1000) + 40);
-            setTimeout(() => {
-              oscs.forEach((o) => { try { o.stop(); } catch (_) {} });
-            }, msLeft);
+            const msLeft = Math.max(80, Math.ceil((stopT - ctx.currentTime) * 1000) + 60);
+            setTimeout(() => stopAll(), msLeft);
           } catch (_) {}
         }
       };
+    }
+
+    // Karplus-Strong tel sentezi için önbellekli buffer üretimi
+    const ksBufferCache = new Map();
+    function getKarplusBuffer(ctx, freq, seconds = 2.2, damping = 0.996, brightness = 0.5) {
+      const key = `${ctx.sampleRate}:${Math.round(freq * 4)}:${seconds}:${damping}:${brightness}`;
+      if (ksBufferCache.has(key)) return ksBufferCache.get(key);
+      const rate = ctx.sampleRate;
+      const len = Math.max(2, Math.floor(rate * seconds));
+      const period = Math.max(2, Math.round(rate / Math.max(20, freq)));
+      const buf = ctx.createBuffer(1, len, rate);
+      const out = buf.getChannelData(0);
+      const ring = new Float32Array(period);
+      for (let i = 0; i < period; i++) ring[i] = Math.random() * 2 - 1;
+      let idx = 0;
+      for (let i = 0; i < len; i++) {
+        const cur = ring[idx];
+        const next = ring[(idx + 1) % period];
+        // brightness: 1 → daha az yumuşatma (parlak), 0 → klasik ortalama (yumuşak)
+        ring[idx] = damping * (brightness * cur + (1 - brightness) * 0.5 * (cur + next));
+        out[i] = cur;
+        idx = (idx + 1) % period;
+      }
+      if (ksBufferCache.size > 160) ksBufferCache.delete(ksBufferCache.keys().next().value);
+      ksBufferCache.set(key, buf);
+      return buf;
+    }
+
+    // Enstrüman tipine göre ses kaynaklarını kurar; zarf (env) bilgisini döndürür
+    function buildMelodicVoice(ctx, dest, type, f, now, detuneCents = 0) {
+      const sources = [];
+      const osc = (wave, freq, gain, cents = 0, target = dest) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = wave;
+        o.frequency.setValueAtTime(freq, now);
+        if (cents) o.detune.setValueAtTime(cents, now);
+        g.gain.value = gain;
+        o.connect(g).connect(target);
+        o.start(now);
+        sources.push(o);
+        return { o, g };
+      };
+      const lfo = (rate, depth, param, delay = 0) => {
+        const l = ctx.createOscillator();
+        const lg = ctx.createGain();
+        l.type = "sine";
+        l.frequency.setValueAtTime(rate, now);
+        lg.gain.setValueAtTime(0, now);
+        lg.gain.linearRampToValueAtTime(depth, now + delay + 0.001);
+        l.connect(lg).connect(param);
+        l.start(now);
+        sources.push(l);
+        return l;
+      };
+      const biquad = (kind, freq, q = 1, target = dest) => {
+        const b = ctx.createBiquadFilter();
+        b.type = kind;
+        b.frequency.setValueAtTime(Math.min(18000, Math.max(30, freq)), now);
+        b.Q.value = q;
+        b.connect(target);
+        return b;
+      };
+      const fm = (ratio, index, decayT, target, carrierWave = "sine", gain = 1) => {
+        const car = ctx.createOscillator();
+        const mod = ctx.createOscillator();
+        const modGain = ctx.createGain();
+        const cg = ctx.createGain();
+        car.type = carrierWave;
+        mod.type = "sine";
+        car.frequency.setValueAtTime(f, now);
+        mod.frequency.setValueAtTime(f * ratio, now);
+        modGain.gain.setValueAtTime(f * index, now);
+        modGain.gain.exponentialRampToValueAtTime(Math.max(0.01, f * index * 0.08), now + decayT);
+        cg.gain.value = gain;
+        mod.connect(modGain).connect(car.frequency);
+        car.connect(cg).connect(target);
+        car.start(now); mod.start(now);
+        sources.push(car, mod);
+      };
+      const noise = (dur, target, gain = 1) => {
+        const n = ctx.createBufferSource();
+        n.buffer = createNoiseBuffer(ctx, dur, 8);
+        n.loop = true;
+        const g = ctx.createGain();
+        g.gain.value = gain;
+        n.connect(g).connect(target);
+        n.start(now);
+        sources.push(n);
+        return g;
+      };
+      const ks = (seconds, damping, gain, target = dest) => {
+        const src = ctx.createBufferSource();
+        src.buffer = getKarplusBuffer(ctx, f, seconds, damping, 0.5);
+        const g = ctx.createGain();
+        g.gain.value = gain;
+        src.connect(g).connect(target);
+        src.start(now);
+        sources.push(src);
+      };
+      const dc = detuneCents;
+      let env = { attack: 0.006, peak: 0.26, decay: 0.6, sustain: 0.5, release: 0.3 };
+
+      switch (type) {
+        case "piano": {
+          // Kuyruklu piyano: sine + triangle karışımı, kısa decay
+          osc("sine", f, 0.62, -dc * 0.15);
+          osc("triangle", f, 0.32, dc * 0.15);
+          osc("sine", f * 2, 0.14);
+          osc("sine", f * 3, 0.05);
+          env = { attack: 0.004, peak: 0.3, decay: 1.1, sustain: 0.12, release: 0.35 };
+          break;
+        }
+        case "upright": {
+          const lp = biquad("lowpass", Math.min(3200, f * 6), 0.7);
+          osc("triangle", f, 0.62, -dc * 0.2, lp);
+          osc("sine", f, 0.4, 0, lp);
+          osc("sine", f * 2.003, 0.12, 0, lp);
+          env = { attack: 0.005, peak: 0.3, decay: 0.8, sustain: 0.08, release: 0.3 };
+          break;
+        }
+        case "epiano": {
+          // Rhodes tipi FM: yumuşak çan tınısı
+          fm(1, 1.6, 0.6, dest, "sine", 0.6);
+          osc("sine", f, 0.35);
+          env = { attack: 0.004, peak: 0.3, decay: 1.6, sustain: 0.18, release: 0.45 };
+          break;
+        }
+        case "eguitar": {
+          const shaper = ctx.createWaveShaper();
+          shaper.curve = createDriveCurve(30);
+          const lp = biquad("lowpass", 2600, 1.2);
+          shaper.connect(lp);
+          const pre = ctx.createGain();
+          pre.gain.value = 0.8;
+          pre.connect(shaper);
+          ks(2.4, 0.997, 0.9, pre);
+          osc("sawtooth", f, 0.08, dc * 0.3, pre);
+          env = { attack: 0.003, peak: 0.3, decay: 1.6, sustain: 0.3, release: 0.25 };
+          break;
+        }
+        case "guitar": {
+          // Akustik gitar: Karplus-Strong, hızlı decay
+          const body = biquad("peaking", 220, 1.1);
+          body.gain.value = 4;
+          ks(2.0, 0.994, 1.0, body);
+          env = { attack: 0.002, peak: 0.36, decay: 1.4, sustain: 0, release: 0.2 };
+          break;
+        }
+        case "harp": {
+          const lp = biquad("lowpass", Math.min(6000, f * 8), 0.6);
+          ks(2.8, 0.998, 0.85, lp);
+          osc("sine", f, 0.12, 0, lp);
+          env = { attack: 0.003, peak: 0.34, decay: 2.2, sustain: 0, release: 0.4 };
+          break;
+        }
+        case "strings":
+        case "cello": {
+          // Keman/çello: sawtooth + lowpass, gecikmeli vibrato ile yaylı tını
+          const isCello = type === "cello";
+          const base = isCello ? f * 0.5 : f;
+          const lp = biquad("lowpass", isCello ? 1500 : 3000, 1.0);
+          const a = osc("sawtooth", base, 0.48, -9 - dc * 0.3, lp);
+          const b = osc("sawtooth", base, 0.42, 9 + dc * 0.3, lp);
+          lfo(5.6, base * 0.006, a.o.frequency, 0.25);
+          lfo(5.3, base * 0.006, b.o.frequency, 0.25);
+          env = { attack: isCello ? 0.12 : 0.09, peak: 0.24, decay: 0.3, sustain: 0.85, release: 0.35 };
+          break;
+        }
+        case "flute": {
+          // Flüt: sine + hafif nefes noise'u, yumuşak, uzun sustain
+          const main = osc("sine", f, 0.75);
+          osc("sine", f * 2, 0.1);
+          lfo(5.0, f * 0.004, main.o.frequency, 0.3);
+          const bp = biquad("bandpass", Math.min(9000, f * 2), 1.6);
+          noise(0.8, bp, 0.07);
+          env = { attack: 0.07, peak: 0.27, decay: 0.3, sustain: 0.9, release: 0.25 };
+          break;
+        }
+        case "clarinet": {
+          // Klarnet: kare dalga (tek harmonikler) + lowpass
+          const lp = biquad("lowpass", Math.min(2400, f * 5), 0.9);
+          osc("square", f, 0.42, dc * 0.1, lp);
+          osc("sine", f, 0.3, 0, lp);
+          env = { attack: 0.035, peak: 0.24, decay: 0.3, sustain: 0.85, release: 0.18 };
+          break;
+        }
+        case "brass": {
+          // Trompet: square + bandpass, parlak; filtre süpürmesi ile "blat"
+          const bp = biquad("bandpass", Math.min(5000, f * 3), 0.9);
+          const lp = biquad("lowpass", 900, 0.8, bp);
+          lp.frequency.exponentialRampToValueAtTime(Math.min(7000, f * 8), now + 0.06);
+          osc("square", f, 0.5, -4, lp);
+          osc("sawtooth", f, 0.4, 4 + dc * 0.2, lp);
+          const dry = ctx.createGain();
+          dry.gain.value = 0.35;
+          dry.connect(dest);
+          lp.connect(dry);
+          env = { attack: 0.035, peak: 0.3, decay: 0.25, sustain: 0.8, release: 0.15 };
+          break;
+        }
+        case "sax": {
+          // Saksafon: sawtooth + iki formant bandpass + vibrato
+          const sum = ctx.createGain();
+          sum.connect(dest);
+          const f1 = biquad("bandpass", 520, 3.2, sum);
+          const f2 = biquad("bandpass", 1450, 4.0, sum);
+          const lp = biquad("lowpass", Math.min(4200, f * 7), 0.7, sum);
+          const pre = ctx.createGain();
+          pre.gain.value = 1;
+          pre.connect(f1); pre.connect(f2); pre.connect(lp);
+          const s = osc("sawtooth", f, 0.55, dc * 0.2, pre);
+          lfo(4.8, f * 0.005, s.o.frequency, 0.35);
+          env = { attack: 0.04, peak: 0.3, decay: 0.3, sustain: 0.82, release: 0.18 };
+          break;
+        }
+        case "marimba": {
+          osc("sine", f, 0.8);
+          const hi = osc("sine", f * 4, 0.22);
+          hi.g.gain.setValueAtTime(0.22, now);
+          hi.g.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+          env = { attack: 0.002, peak: 0.36, decay: 0.7, sustain: 0, release: 0.15 };
+          break;
+        }
+        case "kalimba": {
+          osc("sine", f, 0.8);
+          const hi = osc("sine", f * 5.4, 0.18);
+          hi.g.gain.setValueAtTime(0.18, now);
+          hi.g.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+          env = { attack: 0.002, peak: 0.34, decay: 1.1, sustain: 0, release: 0.2 };
+          break;
+        }
+        case "vibraphone": {
+          // Vibrafon: FM metalik çan + tremolo, uzun ring-out
+          const trem = ctx.createGain();
+          trem.gain.value = 0.8;
+          trem.connect(dest);
+          lfo(5.2, 0.22, trem.gain, 0.05);
+          fm(3.5, 0.9, 0.35, trem, "sine", 0.55);
+          osc("sine", f, 0.45, 0, trem);
+          osc("sine", f * 4, 0.05, 0, trem);
+          env = { attack: 0.003, peak: 0.3, decay: 3.2, sustain: 0, release: 0.6 };
+          break;
+        }
+        case "organ": {
+          // Hammond tipi: drawbar sine harmonikleri, sürekli, hafif leslie tremolo
+          const trem = ctx.createGain();
+          trem.gain.value = 0.9;
+          trem.connect(dest);
+          lfo(6.4, 0.08, trem.gain, 0);
+          [[0.5, 0.35], [1, 0.55], [1.5, 0.18], [2, 0.3], [3, 0.14], [4, 0.12], [6, 0.05]]
+            .forEach(([r, g]) => osc("sine", f * r, g, 0, trem));
+          env = { attack: 0.012, peak: 0.2, decay: 0.05, sustain: 1.0, release: 0.08 };
+          break;
+        }
+        case "accordion": {
+          const lp = biquad("lowpass", 2600, 1.0);
+          osc("sawtooth", f, 0.32, -13, lp);
+          osc("sawtooth", f, 0.32, 13, lp);
+          osc("square", f * 0.5, 0.16, 0, lp);
+          env = { attack: 0.05, peak: 0.24, decay: 0.2, sustain: 0.9, release: 0.12 };
+          break;
+        }
+        case "bass": {
+          // Bas gitar: kalın sine + düşük frekanslı saw gövdesi
+          const lp = biquad("lowpass", 650, 1.2);
+          osc("sine", f, 0.8, 0, lp);
+          osc("triangle", f, 0.25, dc * 0.15, lp);
+          osc("sawtooth", f, 0.14, 0, lp);
+          env = { attack: 0.004, peak: 0.36, decay: 0.7, sustain: 0.45, release: 0.15 };
+          break;
+        }
+        case "synth": {
+          const lp = biquad("lowpass", 900, 6);
+          lp.frequency.exponentialRampToValueAtTime(5200, now + 0.12);
+          osc("sawtooth", f, 0.4, -15 - dc * 0.3, lp);
+          osc("sawtooth", f, 0.4, 15 + dc * 0.3, lp);
+          osc("square", f * 0.5, 0.2, 0, lp);
+          env = { attack: 0.006, peak: 0.24, decay: 0.3, sustain: 0.8, release: 0.2 };
+          break;
+        }
+        case "musicbox": {
+          osc("sine", f * 2, 0.6);
+          const h = osc("sine", f * 6.1, 0.14);
+          h.g.gain.setValueAtTime(0.14, now);
+          h.g.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+          osc("sine", f * 3, 0.12);
+          env = { attack: 0.002, peak: 0.3, decay: 1.4, sustain: 0, release: 0.3 };
+          break;
+        }
+        default: {
+          osc("triangle", f, 0.72, -dc * 0.25);
+          osc("sine", f * 2, 0.16, dc * 0.2);
+          env = { attack: 0.006, peak: 0.25, decay: 0.5, sustain: 0.6, release: 0.3 };
+        }
+      }
+      return { sources, env };
     }
 
     function playFreqSound(freq, instrumentId, duration = 0.48, useDjAndSynth = true, fixedSynth = null) {
@@ -3140,24 +3453,6 @@
       const blacks = keys.filter((k) => k.isBlack);
       const wPct = 100 / whites.length;
 
-      const attachHoldHandlers = (btn, keyObj) => {
-        const onDown = (e) => {
-          if (e) e.stopPropagation();
-          try { btn.setPointerCapture(e.pointerId); } catch (_) {}
-          btn.classList.add("active");
-          onPianoKeyPressDown(keyObj);
-        };
-        const onUp = (e) => {
-          if (e) e.stopPropagation();
-          btn.classList.remove("active");
-          onPianoKeyRelease(keyObj);
-        };
-        btn.onpointerdown = onDown;
-        btn.onpointerup = onUp;
-        btn.onpointercancel = onUp;
-        btn.onlostpointercapture = onUp;
-      };
-
       whites.forEach((k) => {
         const btn = document.createElement("button");
         btn.type = "button";
@@ -3165,7 +3460,6 @@
         btn.dataset.slot = k.slot;
         btn.textContent = k.label;
         appendKbHint(btn, k.slot);
-        attachHoldHandlers(btn, k);
         board.appendChild(btn);
       });
 
@@ -3177,9 +3471,47 @@
         btn.style.left = `${(k.afterWhite + 1) * wPct}%`;
         btn.textContent = k.label;
         appendKbHint(btn, k.slot);
-        attachHoldHandlers(btn, k);
         board.appendChild(btn);
       });
+      bindPianoKeyHandlers();
+    }
+
+    function onPercPadPointerDown(e) {
+      const btn = e.currentTarget;
+      if (e) e.stopPropagation();
+      if (!canIEditStudio()) return;
+      if (app.modeSwitching) return;
+      if (app.recordArmed && app.selectedChannel && app.selectedChannel !== "percussion") return;
+      getAudioCtx();
+
+      if (app.recordArmed) {
+        selectChannel("percussion");
+      }
+
+      const percId = btn.dataset.perc;
+      const lockedSynth = cloneSynth(app.synth);
+      btn.classList.add("hit");
+      setTimeout(() => btn.classList.remove("hit"), 120);
+
+      playFreqSound(261.63, percId, 0.34, true, lockedSynth);
+      recordProfileNote(percId);
+
+      if (app.recordArmed) {
+        const hk = `perc:${percId}:${performance.now()}`;
+        beginStudioTakeNote({
+          holdKey: hk,
+          slot: "",
+          freq: 261.63,
+          label: btn.textContent.trim(),
+          instrumentId: percId,
+          synthParams: lockedSynth,
+          minTailMs: 420
+        });
+        finalizeStudioTakeNote(hk, 420);
+      } else {
+        document.getElementById("takeStatus").textContent =
+          `🎧 Deneme (${btn.textContent.trim()}): Kaydetmek için yukarıdan "Kayıt Modunu Başlat"a bas!`;
+      }
     }
 
     function getCycleDurationMs() {
@@ -3189,7 +3521,7 @@
     }
 
     function beginStudioTakeNote({ holdKey, slot, freq, label, instrumentId, synthParams, minTailMs = 460 }) {
-      if (!app.recordArmed) return;
+      if (!app.recordArmed || app.modeSwitching) return;
       const inst = INSTRUMENTS.find((i) => i.id === instrumentId) || INSTRUMENTS[0];
       const cycleMs = getCycleDurationMs();
       const lockedSynth = cloneSynth(synthParams);
@@ -3419,23 +3751,90 @@
       };
     }
 
-    function playCurrentChallenge() {
-      getAudioCtx();
+    // Melodiyi Taklit Et: kalan dinleme hakkı (ilk dinleme + oda ayarındaki yeniden dinleme hakları)
+    function getMelodyListenInfo() {
+      const room = app.room;
+      const raw = Number(room?.settings?.replayLimit ?? 1);
+      const limit = raw === -1 ? -1 : Math.min(10, Math.max(1, Math.round(raw) || 1));
+      const used = Number(room?.challengeListens?.[app.myId]) || 0;
+      if (limit < 0) return { unlimited: true, used, replaysLeft: Infinity, canListen: true };
+      const allowed = 1 + limit;
+      return {
+        unlimited: false,
+        used,
+        limit,
+        replaysLeft: Math.max(0, Math.min(limit, allowed - Math.max(1, used))),
+        canListen: used < allowed
+      };
+    }
+
+    function updateMelodyReplayUI() {
+      const badge = document.getElementById("melodyReplayBadge");
+      const btn = document.getElementById("melodyListenBtn");
+      if (!badge || !btn) return;
+      const info = getMelodyListenInfo();
+      const submitted = Boolean(app.room?.submissions?.[app.myId]);
+      if (info.unlimited) {
+        badge.textContent = "🔁 Yeniden dinleme: ♾️ Sonsuz";
+      } else if (info.used === 0) {
+        badge.textContent = `🔁 Yeniden dinleme hakkı: ${info.limit}`;
+      } else {
+        badge.textContent = `🔁 Kalan yeniden dinleme: ${info.replaysLeft}/${info.limit}`;
+      }
+      badge.classList.toggle("is-empty", !info.canListen);
+      btn.disabled = submitted || !info.canListen || app.challengePlaying;
+      btn.textContent = info.used === 0 ? "👂 Melodiyi Dinle" : (info.canListen ? "🔁 Yeniden Dinle" : "🚫 Dinleme Hakkı Bitti");
+    }
+
+    async function playCurrentChallenge() {
       const ch = app.room?.challenge;
       if (!ch) return;
-      if (ch.mode === "rhythm") {
-        let elapsed = 0;
-        playFreqSound(ch.freq || 261.63, ch.instrumentId, 0.25, false);
-        (ch.intervals || []).forEach((dt) => {
-          elapsed += dt;
-          setTimeout(() => playFreqSound(ch.freq || 261.63, ch.instrumentId, 0.25, false), elapsed);
-        });
-      } else if (ch.mode === "melody") {
-        (ch.notes || []).forEach((n) => {
-          setTimeout(() => {
-            playFreqSound(n.freq, ch.instrumentId, 0.48, false);
-          }, n.delayMs);
-        });
+      if (app.challengePlaying) return;
+
+      if (ch.mode === "melody") {
+        const info = getMelodyListenInfo();
+        if (!info.canListen) { updateMelodyReplayUI(); return; }
+        // Hakkı yerelde hemen düş (çift tıklamaya karşı), sunucu da doğrulayıp yayınlar
+        if (app.room) {
+          app.room.challengeListens = { ...(app.room.challengeListens || {}), [app.myId]: info.used + 1 };
+        }
+        sendWs({ type: "challenge_listen" });
+      }
+
+      const ctx = getAudioCtx();
+      app.challengePlaying = true;
+      if (ch.mode === "melody") updateMelodyReplayUI();
+      try {
+        // FIX: AudioContext askıdayken çalmaya başlamak ilk notayı bozuyordu — resume tamamlanmasını bekle
+        if (ctx.state !== "running") {
+          try { await ctx.resume(); } catch (_) {}
+        }
+        const t0 = ctx.currentTime + 0.1;
+        const out = routeThroughDjBus(ctx, getMasterDestination(), "normal");
+        let lastEndSec = 0;
+
+        if (ch.mode === "rhythm") {
+          const hits = [0];
+          let elapsed = 0;
+          (ch.intervals || []).forEach((dt) => { elapsed += Number(dt) || 0; hits.push(elapsed); });
+          hits.forEach((ms) => {
+            const at = t0 + ms / 1000;
+            startSustainedOrTimedVoice(ctx, out, ch.freq || 261.63, ch.instrumentId, at, 0.25, "normal", DEFAULT_SYNTH, 0.9);
+            setTimeout(() => pulseLights(0.8), Math.max(0, (at - ctx.currentTime) * 1000));
+          });
+          lastEndSec = elapsed / 1000 + 0.6;
+        } else if (ch.mode === "melody") {
+          (ch.notes || []).forEach((n) => {
+            const at = t0 + (Number(n.delayMs) || 0) / 1000;
+            startSustainedOrTimedVoice(ctx, out, n.freq, ch.instrumentId, at, 0.48, "normal", DEFAULT_SYNTH, 0.9);
+            setTimeout(() => pulseLights(0.8), Math.max(0, (at - ctx.currentTime) * 1000));
+            lastEndSec = Math.max(lastEndSec, (Number(n.delayMs) || 0) / 1000 + 0.9);
+          });
+        }
+        await new Promise((r) => setTimeout(r, Math.ceil((lastEndSec + 0.1) * 1000)));
+      } finally {
+        app.challengePlaying = false;
+        if (ch.mode === "melody") updateMelodyReplayUI();
       }
     }
 
@@ -3501,23 +3900,15 @@
       return Math.round(instScore + pitchScore + rhythmScore);
     }
 
-    function nextRandomConcept() {
-      const avail = CONCEPTS.filter((c) => !app.conceptHistory.includes(c));
-      const pool = avail.length ? avail : CONCEPTS;
-      const pick = pool[Math.floor(Math.random() * pool.length)];
-      app.conceptHistory.push(pick);
-      if (app.conceptHistory.length > 25) app.conceptHistory.shift();
-      return pick;
-    }
-
     function updateLobbyModeFields(mode) {
-      const isLoopMode = ["collab", "theme"].includes(mode);
+      const isLoopMode = ["collab"].includes(mode);
       document.getElementById("fieldRounds").classList.toggle("hidden", !isLoopMode);
       document.getElementById("fieldBpm").classList.toggle("hidden", !isLoopMode);
       document.getElementById("fieldBeats").classList.toggle("hidden", !isLoopMode);
       document.getElementById("fieldSecretMode").classList.toggle("hidden", !isLoopMode);
       document.getElementById("fieldVoteTimer").classList.toggle("hidden", !isLoopMode);
       document.getElementById("fieldTimer").classList.remove("hidden");
+      document.getElementById("fieldReplayLimit").classList.toggle("hidden", mode !== "melody");
     }
 
     function hideAllGameViews() {
@@ -3869,7 +4260,7 @@
     }
 
     function syncLoopStateWithRoom(room) {
-      const isLoopMode = ["collab", "theme"].includes(room.settings?.mode);
+      const isLoopMode = ["collab"].includes(room.settings?.mode);
       const shouldPlay = Boolean(room.started && isLoopMode);
       const anchor = Number(room.loopAnchorServerMs) || estimatedServerNow();
       const dj = room.djEffect || "normal";
@@ -3949,6 +4340,7 @@
         document.getElementById("lobbyBeats").value = String(app.beats);
         document.getElementById("lobbyTimer").value = String(room.settings.turnDuration ?? 0);
         document.getElementById("lobbyVoteTimer").value = room.settings.voteDuration || 30;
+        document.getElementById("lobbyReplayLimit").value = String(room.settings.replayLimit ?? 1);
         document.getElementById("lobbySecretToggle").checked = Boolean(room.settings.secretMode);
 
         document.querySelectorAll(".mode-card").forEach((card) => {
@@ -3958,7 +4350,7 @@
 
         updateLobbyModeFields(mode);
 
-        ["lobbyRounds", "lobbyBpm", "lobbyBeats", "lobbyTimer", "lobbyVoteTimer", "lobbySecretToggle"].forEach((id) => {
+        ["lobbyRounds", "lobbyBpm", "lobbyBeats", "lobbyTimer", "lobbyVoteTimer", "lobbyReplayLimit", "lobbySecretToggle"].forEach((id) => {
           document.getElementById(id).disabled = !isHost;
         });
         document.getElementById("startGameBtn").classList.toggle("hidden", !isHost);
@@ -3993,7 +4385,7 @@
       document.getElementById("lobbyView").classList.add("hidden");
       document.getElementById("restartGameBtn").classList.toggle("hidden", !isHost);
       hideAllGameViews();
-      if (!["collab", "theme"].includes(mode) || room.finished) {
+      if (!["collab"].includes(mode) || room.finished) {
         clearInterval(app.turnTimer);
         app.turnTimer = null;
         app.turnTimerKey = null;
@@ -4048,6 +4440,7 @@
         document.getElementById("melodyWaitBox").classList.toggle("hidden", !submitted);
         document.getElementById("melodyWaitText").textContent = `Gönderildi! Diğer oyuncular bekleniyor (${doneCount}/${room.players.length})...`;
         document.getElementById("melodyForceEndBtn").classList.toggle("hidden", !isHost);
+        updateMelodyReplayUI();
         if (!app.challengeTimer) startChallengeTimer("melody");
         return;
       }
@@ -4093,10 +4486,7 @@
       document.getElementById("clearTakeBtn").disabled = !isMyTurn;
 
       document.getElementById("liveBpmSlider").disabled = !isHost;
-      document.getElementById("newConceptBtn").disabled = !isHost;
 
-      document.getElementById("themeBanner").classList.toggle("hidden", mode !== "theme");
-      document.getElementById("conceptTitle").textContent = room.concept || "Güneşli Piknik";
 
       document.getElementById("djStatusText").textContent = `Aktif Efekt: ${DJ_LABELS[app.djEffect] || "Normal"}${isHost ? "" : " (Oda kurucusu yönetir)"}`;
       document.querySelectorAll("#djButtonsWrap button").forEach((btn) => {
@@ -4761,6 +5151,12 @@
         src.connect(masterGain);
       }
 
+      app.activePreviewSources.add(src);
+      const prevEnded = src.onended;
+      src.onended = () => {
+        app.activePreviewSources.delete(src);
+        if (typeof prevEnded === "function") prevEnded();
+      };
       src.start();
     }
 
@@ -4770,10 +5166,9 @@
       else if (app.micPhase === "waiting") stopMicRecordingNow();
       flushAllPendingHoldDurations();
       const mode = app.room?.settings?.mode;
-      const nextConcept = mode === "theme" ? nextRandomConcept() : undefined;
 
       if (!app.currentTakeNotes.length && !app.micBuffer) {
-        sendWs({ type: "skip_turn", nextConcept });
+        sendWs({ type: "skip_turn" });
         return;
       }
 
@@ -4813,7 +5208,6 @@
       // Eskiden "layer: {...}" içine sarıldığı için notalar boş sayılıyor, kayıt silinip sıra geçiyordu.
       sendWs({
         type: "add_layer",
-        nextConcept,
         instrumentId: instId,
         instrumentName: instName,
         reverse: Boolean(app.reverseTake || app.micReverse),
@@ -4843,6 +5237,7 @@
           beats: normalizeBeats(document.getElementById("lobbyBeats").value),
           turnDuration: Number(document.getElementById("lobbyTimer").value),
           voteDuration: Number(document.getElementById("lobbyVoteTimer").value),
+          replayLimit: Number(document.getElementById("lobbyReplayLimit").value),
           secretMode: document.getElementById("lobbySecretToggle").checked
         }
       });
@@ -4933,7 +5328,7 @@
     function renderTemplatePills(room, isHost) {
       const section = document.getElementById("templateSection");
       const wrap = document.getElementById("templatePills");
-      const isLoopMode = ["collab", "theme"].includes(room.settings?.mode);
+      const isLoopMode = ["collab"].includes(room.settings?.mode);
       section.classList.toggle("hidden", !isHost || !isLoopMode);
       document.getElementById("templateFxText").textContent = `· Efekt: ${DJ_LABELS[room.djEffect || "normal"] || "Normal"}`;
       const activeId = getActiveTemplateId(room);
@@ -5037,7 +5432,7 @@
     function maybeRecordFinishedGame(room) {
       if (!room?.started || !room.finished) return;
       const mode = room.settings?.mode;
-      const isVoteMode = mode === "collab" || mode === "theme";
+      const isVoteMode = mode === "collab";
       if (isVoteMode && !room.votingClosed) return; // kazanan henüz belli değil
       const key = `${room.code}:${room.gameSessionId || 1}`;
       profileState = loadProfile();
@@ -5182,7 +5577,6 @@
       buildChordPillsUI();
       buildPianoBoard();
       syncSynthInputsFromState();
-      loadInstrumentSamples("grand_piano");
 
       document.getElementById("toggleRecordArmBtn").onclick = () => {
         if (!canIEditStudio()) return;
@@ -5235,7 +5629,7 @@
         sendWs({ type: "join_room", name, avatar: app.myAvatar, code });
       };
 
-      ["lobbyRounds", "lobbyBpm", "lobbyBeats", "lobbyTimer", "lobbyVoteTimer", "lobbySecretToggle"].forEach((id) => {
+      ["lobbyRounds", "lobbyBpm", "lobbyBeats", "lobbyTimer", "lobbyVoteTimer", "lobbyReplayLimit", "lobbySecretToggle"].forEach((id) => {
         document.getElementById(id).onchange = () => {
           document.getElementById("lobbyBpmVal").textContent = document.getElementById("lobbyBpm").value;
           sendLobbySettingsUpdate();
@@ -5249,8 +5643,6 @@
         const payload = { type: "start_game" };
         if (mode === "rhythm" || mode === "melody") {
           payload.challenge = buildChallengeForMode(mode);
-        } else if (mode === "theme") {
-          payload.concept = nextRandomConcept();
         }
         const lobbyDj = app.room?.djEffect || "normal";
         sendWs(payload);
@@ -5321,14 +5713,8 @@
 
       document.getElementById("saveTurnBtn").onclick = saveMyLayerAndAdvance;
       document.getElementById("skipTurnBtn").onclick = () => {
-        const nextConcept = app.room?.settings?.mode === "theme" ? nextRandomConcept() : undefined;
         resetDraftStudioTake();
-        sendWs({ type: "skip_turn", nextConcept });
-      };
-
-      document.getElementById("newConceptBtn").onclick = () => {
-        if (!isHostUser()) return;
-        sendWs({ type: "change_concept", concept: nextRandomConcept() });
+        sendWs({ type: "skip_turn" });
       };
 
       document.querySelectorAll("#djButtonsWrap button").forEach((btn) => {
@@ -5356,7 +5742,6 @@
         if (!canIEditStudio()) return;
         if (app.recordArmed && (app.selectedChannel || app.lockedMelodicId)) return;
         app.instrumentId = e.target.value;
-        loadInstrumentSamples(app.instrumentId);
       };
 
       document.getElementById("randomInstBtn").onclick = () => {
@@ -5365,7 +5750,6 @@
         const pick = MELODIC_INSTRUMENTS[Math.floor(Math.random() * MELODIC_INSTRUMENTS.length)];
         app.instrumentId = pick.id;
         document.getElementById("instrumentSelect").value = pick.id;
-        loadInstrumentSamples(pick.id);
       };
 
       document.getElementById("reverseTakeBtn").onclick = () => {
@@ -5374,43 +5758,7 @@
         document.getElementById("reverseTakeBtn").classList.toggle("active", app.reverseTake);
       };
 
-      document.querySelectorAll("#studioPercWrap .perc-pad-btn").forEach((btn) => {
-        btn.onpointerdown = (e) => {
-          if (e) e.stopPropagation();
-          if (!canIEditStudio()) return;
-          if (app.recordArmed && app.selectedChannel && app.selectedChannel !== "percussion") return;
-          getAudioCtx();
-
-          if (app.recordArmed) {
-            selectChannel("percussion");
-          }
-
-          const percId = btn.dataset.perc;
-          const lockedSynth = cloneSynth(app.synth);
-          btn.classList.add("hit");
-          setTimeout(() => btn.classList.remove("hit"), 120);
-
-          playFreqSound(261.63, percId, 0.34, true, lockedSynth);
-          recordProfileNote(percId);
-
-          if (app.recordArmed) {
-            const hk = `perc:${percId}:${performance.now()}`;
-            beginStudioTakeNote({
-              holdKey: hk,
-              slot: "",
-              freq: 261.63,
-              label: btn.textContent.trim(),
-              instrumentId: percId,
-              synthParams: lockedSynth,
-              minTailMs: 420
-            });
-            finalizeStudioTakeNote(hk, 420);
-          } else {
-            document.getElementById("takeStatus").textContent =
-              `🎧 Deneme (${btn.textContent.trim()}): Kaydetmek için yukarıdan "Kayıt Modunu Başlat"a bas!`;
-          }
-        };
-      });
+      bindPercPadHandlers();
 
       const bindSynthSlider = (id, key) => {
         document.getElementById(id).oninput = (e) => {
@@ -5517,12 +5865,7 @@
       };
       document.addEventListener("pointerdown", unlockAudio, true);
       document.addEventListener("keydown", unlockAudio, true);
-      document.addEventListener("keydown", handlePianoKeyDown);
-      document.addEventListener("keyup", handlePianoKeyUp);
-      window.addEventListener("blur", releaseAllKeyboardNotes);
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden) releaseAllKeyboardNotes();
-      });
+      bindKeyboardPianoHandlers();
 
       updateLobbyModeFields("collab");
 
