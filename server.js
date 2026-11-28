@@ -2,6 +2,7 @@ const express = require("express");
 const http = require("http");
 const path = require("path");
 const { WebSocketServer } = require("ws");
+const crypto = require("crypto");
 
 const app = express();
 app.use(express.static(path.join(__dirname)));
@@ -14,7 +15,16 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 const rooms = new Map();
-const clients = new Map();
+const clients = new Map(); // playerId -> { ws, roomCode, token }
+
+// ─── Yeniden bağlanma ─────────────────────────────────────────────────────────
+// Bağlantısı kopan oyuncu hemen silinmez; bu süre içinde gizli token ile geri dönebilir.
+const RECONNECT_GRACE_MS = 30_000;
+const disconnectedPlayers = new Map(); // playerId -> { roomCode, token, timer }
+
+function makeToken() {
+  return crypto.randomBytes(16).toString("hex");
+}
 
 const ALLOWED_MODES = new Set(["collab", "theme", "rhythm", "melody", "tabu"]);
 const ALLOWED_DJ_EFFECTS = new Set(["normal", "slowed", "underwater", "radio", "cave"]);
@@ -229,7 +239,7 @@ function sanitizeRoomForViewer(room, viewerId) {
     code: room.code,
     hostId: room.hostId,
     // FIX: Referans yerine kopya gönder — dış mutasyona karşı koruma
-    players: room.players.map((p) => ({ ...p })),
+    players: room.players.map((p) => ({ ...p, offline: disconnectedPlayers.has(p.id) })),
     gameSessionId: room.gameSessionId,
     turnSeq: room.turnSeq,
     settings: { ...room.settings },
@@ -332,6 +342,49 @@ function advanceStudioTurn(room) {
   }
 }
 
+// Oyuncuyu odadan kalıcı olarak çıkarır (tur/round/oylama mantığını düzelterek)
+function removePlayerFromRoom(room, playerId) {
+  const wasActive = room.players[room.turnIndex]?.id === playerId;
+  room.players = room.players.filter((p) => p.id !== playerId);
+
+  if (!room.players.length) {
+    clearVotingTimer(room);
+    rooms.delete(room.code);
+    return;
+  }
+
+  if (room.hostId === playerId) {
+    room.hostId = room.players[0].id;
+  }
+
+  const wrappedAround = room.turnIndex >= room.players.length;
+  if (wrappedAround) room.turnIndex = 0;
+
+  if (wasActive && room.started && !room.finished) {
+    room.turnSeq = (room.turnSeq || 0) + 1;
+    if (["collab", "theme"].includes(room.settings.mode) && wrappedAround) {
+      const totalRounds = clampTotalRounds(room.settings.totalRounds);
+      if (room.currentRound < totalRounds) {
+        room.currentRound += 1;
+      } else {
+        openStudioVoting(room);
+      }
+    }
+  }
+
+  if (room.started && !room.finished && ["rhythm", "melody"].includes(room.settings.mode)) {
+    if (Object.keys(room.submissions).length >= room.players.length) {
+      room.finished = true;
+    }
+  }
+
+  if (room.finished && !room.votingClosed) {
+    checkAllPlayersDoneVoting(room);
+  }
+
+  broadcastRoom(room);
+}
+
 // ─── Pasif oda temizleme: 2 saattir başlamamış odaları kaldır ─────────────────
 setInterval(() => {
   const cutoff = Date.now() - 2 * 60 * 60 * 1000;
@@ -345,10 +398,13 @@ setInterval(() => {
 // ──────────────────────────────────────────────────────────────────────────────
 
 wss.on("connection", (ws) => {
-  const playerId = makeId(8);
-  clients.set(playerId, { ws, roomCode: null });
+  let playerId = makeId(8);
+  while (clients.has(playerId) || disconnectedPlayers.has(playerId)) playerId = makeId(8);
+  const token = makeToken();
+  clients.set(playerId, { ws, roomCode: null, token });
 
-  ws.send(JSON.stringify({ type: "welcome", playerId, serverNow: Date.now() }));
+  // token sadece bu oyuncuya gider; oda durumunda asla yayınlanmaz
+  ws.send(JSON.stringify({ type: "welcome", playerId, token, serverNow: Date.now() }));
 
   ws.on("message", (raw) => {
     let msg;
@@ -359,7 +415,48 @@ wss.on("connection", (ws) => {
     }
 
     const session = clients.get(playerId);
-    if (!session) return;
+    if (!session || session.ws !== ws) return;
+
+    if (msg.type === "reconnect") {
+      const oldId = String(msg.playerId || "").slice(0, 16);
+      const reqToken = String(msg.token || "");
+      const reqCode = String(msg.roomCode || "").trim().toUpperCase();
+      const room = rooms.get(reqCode);
+      const fail = () => ws.send(JSON.stringify({ type: "reconnect_failed", serverNow: Date.now() }));
+
+      if (!oldId || !reqToken || !room || oldId === playerId) return fail();
+      if (!room.players.some((p) => p.id === oldId)) return fail();
+
+      const disc = disconnectedPlayers.get(oldId);
+      const live = clients.get(oldId);
+      let expectedToken = null;
+      if (disc && disc.roomCode === reqCode) expectedToken = disc.token;
+      else if (live && live.roomCode === reqCode) expectedToken = live.token; // sunucu kopmayı henüz fark etmediyse
+      if (!expectedToken) return fail();
+
+      const a = Buffer.from(expectedToken);
+      const b = Buffer.from(reqToken);
+      if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return fail();
+
+      if (disc) {
+        clearTimeout(disc.timer);
+        disconnectedPlayers.delete(oldId);
+      }
+
+      // Bu bağlantının geçici kimliğini bırak, eski kimliği devral
+      clients.delete(playerId);
+      playerId = oldId;
+      clients.set(playerId, { ws, roomCode: reqCode, token: expectedToken });
+
+      // Eski (yarı açık) soket varsa kapat; close handler'ı ws eşleşmediği için hiçbir şey yapmaz
+      if (live && live.ws !== ws) {
+        try { live.ws.terminate(); } catch (_) {}
+      }
+
+      ws.send(JSON.stringify({ type: "reconnected", playerId, roomCode: reqCode, serverNow: Date.now() }));
+      broadcastRoom(room);
+      return;
+    }
 
     if (msg.type === "create_room") {
       const name = String(msg.name || "Kurucu").trim().slice(0, 20) || "Kurucu";
@@ -756,63 +853,24 @@ wss.on("connection", (ws) => {
 
   ws.on("close", () => {
     const session = clients.get(playerId);
+    // Kimlik başka bir bağlantıya devredildiyse (yeniden bağlanma) dokunma
+    if (!session || session.ws !== ws) return;
     clients.delete(playerId);
-    if (!session || !session.roomCode) return;
+    if (!session.roomCode) return;
 
     const room = rooms.get(session.roomCode);
-    if (!room) return;
+    if (!room || !room.players.some((p) => p.id === playerId)) return;
 
-    const wasActive = room.players[room.turnIndex]?.id === playerId;
-    room.players = room.players.filter((p) => p.id !== playerId);
+    const goneId = playerId;
+    const roomCode = session.roomCode;
+    const timer = setTimeout(() => {
+      disconnectedPlayers.delete(goneId);
+      const r = rooms.get(roomCode);
+      if (r) removePlayerFromRoom(r, goneId);
+    }, RECONNECT_GRACE_MS);
 
-    if (!room.players.length) {
-      clearVotingTimer(room);
-      rooms.delete(room.code);
-      return;
-    }
-
-    if (room.hostId === playerId) {
-      room.hostId = room.players[0].id;
-    }
-
-    // FIX: turnIndex ayarını önce yap; tur ilerletme kararı buna göre verilecek
-    const wrappedAround = room.turnIndex >= room.players.length;
-    if (wrappedAround) {
-      room.turnIndex = 0;
-    }
-
-    // FIX: Aktif oyuncu ayrılırken tur/round mantığını doğru ilerlet
-    if (wasActive && room.started && !room.finished) {
-      if (["collab", "theme"].includes(room.settings.mode)) {
-        room.turnSeq = (room.turnSeq || 0) + 1;
-        if (wrappedAround) {
-          // Son oyuncu ayrıldı: round bitişini veya oylama başlangıcını kontrol et
-          const totalRounds = clampTotalRounds(room.settings.totalRounds);
-          if (room.currentRound < totalRounds) {
-            room.currentRound += 1;
-          } else {
-            // Son round'un son turu da geçildi → oylama başlasın
-            openStudioVoting(room);
-          }
-        }
-        // Wrap olmadıysa: turnIndex zaten bir sonraki oyuncuya işaret ediyor, ekstra işlem yok
-      } else {
-        // rhythm / melody / tabu: sadece turnSeq'i artır, UI'yı uyar
-        room.turnSeq = (room.turnSeq || 0) + 1;
-      }
-    }
-
-    if (room.started && !room.finished && ["rhythm", "melody"].includes(room.settings.mode)) {
-      if (Object.keys(room.submissions).length >= room.players.length) {
-        room.finished = true;
-      }
-    }
-
-    if (room.finished && !room.votingClosed) {
-      checkAllPlayersDoneVoting(room);
-    }
-
-    broadcastRoom(room);
+    disconnectedPlayers.set(goneId, { roomCode, token: session.token, timer });
+    broadcastRoom(room); // diğerleri oyuncuyu "bağlantı koptu" olarak görür
   });
 });
 
